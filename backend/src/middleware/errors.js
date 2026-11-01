@@ -1,0 +1,71 @@
+'use strict';
+
+const { ZodError } = require('zod');
+const HttpError = require('../lib/http-error');
+const { formatZodError } = require('../validators/schemas');
+const config = require('../config');
+
+/** 404 for unmatched API routes. */
+function apiNotFound(req, res) {
+  res.status(404).json({
+    error: { code: 'NOT_FOUND', message: 'المسار المطلوب غير موجود.' },
+  });
+}
+
+/** Centralised error handler: one consistent JSON shape for the whole API. */
+// eslint-disable-next-line no-unused-vars
+function errorHandler(error, req, res, next) {
+  if (error instanceof ZodError) {
+    return res.status(400).json({
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'تحقق من البيانات المدخلة.',
+        fields: formatZodError(error),
+      },
+    });
+  }
+
+  if (error instanceof HttpError) {
+    return res.status(error.status).json({
+      error: {
+        code: error.code,
+        message: error.message,
+        ...(error.fields ? { fields: error.fields } : {}),
+      },
+    });
+  }
+
+  // body-parser / payload errors
+  if (error && error.type === 'entity.too.large') {
+    return res.status(413).json({
+      error: { code: 'PAYLOAD_TOO_LARGE', message: 'حجم البيانات المرسلة كبير جدًا.' },
+    });
+  }
+  if (error && (error.type === 'entity.parse.failed' || error instanceof SyntaxError)) {
+    return res.status(400).json({
+      error: { code: 'INVALID_JSON', message: 'صيغة البيانات المرسلة غير صحيحة.' },
+    });
+  }
+
+  // express-rate-limit
+  if (error && error.status === 429) {
+    return res.status(429).json({
+      error: { code: 'RATE_LIMITED', message: 'عدد المحاولات كبير. يرجى المحاولة لاحقًا.' },
+    });
+  }
+
+  // Unexpected errors: log server-side, never leak internals to clients.
+  // eslint-disable-next-line no-console
+  console.error('[error]', error && error.stack ? error.stack : error);
+
+  return res.status(500).json({
+    error: {
+      code: 'INTERNAL_ERROR',
+      message: config.isProduction
+        ? 'حدث خطأ غير متوقع. حاول مرة أخرى لاحقًا.'
+        : 'حدث خطأ غير متوقع في الخادم.',
+    },
+  });
+}
+
+module.exports = { apiNotFound, errorHandler };

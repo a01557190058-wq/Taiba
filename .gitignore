@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+package-lock.json.bak
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# SQLite database and sidecar files
+database/*.sqlite
+database/*.sqlite-journal
+database/*.sqlite-wal
+database/*.sqlite-shm
+database/*.db
+
+# Logs and coverage
+logs/
+*.log
+coverage/
+.nyc_output/
+
+# Test artifacts
+backend/tests/.tmp/
+.tmp/
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
