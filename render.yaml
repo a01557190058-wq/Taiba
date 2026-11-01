@@ -1,0 +1,43 @@
+# Render Blueprint for the Taiba Technology School website.
+# Create it from: Render Dashboard -> New -> Blueprint -> select this repository.
+# A persistent disk is required: SQLite data must survive restarts and deploys.
+services:
+  - type: web
+    name: taiba-technology-school
+    runtime: node
+    plan: starter
+    region: frankfurt
+    buildCommand: cd backend && npm ci --omit=dev
+    startCommand: cd backend && npm run admin:init && npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    disk:
+      name: taiba-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: TRUST_PROXY
+        value: "true"
+      - key: DB_PATH
+        value: /var/data/taiba.sqlite
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        value: admin
+      # Set these in the Render dashboard. ADMIN_PASSWORD must be at least 10
+      # characters; if left empty, a password is generated and printed once in
+      # the deploy logs.
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      # Set to the public URL after the first deploy, e.g.
+      # https://taiba-technology-school.onrender.com
+      - key: APP_ORIGIN
+        sync: false

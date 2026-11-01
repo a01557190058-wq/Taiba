@@ -13,7 +13,7 @@
 
 | المتطلب | الإصدار |
 | --- | --- |
-| Node.js | 22.5 أو أحدث (يلزم لتوفّر `node:sqlite`) |
+| Node.js | 22.13 أو أحدث، ويُفضّل 24 LTS (يلزم لتوفّر `node:sqlite` بدون علم تجريبي) |
 | npm | 10 أو أحدث |
 | نظام التشغيل | Windows / Linux / macOS |
 
@@ -74,6 +74,29 @@ npm run admin:init
 
 ---
 
+## النشر على Render أو Railway
+
+المشروع جاهز للنشر على أي منصة تدعم Node.js مع **قرص تخزين دائم** (Persistent Disk / Volume)، لأن قاعدة البيانات ملف SQLite. لا يكفي النشر على بيئة بلا قرص دائم، وإلا فُقدت البيانات عند كل إعادة نشر.
+
+- ملف `render.yaml` يجهّز خدمة Render كاملة (بناء، تشغيل، فحص صحة، قرص، متغيرات بيئة).
+- ملف `railway.toml` يجهّز أوامر البناء والتشغيل على Railway.
+- ملف `.node-version` يثبّت Node.js 24.
+
+الدليل الكامل خطوة بخطوة، بما فيه متغيرات البيئة والقرص الدائم والنسخ الاحتياطي وحل المشكلات، في [`docs/DEPLOY.md`](docs/DEPLOY.md).
+
+باختصار:
+
+```text
+Build:  cd backend && npm ci --omit=dev
+Start:  cd backend && npm run admin:init && npm start
+Health: /api/health
+Disk:   /var/data        (DB_PATH=/var/data/taiba.sqlite)
+```
+
+> بعد أول نشر، افتح لوحة التحكم وغيّر كلمة مرور المدير، ثم احذف البيانات التجريبية قبل الإطلاق الرسمي.
+
+---
+
 ## أوامر npm
 
 من داخل مجلد `backend`:
@@ -124,8 +147,12 @@ npm test
 │   └── admin/                   # لوحة التحكم
 ├── docs/
 │   ├── API.md                   # مرجع الواجهة البرمجية
+│   ├── DEPLOY.md                # دليل النشر على Render/Railway
 │   └── SECURITY.md              # نموذج الأمان والصلاحيات
 ├── .env.example
+├── .node-version                # إصدار Node.js المستخدم في النشر
+├── render.yaml                  # إعداد خدمة Render
+├── railway.toml                 # إعداد خدمة Railway
 └── README.md
 ```
 
