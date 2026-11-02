@@ -83,6 +83,9 @@ const config = {
     applicationMax: int(process.env.APPLICATION_RATE_LIMIT_MAX, 5),
   },
   trustProxy: bool(process.env.TRUST_PROXY, false),
+  // Opt-in, for hosts without a persistent disk: seed the demonstration
+  // dataset once, only when the database is completely empty.
+  seedDemoOnEmpty: bool(process.env.SEED_DEMO_ON_EMPTY, false),
   allowedOrigins,
   admin: {
     username: process.env.ADMIN_USERNAME || 'admin',

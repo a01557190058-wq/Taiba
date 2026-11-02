@@ -76,13 +76,13 @@ npm run admin:init
 
 ## النشر على Render أو Railway
 
-المشروع جاهز للنشر على أي منصة تدعم Node.js مع **قرص تخزين دائم** (Persistent Disk / Volume)، لأن قاعدة البيانات ملف SQLite. لا يكفي النشر على بيئة بلا قرص دائم، وإلا فُقدت البيانات عند كل إعادة نشر.
+المشروع جاهز للنشر على أي منصة تدعم Node.js. قاعدة البيانات ملف SQLite، لذلك النشر **مع قرص تخزين دائم** (Persistent Disk / Volume) هو الوضع الموصى به: بدونه تُفقد البيانات عند كل إعادة نشر.
 
-- ملف `render.yaml` يجهّز خدمة Render كاملة (بناء، تشغيل، فحص صحة، قرص، متغيرات بيئة).
+- ملف `render.yaml` يجهّز خدمة Render كاملة (بناء، تشغيل، فحص صحة، متغيرات بيئة) على الخطة المجانية.
 - ملف `railway.toml` يجهّز أوامر البناء والتشغيل على Railway.
 - ملف `.node-version` يثبّت Node.js 24.
 
-الدليل الكامل خطوة بخطوة، بما فيه متغيرات البيئة والقرص الدائم والنسخ الاحتياطي وحل المشكلات، في [`docs/DEPLOY.md`](docs/DEPLOY.md).
+الدليل الكامل خطوة بخطوة، بما فيه متغيرات البيئة والقرص الدائم والخطة المجانية والنسخ الاحتياطي وحل المشكلات، في [`docs/DEPLOY.md`](docs/DEPLOY.md).
 
 باختصار:
 
@@ -90,8 +90,12 @@ npm run admin:init
 Build:  cd backend && npm ci --omit=dev
 Start:  cd backend && npm run admin:init && npm start
 Health: /api/health
-Disk:   /var/data        (DB_PATH=/var/data/taiba.sqlite)
 ```
+
+| الوضع | القرص | البيانات |
+| --- | --- | --- |
+| مجاني (Render Free) | بدون قرص، `DB_PATH=./data/taiba.sqlite` | تُعاد للبيانات التجريبية عند كل إعادة تشغيل |
+| دائم (Render Starter / Railway Hobby) | `/var/data`، `DB_PATH=/var/data/taiba.sqlite` | محفوظة دائمًا |
 
 > بعد أول نشر، افتح لوحة التحكم وغيّر كلمة مرور المدير، ثم احذف البيانات التجريبية قبل الإطلاق الرسمي.
 
@@ -276,6 +280,7 @@ npm test
 | `PORT` | `3000` | منفذ الخادم |
 | `HOST` | `127.0.0.1` | عنوان الاستماع |
 | `DB_PATH` | `../database/taiba.sqlite` | نسبي إلى `backend/` |
+| `SEED_DEMO_ON_EMPTY` | `false` | تعبئة البيانات التجريبية عند إقلاع قاعدة فارغة (للاستضافة بلا قرص فقط) |
 | `SESSION_SECRET` | فارغ | **إلزامي في الإنتاج** |
 | `SESSION_TTL_HOURS` | `8` | مدة الجلسة |
 | `TRUST_PROXY` | `false` | فعّلها فقط خلف وكيل موثوق |

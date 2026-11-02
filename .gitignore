@@ -13,6 +13,7 @@ database/*.sqlite-journal
 database/*.sqlite-wal
 database/*.sqlite-shm
 database/*.db
+backend/data/
 
 # Logs and coverage
 logs/

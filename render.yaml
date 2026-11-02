@@ -1,20 +1,21 @@
 # Render Blueprint for the Taiba Technology School website.
 # Create it from: Render Dashboard -> New -> Blueprint -> select this repository.
-# A persistent disk is required: SQLite data must survive restarts and deploys.
+#
+# This configuration targets the FREE plan, which has no persistent disk:
+# the SQLite file lives inside the container and is recreated on every deploy
+# or restart. SEED_DEMO_ON_EMPTY keeps the public pages populated after such a
+# restart. For a production deployment that must keep applications, switch to
+# `plan: starter` and add the disk block shown at the bottom of this file.
 services:
   - type: web
     name: taiba-technology-school
     runtime: node
-    plan: starter
+    plan: free
     region: frankfurt
     buildCommand: cd backend && npm ci --omit=dev
     startCommand: cd backend && npm run admin:init && npm start
     healthCheckPath: /api/health
     autoDeploy: true
-    disk:
-      name: taiba-data
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: NODE_VERSION
         value: "24"
@@ -24,8 +25,12 @@ services:
         value: 0.0.0.0
       - key: TRUST_PROXY
         value: "true"
+      # Ephemeral path: no disk is attached on the free plan.
       - key: DB_PATH
-        value: /var/data/taiba.sqlite
+        value: ./data/taiba.sqlite
+      # Refills the demo content when the database is recreated.
+      - key: SEED_DEMO_ON_EMPTY
+        value: "true"
       - key: SESSION_SECRET
         generateValue: true
       - key: ADMIN_USERNAME
@@ -41,3 +46,13 @@ services:
       # https://taiba-technology-school.onrender.com
       - key: APP_ORIGIN
         sync: false
+
+# --- Production upgrade (paid plan) -----------------------------------------
+# Change `plan: free` to `plan: starter`, then add:
+#
+#    disk:
+#      name: taiba-data
+#      mountPath: /var/data
+#      sizeGB: 1
+#
+# and set DB_PATH=/var/data/taiba.sqlite. Data then survives deploys.

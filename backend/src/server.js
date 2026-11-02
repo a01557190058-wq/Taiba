@@ -3,11 +3,37 @@
 const config = require('./config');
 const { migrate } = require('./db/migrate');
 const db = require('./db');
+const { seedDemoData } = require('./services/demo.service');
 const { createApp } = require('./app');
 
 // The schema is applied idempotently at boot. Demo data is NEVER seeded
-// automatically - that is an explicit administrator/CLI action.
+// automatically - that is an explicit administrator/CLI action. The only
+// exception is the opt-in SEED_DEMO_ON_EMPTY flag, used on hosts whose
+// filesystem is recreated on every restart.
 migrate();
+
+if (config.seedDemoOnEmpty) {
+  seedIfDatabaseIsEmpty();
+}
+
+function seedIfDatabaseIsEmpty() {
+  const counts = db.get(
+    `SELECT
+       (SELECT COUNT(*) FROM departments)  AS departments,
+       (SELECT COUNT(*) FROM applications) AS applications,
+       (SELECT COUNT(*) FROM faqs)         AS faqs`
+  );
+
+  if (counts.departments || counts.applications || counts.faqs) return;
+
+  const summary = seedDemoData();
+  /* eslint-disable no-console */
+  console.log(
+    `[seed] قاعدة بيانات فارغة - تمت إضافة البيانات التجريبية ` +
+      `(${summary.departments_inserted} قسم، ${summary.applications_inserted} طلب).`
+  );
+  /* eslint-enable no-console */
+}
 
 const app = createApp();
 const server = app.listen(config.port, config.host, () => {
