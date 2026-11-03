@@ -1,6 +1,6 @@
 import { schoolContentPromise } from './common.js';
 import { api } from './api.js';
-import { qs, el, departmentCard, skeletonGrid, stateBox } from './ui.js';
+import { qs, el, departmentCard, skeletonGrid, stateBox, setCounter, revealNow } from './ui.js';
 
 const featured = qs('#featured-departments');
 const faqList = qs('#faq-list');
@@ -13,7 +13,7 @@ async function loadDepartments() {
   skeletonGrid(featured, 3);
   try {
     const departments = await api('/api/departments');
-    qs('#stat-departments').textContent = new Intl.NumberFormat('ar-EG').format(departments.length);
+    setCounter(qs('#stat-departments'), departments.length);
 
     if (!departments.length) {
       featured.replaceChildren(
@@ -29,6 +29,7 @@ async function loadDepartments() {
     }
 
     featured.replaceChildren(...departments.slice(0, 6).map(departmentCard));
+    revealNow(featured);
   } catch (error) {
     featured.replaceChildren(
       stateBox({
@@ -100,6 +101,8 @@ function renderContent(data) {
   }
 
   renderFaqs(faqs);
+
+  setCounter(qs('#stat-faqs'), Array.isArray(faqs) ? faqs.length : 0);
 }
 
 loadDepartments();

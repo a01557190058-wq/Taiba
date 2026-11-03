@@ -118,6 +118,7 @@ function createApp() {
   app.get('/', sendPage('index.html'));
   app.get('/about', sendPage('about.html'));
   app.get('/departments', sendPage('departments.html'));
+  app.get('/student-life', sendPage('student-life.html'));
   app.get('/departments/:slug', sendPage('department.html'));
   app.get('/admission', sendPage('admission.html'));
   app.get('/apply', sendPage('apply.html'));

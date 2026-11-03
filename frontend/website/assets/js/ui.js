@@ -1,5 +1,8 @@
 /** DOM helpers shared by all public pages. All dynamic text uses textContent. */
 
+// Enables the scroll-reveal hidden state only when scripts actually run.
+document.documentElement.classList.add('js');
+
 export const qs = (selector, root = document) => root.querySelector(selector);
 export const qsa = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
@@ -38,6 +41,7 @@ const ICONS = {
   sparkles:
     '<path d="m12 3 1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8Z"/><path d="M18.5 15.5 19.4 18l2.5.9-2.5.9-.9 2.5-.9-2.5-2.5-.9 2.5-.9Z"/>',
   arrowLeft: '<path d="M19 12H5M12 19l-7-7 7-7"/>',
+  arrowUp: '<path d="M12 19V5M5 12l7-7 7 7"/>',
 };
 
 export function icon(name, size = 20) {
@@ -70,7 +74,7 @@ export function formatDateTime(value) {
 }
 
 /** Department card built safely from API data. */
-export function departmentCard(department) {
+export function departmentCard(department, index = 0) {
   const image = el('img', {
     attrs: {
       src: department.image_url || '/assets/img/departments/default.svg',
@@ -94,17 +98,31 @@ export function departmentCard(department) {
     attrs: { href: `/departments/${encodeURIComponent(department.slug)}` },
     text: 'تفاصيل القسم',
   });
-  link.append(icon('arrowLeft', 16));
 
-  return el('article', { className: 'department-card' }, [
-    el('div', { className: 'department-card__media' }, [image]),
-    el('div', { className: 'department-card__body' }, [
-      el('h3', { className: 'department-card__title', text: department.name }),
-      el('p', { className: 'department-card__desc', text: department.short_description }),
-      chips,
-      link,
-    ]),
+  const arrow = el('span', { className: 'department-card__arrow', attrs: { 'aria-hidden': 'true' } }, [
+    icon('arrowLeft', 16),
   ]);
+
+  const media = el('div', { className: 'department-card__media' }, [
+    image,
+    el('span', { className: 'department-card__badge', text: 'مسار تقني' }),
+  ]);
+
+  const body = el('div', { className: 'department-card__body' }, [
+    el('h3', { className: 'department-card__title', text: department.name }),
+    el('p', { className: 'department-card__desc', text: department.short_description }),
+    chips,
+    el('div', { className: 'department-card__footer' }, [link, arrow]),
+  ]);
+
+  return el(
+    'article',
+    {
+      className: 'department-card reveal',
+      attrs: { 'data-delay': String(index % 3) },
+    },
+    [media, body]
+  );
 }
 
 export function stateBox({ title, message, actionLabel, onAction, iconName = 'inbox' }) {
@@ -170,4 +188,119 @@ export function setYear() {
   qsa('[data-current-year]').forEach((node) => {
     node.textContent = String(new Date().getFullYear());
   });
+}
+
+/* --------------------------------------------------------------------------
+   Motion helpers
+   -------------------------------------------------------------------------- */
+const REDUCED_MOTION = () =>
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let revealObserver = null;
+
+/** Fade/slide elements marked with `.reveal` into view once. */
+export function initReveal() {
+  const nodes = qsa('.reveal');
+  if (REDUCED_MOTION() || !('IntersectionObserver' in window)) {
+    nodes.forEach((node) => node.classList.add('is-visible'));
+    return;
+  }
+
+  revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        revealObserver.unobserve(entry.target);
+      });
+    },
+    { rootMargin: '0px 0px -6% 0px', threshold: 0.08 }
+  );
+
+  nodes.forEach((node) => revealObserver.observe(node));
+}
+
+/** Register elements added after the initial page render. */
+export function revealNow(root = document) {
+  qsa('.reveal', root).forEach((node) => {
+    if (node.classList.contains('is-visible')) return;
+    if (revealObserver) revealObserver.observe(node);
+    else node.classList.add('is-visible');
+  });
+}
+
+const arabicNumber = new Intl.NumberFormat('ar-EG');
+
+/** Animate a numeric value from zero, respecting reduced-motion. */
+export function setCounter(node, value, duration = 1100) {
+  if (!node) return;
+  const target = Number(value) || 0;
+
+  if (REDUCED_MOTION() || typeof requestAnimationFrame !== 'function') {
+    node.textContent = arabicNumber.format(target);
+    return;
+  }
+
+  const start = performance.now();
+  const tick = (now) => {
+    const progress = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    node.textContent = arabicNumber.format(Math.round(target * eased));
+    if (progress < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function initStaticCounters() {
+  const nodes = qsa('[data-counter-value]');
+  if (!nodes.length) return;
+
+  const run = (node) => {
+    setCounter(node, node.dataset.counterValue);
+    node.removeAttribute('data-counter-value');
+  };
+
+  if (REDUCED_MOTION() || !('IntersectionObserver' in window)) {
+    nodes.forEach(run);
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        run(entry.target);
+        observer.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.4 }
+  );
+  nodes.forEach((node) => observer.observe(node));
+}
+
+/** Header elevation, back-to-top button and counters shared by all pages. */
+export function initMotion() {
+  initReveal();
+  initStaticCounters();
+
+  const header = qs('.site-header');
+  if (header) {
+    const sync = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
+  }
+
+  const button = el('button', {
+    className: 'to-top',
+    attrs: { type: 'button', 'aria-label': 'العودة إلى أعلى الصفحة' },
+  }, [icon('arrowUp', 18)]);
+  button.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: REDUCED_MOTION() ? 'auto' : 'smooth' });
+  });
+  document.body.append(button);
+
+  const syncTop = () => button.classList.toggle('is-visible', window.scrollY > 480);
+  syncTop();
+  window.addEventListener('scroll', syncTop, { passive: true });
 }

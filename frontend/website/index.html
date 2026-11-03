@@ -28,6 +28,7 @@
           <li><a class="site-nav__link" href="/" aria-current="page">الرئيسية</a></li>
           <li><a class="site-nav__link" href="/about">عن المدرسة</a></li>
           <li><a class="site-nav__link" href="/departments">الأقسام</a></li>
+          <li><a class="site-nav__link" href="/student-life">الحياة الطلابية</a></li>
           <li><a class="site-nav__link" href="/admission">القبول</a></li>
           <li><a class="site-nav__link" href="#contact">تواصل معنا</a></li>
         </ul>
@@ -46,8 +47,13 @@
   <main id="main">
     <!-- ================= HERO ================= -->
     <section class="hero">
+      <div class="hero__bg" aria-hidden="true">
+        <span class="hero__orb hero__orb--1"></span>
+        <span class="hero__orb hero__orb--2"></span>
+        <span class="hero__orb hero__orb--3"></span>
+      </div>
       <div class="container hero__inner">
-        <div>
+        <div class="hero__content">
           <span class="hero__badge" data-content-key="hero_badge">بيانات تجريبية — مدرسة تقنية</span>
           <h1 class="hero__title">
             مدرسة طيبة <span class="accent">تكنولوجي</span><br>
@@ -66,37 +72,76 @@
             <a class="btn btn-outline btn-lg" href="/departments">استكشف الأقسام</a>
           </div>
 
+          <ul class="hero__trust">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>
+              تقديم إلكتروني في دقائق
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>
+              رقم طلب لمتابعة الحالة
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>
+              بياناتك محفوظة بسرية
+            </li>
+          </ul>
+
           <p class="hero__note">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg>
             <span>هذا موقع تجريبي لأغراض العرض. الأقسام والمواعيد وبيانات التواصل المعروضة غير رسمية.</span>
           </p>
-
-          <div class="hero__facts">
-            <div class="hero__fact">
-              <strong id="stat-departments">—</strong>
-              <span>قسمًا تقنيًا منشورًا</span>
-            </div>
-            <div class="hero__fact">
-              <strong>تطبيقي</strong>
-              <span>تعلّم قائم على المشروعات</span>
-            </div>
-            <div class="hero__fact">
-              <strong>مستمر</strong>
-              <span>متابعة أكاديمية للطلاب</span>
-            </div>
-          </div>
         </div>
 
         <div class="hero__media">
-          <img src="/assets/img/hero.svg" alt="رسم توضيحي يمثل بيئة تعلم برمجية وتقنية" width="640" height="560">
+          <div class="hero__media-frame">
+            <img src="/assets/img/hero.svg" alt="رسم توضيحي يمثل بيئة تعلم برمجية وتقنية" width="640" height="560">
+          </div>
+          <div class="hero__float hero__float--1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 15 4-4 3 3 5-6"/></svg>
+            <div>
+              <strong>تعلّم بالمشروعات</strong>
+              <span>تطبيق عملي لكل وحدة دراسية</span>
+            </div>
+          </div>
+          <div class="hero__float hero__float--2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 7.5 12 12l9-4.5L12 3Z"/><path d="m3 12 9 4.5L21 12"/><path d="m3 16.5 9 4.5 9-4.5"/></svg>
+            <div>
+              <strong>مسارات متعددة</strong>
+              <span>برمجة وهندسة وتقنيات صناعية</span>
+            </div>
+          </div>
         </div>
+      </div>
+    </section>
+
+    <!-- ================= STATS BAND ================= -->
+    <section class="container" aria-label="أرقام سريعة عن المدرسة">
+      <div class="stats-band reveal">
+        <div class="stats-band__item">
+          <span class="stats-band__value" id="stat-departments" data-counter>0</span>
+          <span class="stats-band__label">قسمًا تقنيًا منشورًا</span>
+        </div>
+        <div class="stats-band__item">
+          <span class="stats-band__value" data-counter data-counter-value="5">0</span>
+          <span class="stats-band__label">خطوات للتقديم</span>
+        </div>
+        <div class="stats-band__item">
+          <span class="stats-band__value" id="stat-faqs" data-counter>0</span>
+          <span class="stats-band__label">سؤالًا شائعًا</span>
+        </div>
+        <div class="stats-band__item">
+          <span class="stats-band__value">100<em>%</em></span>
+          <span class="stats-band__label">تقديم إلكتروني بدون ورق</span>
+        </div>
+        <a class="btn btn-primary stats-band__cta" href="/apply">ابدأ التقديم</a>
       </div>
     </section>
 
     <!-- ================= ADVANTAGES ================= -->
     <section class="section" id="why">
       <div class="container">
-        <div class="section-head section-head--center">
+        <div class="section-head section-head--center reveal">
           <span class="eyebrow">لماذا مدرسة طيبة تكنولوجي؟</span>
           <h2 class="section-title">تعليم تقني يبدأ من التطبيق ولا ينتهي عند النظرية</h2>
           <p class="section-lead">
@@ -106,7 +151,7 @@
         </div>
 
         <div class="grid grid--3">
-          <article class="card feature">
+          <article class="card feature reveal" data-delay="0">
             <span class="feature__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 7.5 12 12l9-4.5L12 3Z"/><path d="m3 12 9 4.5L21 12"/><path d="m3 16.5 9 4.5 9-4.5"/></svg>
             </span>
@@ -114,7 +159,7 @@
             <p>ينتقل الطالب من التمرين إلى مشروع متكامل، فيفهم كيف تُطبَّق المعرفة في سياق حقيقي.</p>
           </article>
 
-          <article class="card feature">
+          <article class="card feature reveal">
             <span class="feature__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6"/><path d="M10 3v6l-5 8.5A2 2 0 0 0 6.7 21h10.6a2 2 0 0 0 1.7-3.5L14 9V3"/><path d="M7.5 15h9"/></svg>
             </span>
@@ -122,7 +167,7 @@
             <p>تدريبات معملية منظمة داخل بيئة تعليمية آمنة، مع أدوات ومعدات مناسبة لكل مسار.</p>
           </article>
 
-          <article class="card feature">
+          <article class="card feature reveal">
             <span class="feature__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 15 4-4 3 3 5-6"/></svg>
             </span>
@@ -130,7 +175,7 @@
             <p>تقييم دوري لملفات الإنجاز والمشروعات، وملاحظات واضحة تساعد الطالب على التطور.</p>
           </article>
 
-          <article class="card feature">
+          <article class="card feature reveal">
             <span class="feature__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/></svg>
             </span>
@@ -138,7 +183,7 @@
             <p>تدريب على العمل الجماعي والتواصل المهني وتوثيق الأعمال، إلى جانب المهارة التقنية.</p>
           </article>
 
-          <article class="card feature">
+          <article class="card feature reveal">
             <span class="feature__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4.2 2.9 7.7 7 9 4.1-1.3 7-4.8 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
             </span>
@@ -146,7 +191,7 @@
             <p>إجراءات سلامة واضحة داخل المختبرات، واحترام كامل لخصوصية بيانات المتقدمين.</p>
           </article>
 
-          <article class="card feature">
+          <article class="card feature reveal">
             <span class="feature__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
             </span>
@@ -169,14 +214,14 @@
           <a class="btn btn-outline" href="/departments">عرض جميع الأقسام</a>
         </div>
 
-        <div class="department-grid" id="featured-departments" aria-live="polite"></div>
+        <div class="department-grid reveal" id="featured-departments" aria-live="polite"></div>
       </div>
     </section>
 
     <!-- ================= ABOUT / OBJECTIVES ================= -->
     <section class="section" id="about">
       <div class="container split">
-        <div class="prose">
+        <div class="prose reveal">
           <span class="eyebrow">عن المدرسة</span>
           <h2 class="section-title mt-1 mb-2">مدرسة تجمع الأساس النظري بالتجربة العملية</h2>
           <p data-content-key="school_intro">
@@ -189,7 +234,7 @@
           <a class="btn btn-outline mt-3" href="/about">تعرّف على المدرسة</a>
         </div>
 
-        <div class="card p-2">
+        <div class="card p-2 reveal" data-delay="1">
           <span class="eyebrow">أهدافنا التعليمية</span>
           <ul class="skill-list mt-2" id="objectives-list" aria-live="polite">
             <li>ربط المناهج التقنية باحتياجات سوق العمل والمشروعات الواقعية.</li>
@@ -204,12 +249,12 @@
     <!-- ================= ADMISSION PROCESS ================= -->
     <section class="section section--soft" id="admission-process">
       <div class="container">
-        <div class="section-head section-head--center">
+        <div class="section-head section-head--center reveal">
           <span class="eyebrow">خطوات التقديم</span>
           <h2 class="section-title">من اختيار القسم إلى تسجيل الطلب</h2>
           <p class="section-lead">عملية تقديم مبسطة، ويمكنك متابعة حالة الطلب برقم الطلب الذي يظهر بعد الإرسال.</p>
         </div>
-        <ol class="steps" id="admission-steps" aria-live="polite">
+        <ol class="steps reveal" id="admission-steps" aria-live="polite">
           <li class="step"><h3>اختيار القسم</h3><p>اطّلع على وصف الأقسام ومهاراتها واختر المسار الأنسب.</p></li>
           <li class="step"><h3>تعبئة النموذج</h3><p>أدخل الاسم ورقم الهاتف وبيانات التواصل الأساسية.</p></li>
           <li class="step"><h3>إرسال الطلب</h3><p>راجع البيانات ووافق على معالجة المعلومات ثم أرسل.</p></li>
@@ -224,13 +269,89 @@
     <!-- ================= FAQ ================= -->
     <section class="section" id="faq">
       <div class="container">
-        <div class="section-head section-head--center">
+        <div class="section-head section-head--center reveal">
           <span class="eyebrow">أسئلة شائعة</span>
           <h2 class="section-title">إجابات عن أكثر ما يسأل عنه المتقدمون</h2>
         </div>
-        <div class="faq-list" id="faq-list" aria-live="polite">
+        <div class="faq-list reveal" id="faq-list" aria-live="polite">
           <div class="skeleton-line" aria-hidden="true"></div>
           <div class="skeleton-line" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TESTIMONIALS ================= -->
+    <section class="section section--soft" id="voices">
+      <div class="container">
+        <div class="section-head section-head--center reveal">
+          <span class="eyebrow">تجارب الطلاب</span>
+          <h2 class="section-title">كيف يصف الطلاب تجربة التعلّم داخل المدرسة؟</h2>
+          <p class="section-lead">
+            نماذج توضيحية لآراء طلاب، مكتوبة لأغراض العرض ولا تمثل شهادات حقيقية.
+          </p>
+        </div>
+
+        <div class="quote-grid reveal">
+          <figure class="quote-card">
+            <blockquote class="quote-card__text">
+              بدأت بدون أي خلفية برمجية، ومع المشروعات الأسبوعية صرت قادرًا على بناء تطبيق كامل
+              وعرضه على زملائي بثقة.
+            </blockquote>
+            <figcaption class="quote-card__person">
+              <span class="quote-card__avatar" aria-hidden="true">أ</span>
+              <span>
+                <span class="quote-card__name">طالب — قسم البرمجة</span>
+                <span class="quote-card__role">نموذج توضيحي</span>
+              </span>
+            </figcaption>
+          </figure>
+
+          <figure class="quote-card">
+            <blockquote class="quote-card__text">
+              أكثر ما أفادني هو التدريب العملي في المختبر. نفهم الفكرة على السبورة، ثم نطبقها
+              مباشرة على أجهزة حقيقية في نفس الأسبوع.
+            </blockquote>
+            <figcaption class="quote-card__person">
+              <span class="quote-card__avatar" aria-hidden="true">س</span>
+              <span>
+                <span class="quote-card__name">طالبة — قسم الإلكترونيات</span>
+                <span class="quote-card__role">نموذج توضيحي</span>
+              </span>
+            </figcaption>
+          </figure>
+
+          <figure class="quote-card">
+            <blockquote class="quote-card__text">
+              المتابعة الفردية ساعدتني على تنظيم وقتي بين الدراسة والمشروع. الملاحظات على كل
+              تسليم كانت واضحة وقابلة للتطبيق.
+            </blockquote>
+            <figcaption class="quote-card__person">
+              <span class="quote-card__avatar" aria-hidden="true">م</span>
+              <span>
+                <span class="quote-card__name">طالب — قسم الطاقة المتجددة</span>
+                <span class="quote-card__role">نموذج توضيحي</span>
+              </span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CTA ================= -->
+    <section class="section section--tight">
+      <div class="container">
+        <div class="cta-band reveal">
+          <div>
+            <h2>جاهز تبدأ رحلتك التقنية معنا؟</h2>
+            <p>
+              اختر القسم المناسب، أرسل طلبك في دقائق، واحتفظ برقم الطلب لمتابعة حالة المراجعة
+              مع إدارة المدرسة.
+            </p>
+          </div>
+          <div class="cta-band__actions">
+            <a class="btn btn-primary btn-lg" href="/apply">قدّم الآن</a>
+            <a class="btn btn-outline btn-lg" href="/departments">تصفّح الأقسام</a>
+          </div>
         </div>
       </div>
     </section>
@@ -238,7 +359,7 @@
     <!-- ================= CONTACT ================= -->
     <section class="section section--soft" id="contact">
       <div class="container">
-        <div class="contact-card">
+        <div class="contact-card reveal">
           <div class="contact-card__main">
             <span class="eyebrow">تواصل معنا</span>
             <h2 class="section-title mt-1 mb-2">هل لديك سؤال قبل التقديم؟</h2>
@@ -310,6 +431,7 @@
           <ul class="footer-links">
             <li><a href="/about">عن المدرسة</a></li>
             <li><a href="/departments">الأقسام</a></li>
+            <li><a href="/student-life">الحياة الطلابية</a></li>
             <li><a href="/admission">القبول والتقديم</a></li>
             <li><a href="/apply">نموذج التقديم</a></li>
           </ul>

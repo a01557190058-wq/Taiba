@@ -4,7 +4,7 @@
  * locally by name, short description or skill (Arabic-aware matching).
  */
 import { api } from './api.js';
-import { qs, el, departmentCard, skeletonGrid, stateBox } from './ui.js';
+import { qs, el, departmentCard, skeletonGrid, stateBox, revealNow } from './ui.js';
 
 const grid = qs('#departments-grid');
 const countNode = qs('#departments-count');
@@ -82,6 +82,7 @@ function render() {
   }
 
   grid.replaceChildren(...visible.map(departmentCard));
+  revealNow(grid);
 }
 
 async function load() {

@@ -3,9 +3,10 @@
  * editable school content that appears in the header/footer/contact blocks.
  */
 import { api } from './api.js';
-import { qs, qsa, initNav, setYear } from './ui.js';
+import { qs, qsa, initNav, initMotion, setYear } from './ui.js';
 
 initNav();
+initMotion();
 setYear();
 
 export const schoolContentPromise = api('/api/school-content')
