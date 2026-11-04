@@ -122,6 +122,36 @@ CREATE TABLE IF NOT EXISTS faqs (
 CREATE INDEX IF NOT EXISTS idx_faqs_order ON faqs (sort_order, id);
 
 -- ---------------------------------------------------------------------------
+-- School news (managed from the dashboard)
+--   is_published : visible on the public website
+--   is_featured  : highlighted on the home page and the news listing
+--   is_demo      : explicit demo-data flag used by the demo-data manager
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS news (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  title        TEXT NOT NULL,
+  slug         TEXT NOT NULL UNIQUE,
+  summary      TEXT NOT NULL DEFAULT '',
+  body         TEXT NOT NULL DEFAULT '',
+  category     TEXT NOT NULL DEFAULT '',
+  image_url    TEXT NOT NULL DEFAULT '',
+  is_published INTEGER NOT NULL DEFAULT 0 CHECK (is_published IN (0, 1)),
+  is_featured  INTEGER NOT NULL DEFAULT 0 CHECK (is_featured IN (0, 1)),
+  is_demo      INTEGER NOT NULL DEFAULT 0 CHECK (is_demo IN (0, 1)),
+  published_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+  sort_order   INTEGER NOT NULL DEFAULT 0,
+  created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+  updated_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+  CHECK (length(trim(title)) > 0),
+  CHECK (length(trim(slug)) > 0)
+);
+
+CREATE INDEX IF NOT EXISTS idx_news_public
+  ON news (is_published, published_at DESC, sort_order);
+CREATE INDEX IF NOT EXISTS idx_news_demo
+  ON news (is_demo);
+
+-- ---------------------------------------------------------------------------
 -- Server-side sessions (custom store, survives restarts)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS sessions (

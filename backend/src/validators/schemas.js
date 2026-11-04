@@ -168,6 +168,45 @@ const faqUpdateSchema = z
   .refine((value) => Object.keys(value).length > 0, { message: 'لا توجد بيانات للتحديث.' });
 
 // ---------------------------------------------------------------------------
+// Admin: news
+// ---------------------------------------------------------------------------
+const publishedAtField = z
+  .union([z.string(), z.null(), z.undefined()])
+  .transform((value) => cleanText(value ?? ''))
+  .refine((value) => value === '' || !Number.isNaN(Date.parse(value)), {
+    message: 'تاريخ النشر غير صالح.',
+  })
+  .transform((value) => (value === '' ? null : new Date(value).toISOString()));
+
+const newsCreateSchema = z.object({
+  title: text('عنوان الخبر', { min: 3, max: 160 }),
+  slug: z.union([slugField, z.literal('')]).optional(),
+  summary: text('الملخص', { min: 10, max: 500 }),
+  body: text('نص الخبر', { min: 20, max: 12000 }),
+  category: optionalText('التصنيف', 80),
+  image_url: imageUrlField,
+  is_published: booleanField.default(false),
+  is_featured: booleanField.default(false),
+  published_at: publishedAtField,
+  sort_order: sortOrderField.default(0),
+});
+
+const newsUpdateSchema = z
+  .object({
+    title: text('عنوان الخبر', { min: 3, max: 160 }).optional(),
+    slug: slugField.optional(),
+    summary: text('الملخص', { min: 10, max: 500 }).optional(),
+    body: text('نص الخبر', { min: 20, max: 12000 }).optional(),
+    category: optionalText('التصنيف', 80).optional(),
+    image_url: imageUrlField.optional(),
+    is_published: booleanField.optional(),
+    is_featured: booleanField.optional(),
+    published_at: publishedAtField.optional(),
+    sort_order: sortOrderField.optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, { message: 'لا توجد بيانات للتحديث.' });
+
+// ---------------------------------------------------------------------------
 // Auth
 // ---------------------------------------------------------------------------
 const loginSchema = z.object({
@@ -210,6 +249,8 @@ module.exports = {
   schoolContentSchema,
   faqCreateSchema,
   faqUpdateSchema,
+  newsCreateSchema,
+  newsUpdateSchema,
   loginSchema,
   demoResetSchema,
   demoCleanupSchema,

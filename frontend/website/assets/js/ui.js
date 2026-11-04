@@ -125,6 +125,57 @@ export function departmentCard(department, index = 0) {
   );
 }
 
+/** News card built safely from API data. */
+export function newsCard(article, index = 0) {
+  const image = el('img', {
+    attrs: {
+      src: article.image_url || '/assets/img/departments/default.svg',
+      alt: `رسم توضيحي لخبر ${article.title}`,
+      loading: 'lazy',
+      width: '640',
+      height: '400',
+    },
+  });
+  image.addEventListener('error', () => {
+    if (!image.src.endsWith('/default.svg')) image.src = '/assets/img/departments/default.svg';
+  });
+
+  const href = `/news/${encodeURIComponent(article.slug)}`;
+
+  return el(
+    'article',
+    {
+      className: 'news-card reveal',
+      attrs: { 'data-delay': String(index % 3) },
+    },
+    [
+      el('a', { className: 'news-card__media', attrs: { href, tabindex: '-1', 'aria-hidden': 'true' } }, [
+        image,
+        article.is_featured
+          ? el('span', { className: 'news-card__badge', text: 'خبر مميز' })
+          : null,
+      ]),
+      el('div', { className: 'news-card__body' }, [
+        el('div', { className: 'news-card__meta' }, [
+          article.category
+            ? el('span', { className: 'news-card__category', text: article.category })
+            : null,
+          el('time', {
+            className: 'news-card__date',
+            attrs: { datetime: article.published_at || '' },
+            text: formatDate(article.published_at),
+          }),
+        ]),
+        el('h3', { className: 'news-card__title' }, [
+          el('a', { attrs: { href }, text: article.title }),
+        ]),
+        el('p', { className: 'news-card__summary', text: article.summary }),
+        el('a', { className: 'card-link', attrs: { href }, text: 'اقرأ الخبر' }),
+      ]),
+    ]
+  );
+}
+
 export function stateBox({ title, message, actionLabel, onAction, iconName = 'inbox' }) {
   const box = el('div', { className: 'state-box' }, [
     el('div', { className: 'state-box__icon' }, [icon(iconName, 28)]),

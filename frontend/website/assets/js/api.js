@@ -23,7 +23,7 @@ function readCookie(name) {
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
-async function perform(path, options) {
+async function send(path, options) {
   const response = await fetch(path, options);
   const contentType = response.headers.get('content-type') || '';
   const isJson = contentType.includes('application/json');
@@ -38,10 +38,14 @@ async function perform(path, options) {
     });
   }
 
-  return payload && Object.prototype.hasOwnProperty.call(payload, 'data') ? payload.data : payload;
+  return payload;
 }
 
-export async function api(path, { method = 'GET', body, headers = {}, retry = true } = {}) {
+/**
+ * Performs a request and returns the raw `{ data, meta }` envelope.
+ * Used by listings that need pagination metadata.
+ */
+export async function request(path, { method = 'GET', body, headers = {}, retry = true } = {}) {
   const requestHeaders = { Accept: 'application/json', ...headers };
   const options = { method, headers: requestHeaders, credentials: 'same-origin' };
 
@@ -55,7 +59,7 @@ export async function api(path, { method = 'GET', body, headers = {}, retry = tr
   }
 
   try {
-    return await perform(path, options);
+    return await send(path, options);
   } catch (error) {
     // The CSRF cookie can expire while a page stays open. Refresh it once.
     if (
@@ -66,8 +70,14 @@ export async function api(path, { method = 'GET', body, headers = {}, retry = tr
     ) {
       await fetch('/api/health', { credentials: 'same-origin' });
       requestHeaders['X-CSRF-Token'] = readCookie('taiba.csrf');
-      return perform(path, options);
+      return send(path, options);
     }
     throw error;
   }
+}
+
+/** Convenience wrapper that unwraps `data` from the response envelope. */
+export async function api(path, options) {
+  const payload = await request(path, options);
+  return payload && Object.prototype.hasOwnProperty.call(payload, 'data') ? payload.data : payload;
 }

@@ -214,7 +214,7 @@ test('a department without applications can be deleted', async () => {
   assert.equal(detail.status, 404);
 });
 
-test('deleting a department with applications is blocked and preserves history', async () => {
+test('deleting a department with applications is blocked without an explicit force', async () => {
   const department = db.get("SELECT * FROM departments WHERE slug = 'programming'");
   const applicationCount = db.get(
     'SELECT COUNT(*) AS count FROM applications WHERE department_id = ?',
@@ -235,7 +235,7 @@ test('deleting a department with applications is blocked and preserves history',
     applicationCount
   );
 
-  // Archiving is the documented alternative.
+  // Archiving is still available as a non-destructive alternative.
   const archived = await agent
     .patch(`/api/admin/departments/${department.id}`)
     .set('x-csrf-token', token)
@@ -246,6 +246,35 @@ test('deleting a department with applications is blocked and preserves history',
   // Applications remain accessible to administrators after archiving.
   const apps = await agent.get(`/api/admin/applications?department_id=${department.id}`);
   assert.ok(apps.body.meta.total >= 1);
+});
+
+test('force deleting a department removes it together with its applications', async () => {
+  const department = db.get("SELECT * FROM departments WHERE slug = 'programming'");
+  const applicationCount = db.get(
+    'SELECT COUNT(*) AS count FROM applications WHERE department_id = ?',
+    [department.id]
+  ).count;
+  const totalApplications = db.get('SELECT COUNT(*) AS count FROM applications').count;
+  assert.ok(applicationCount > 0);
+
+  const { agent, token } = await adminAgent();
+  const res = await agent
+    .delete(`/api/admin/departments/${department.id}?force=true`)
+    .set('x-csrf-token', token);
+
+  assert.equal(res.status, 200);
+  assert.equal(res.body.data.id, department.id);
+  assert.equal(res.body.data.deleted_applications, applicationCount);
+  assert.equal(db.get('SELECT id FROM departments WHERE id = ?', [department.id]), undefined);
+  assert.equal(
+    db.get('SELECT COUNT(*) AS count FROM applications WHERE department_id = ?', [department.id]).count,
+    0
+  );
+  assert.equal(
+    db.get('SELECT COUNT(*) AS count FROM applications').count,
+    totalApplications - applicationCount,
+    'only the deleted department applications are removed'
+  );
 });
 
 test('department writes require authentication and CSRF', async () => {

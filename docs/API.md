@@ -103,6 +103,43 @@
 
 يعيد قسمًا منشورًا ونشطًا فقط. غير المتاح يعيد `404 DEPARTMENT_NOT_FOUND`.
 
+### `GET /api/news`
+
+يعيد الأخبار المنشورة فقط، مرتبة بالأخبار المميزة ثم تاريخ النشر. يقبل:
+
+- `q`: بحث في العنوان والملخص والنص.
+- `category`: تصفية حسب التصنيف.
+- `featured=true`: الأخبار المميزة فقط.
+- `page` و`limit` (الحد الأقصى 30).
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "انطلاق أسبوع المشروعات التطبيقية",
+      "slug": "demo-projects-week",
+      "summary": "...",
+      "category": "أنشطة",
+      "image_url": "/assets/img/departments/programming.svg",
+      "is_featured": true,
+      "published_at": "2026-10-20T09:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 9,
+    "total": 6,
+    "hasNext": false,
+    "categories": [{ "name": "أنشطة", "count": 2 }]
+  }
+}
+```
+
+### `GET /api/news/:slug`
+
+يعيد خبرًا منشورًا مع حقل `related` يحتوي حتى 3 أخبار ذات صلة. غير المنشور أو غير الموجود يعيد `404 NOT_FOUND`.
+
 ### `GET /api/school-content`
 
 ```json
@@ -204,7 +241,7 @@
 - `POST /api/admin/departments` — الحقول: `name`، `slug` (اختياري)، `short_description`، `description`، `educational_focus`، `skills`، `admission_info`، `image_url`، `is_published`، `is_active`، `sort_order`.
 - `GET /api/admin/departments/:id` — بيانات قسم واحد.
 - `PATCH /api/admin/departments/:id` — أي مجموعة من الحقول أعلاه.
-- `DELETE /api/admin/departments/:id` — يُرفض بـ `409 DEPARTMENT_HAS_APPLICATIONS` إذا كان للقسم طلبات. استخدم الأرشفة بدلًا من الحذف.
+- `DELETE /api/admin/departments/:id` — يُرفض بـ `409 DEPARTMENT_HAS_APPLICATIONS` إذا كان للقسم طلبات. أضف `?force=true` لحذف القسم وطلباته معًا داخل معاملة واحدة بعد تأكيد كتابي في الواجهة.
 
 قواعد الحقول:
 
@@ -221,7 +258,7 @@
 - `GET /api/admin/applications/:id` — يعيد التفاصيل كاملة بما فيها `admin_notes`.
 - `PATCH /api/admin/applications/:id/status` — `{ "status": "NEW" | "UNDER_REVIEW" | "ACCEPTED" | "REJECTED" }`.
 - `PATCH /api/admin/applications/:id/notes` — `{ "admin_notes": "..." }` بحد 2000 حرف.
-- `DELETE /api/admin/applications/:id` — للطلبات التجريبية فقط. الطلب الحقيقي يعيد `409 APPLICATION_IS_REAL`.
+- `DELETE /api/admin/applications/:id` — حذف نهائي لأي طلب، تجريبي أو حقيقي، بعد تأكيد كتابي في الواجهة. يعيد `{ "id", "reference_number", "was_demo" }`.
 - `GET /api/admin/applications/export.csv` — يقبل نفس فلاتر القائمة، ويعيد `text/csv` مع BOM ليتوافق مع Excel العربي.
 
 ### المحتوى والأسئلة
@@ -234,6 +271,24 @@
 
 المحتوى يُخزَّن ويُعرض كنص عادي فقط؛ لا يوجد مسار لتنفيذ HTML.
 
+### الأخبار
+
+- `GET /api/admin/news` — قائمة كاملة مع `q` و`state` (`published` / `draft` / `featured`) و`is_demo` والترقيم.
+- `POST /api/admin/news` — الحقول: `title`، `slug` (اختياري)، `summary`، `body`، `category`، `image_url`، `is_published`، `is_featured`، `published_at`، `sort_order`.
+- `GET /api/admin/news/:id` — بيانات خبر واحد.
+- `PATCH /api/admin/news/:id` — أي مجموعة من الحقول أعلاه.
+- `DELETE /api/admin/news/:id` — حذف نهائي لأي خبر، تجريبي أو حقيقي.
+
+قواعد الحقول:
+
+- `title`: 3–160 حرفًا، و`slug` يُشتق منه إن تُرك فارغًا.
+- `summary`: 10–500 حرف.
+- `body`: 20–12000 حرف، ويُعرض كنص عادي.
+- `category`: اختياري حتى 80 حرفًا.
+- `slug`: فريد؛ التعارض يعيد `409 SLUG_TAKEN`.
+- `published_at`: تاريخ ISO اختياري؛ يُستخدم وقت الحفظ إن تُرك فارغًا.
+- `sort_order`: عدد صحيح 0–9999.
+
 ### البيانات التجريبية
 
 - `GET /api/admin/demo-data` — ملخص العدادات وقوائم السجلات التجريبية.
@@ -241,7 +296,7 @@
 - `POST /api/admin/demo-data/reset` — يتطلب `{ "confirm": "RESET_DEMO_DATA" }`.
 - `POST /api/admin/demo-data/cleanup` — يتطلب `{ "confirm": "DELETE_DEMO_DATA" }`.
 
-`reset` يحذف السجلات التجريبية ثم يعيد إنشاءها. القسم التجريبي المرتبط بطلب حقيقي يُؤرشف أثناء الحذف ثم يُعاد نشره تلقائيًا. الطلبات والأقسام الحقيقية لا تُحذف.
+`reset` يحذف السجلات التجريبية ثم يعيد إنشاءها. القسم التجريبي المرتبط بطلب حقيقي يُؤرشف أثناء الحذف ثم يُعاد نشره تلقائيًا. عمليات البيانات التجريبية لا تحذف أي سجل حقيقي.
 
 ---
 
@@ -256,7 +311,7 @@
 | `FORBIDDEN` | 403 | صلاحية غير كافية |
 | `NOT_FOUND` | 404 | المورد غير موجود |
 | `DUPLICATE_APPLICATION` | 409 | طلب مكرر خلال 24 ساعة |
-| `DEPARTMENT_HAS_APPLICATIONS` | 409 | لا يمكن حذف قسم له طلبات |
-| `APPLICATION_IS_REAL` | 409 | لا يمكن حذف طلب حقيقي |
+| `DEPARTMENT_HAS_APPLICATIONS` | 409 | قسم له طلبات؛ أعد المحاولة مع `?force=true` للحذف الكامل |
+| `SLUG_TAKEN` | 409 | معرّف الخبر أو القسم مستخدم بالفعل |
 | `RATE_LIMITED` | 429 | تجاوز حد المحاولات |
 | `INTERNAL_ERROR` | 500 | خطأ غير متوقع برسالة آمنة |

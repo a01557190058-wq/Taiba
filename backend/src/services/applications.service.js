@@ -201,20 +201,19 @@ function updateNotes(id, adminNotes) {
 }
 
 /**
- * Deletion policy: only explicitly flagged demo applications may be deleted.
- * Genuine applications are preserved permanently (status can still change).
+ * Full administrative control: any application can be deleted, whether it is
+ * flagged as demo data or a genuine submission. The dashboard asks for an
+ * explicit typed confirmation before calling this endpoint.
  */
 function remove(id) {
   const application = db.get('SELECT id, reference_number, is_demo FROM applications WHERE id = ?', [id]);
   if (!application) throw HttpError.notFound('الطلب غير موجود.');
-  if (!application.is_demo) {
-    throw HttpError.conflict(
-      'APPLICATION_IS_REAL',
-      'لا يمكن حذف طلب حقيقي. تُحفظ سجلات الطلبات الحقيقية دائمًا؛ يمكنك تغيير حالته بدلًا من ذلك.'
-    );
-  }
   db.run('DELETE FROM applications WHERE id = ?', [id]);
-  return { id, reference_number: application.reference_number };
+  return {
+    id,
+    reference_number: application.reference_number,
+    was_demo: Boolean(application.is_demo),
+  };
 }
 
 /** Escape a value for CSV (Excel-friendly, quotes doubled). */

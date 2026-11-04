@@ -4,11 +4,13 @@ const express = require('express');
 const departmentsService = require('../services/departments.service');
 const applicationsService = require('../services/applications.service');
 const contentService = require('../services/content.service');
+const newsService = require('../services/news.service');
 const { validate } = require('../middleware/validate');
 const { applicationCreateSchema } = require('../validators/schemas');
 const { applicationLimiter } = require('../middleware/rate-limit');
 const { requireCsrf } = require('../middleware/csrf');
 const { toLines } = require('../lib/text');
+const { parsePagination, buildMeta } = require('../lib/pagination');
 const HttpError = require('../lib/http-error');
 
 const router = express.Router();
@@ -42,6 +44,32 @@ router.get('/departments/:slug', (req, res, next) => {
     return next(HttpError.notFound('القسم غير متوفر أو غير منشور حاليًا.'));
   }
   return res.json({ data: department });
+});
+
+// ---------------------------------------------------------------------------
+// School news (public, published only)
+// ---------------------------------------------------------------------------
+router.get('/news', (req, res) => {
+  const { page, limit } = parsePagination(req.query);
+  const { items, total } = newsService.listPublic({
+    q: (req.query.q || '').toString().trim().slice(0, 120),
+    category: (req.query.category || '').toString().trim().slice(0, 80),
+    featured: req.query.featured === 'true' ? true : null,
+    page,
+    limit: Math.min(limit, 30),
+  });
+  res.json({
+    data: items,
+    meta: { ...buildMeta({ page, limit: Math.min(limit, 30), total }), categories: newsService.listCategories() },
+  });
+});
+
+router.get('/news/:slug', (req, res, next) => {
+  const article = newsService.getPublicBySlug(req.params.slug);
+  if (!article) {
+    return next(HttpError.notFound('الخبر غير متوفر أو غير منشور حاليًا.'));
+  }
+  return res.json({ data: { ...article, related: newsService.relatedPublic(article, 3) } });
 });
 
 // ---------------------------------------------------------------------------

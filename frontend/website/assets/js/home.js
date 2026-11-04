@@ -1,8 +1,9 @@
 import { schoolContentPromise } from './common.js';
 import { api } from './api.js';
-import { qs, el, departmentCard, skeletonGrid, stateBox, setCounter, revealNow } from './ui.js';
+import { qs, el, departmentCard, newsCard, skeletonGrid, stateBox, setCounter, revealNow } from './ui.js';
 
 const featured = qs('#featured-departments');
+const latestNews = qs('#latest-news');
 const faqList = qs('#faq-list');
 const objectivesList = qs('#objectives-list');
 const stepsList = qs('#admission-steps');
@@ -37,6 +38,40 @@ async function loadDepartments() {
         message: error.message || 'حدث خطأ أثناء الاتصال بالخادم. تحقق من اتصالك ثم حاول مرة أخرى.',
         actionLabel: 'إعادة المحاولة',
         onAction: loadDepartments,
+        iconName: 'alert',
+      })
+    );
+  }
+}
+
+async function loadNews() {
+  if (!latestNews) return;
+  skeletonGrid(latestNews, 3);
+  try {
+    const articles = await api('/api/news?limit=3');
+    if (!Array.isArray(articles) || !articles.length) {
+      latestNews.replaceChildren(
+        stateBox({
+          title: 'لا توجد أخبار منشورة حاليًا',
+          message: 'تُنشر الأخبار والأنشطة من لوحة التحكم وتظهر هنا مباشرة بعد نشرها.',
+          actionLabel: 'زيارة صفحة الأخبار',
+          onAction: () => {
+            window.location.href = '/news';
+          },
+          iconName: 'inbox',
+        })
+      );
+      return;
+    }
+    latestNews.replaceChildren(...articles.map((article, index) => newsCard(article, index)));
+    revealNow(latestNews);
+  } catch (error) {
+    latestNews.replaceChildren(
+      stateBox({
+        title: 'تعذّر تحميل الأخبار',
+        message: error.message || 'حدث خطأ أثناء الاتصال بالخادم. تحقق من اتصالك ثم حاول مرة أخرى.',
+        actionLabel: 'إعادة المحاولة',
+        onAction: loadNews,
         iconName: 'alert',
       })
     );
@@ -106,4 +141,5 @@ function renderContent(data) {
 }
 
 loadDepartments();
+loadNews();
 schoolContentPromise.then(renderContent);

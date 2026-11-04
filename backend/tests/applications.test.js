@@ -268,7 +268,7 @@ test('applications can be filtered by status and department, and paginated', asy
   assert.equal(sorted.status, 200);
 });
 
-test('demo applications can be deleted but real ones cannot', async () => {
+test('administrators can delete any application, demo or real', async () => {
   const { agent, token } = await anonymousAgent();
   const created = await submitApplication(agent, token, { phone: '01234567892' });
   const realId = db.get('SELECT id FROM applications WHERE reference_number = ?', [
@@ -279,12 +279,14 @@ test('demo applications can be deleted but real ones cannot', async () => {
   const { agent: admin, token: adminToken } = await adminAgent();
 
   const realDelete = await admin.delete(`/api/admin/applications/${realId}`).set('x-csrf-token', adminToken);
-  assert.equal(realDelete.status, 409);
-  assert.equal(realDelete.body.error.code, 'APPLICATION_IS_REAL');
-  assert.ok(db.get('SELECT id FROM applications WHERE id = ?', [realId]));
+  assert.equal(realDelete.status, 200);
+  assert.equal(realDelete.body.data.id, realId);
+  assert.equal(realDelete.body.data.was_demo, false);
+  assert.equal(db.get('SELECT id FROM applications WHERE id = ?', [realId]), undefined);
 
   const demoDelete = await admin.delete(`/api/admin/applications/${demo.id}`).set('x-csrf-token', adminToken);
   assert.equal(demoDelete.status, 200);
+  assert.equal(demoDelete.body.data.was_demo, true);
   assert.equal(db.get('SELECT id FROM applications WHERE id = ?', [demo.id]), undefined);
 });
 

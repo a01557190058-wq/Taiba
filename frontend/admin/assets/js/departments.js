@@ -1,7 +1,7 @@
 /**
  * Admin departments list: search, state/demo filters, pagination and
- * publish/archive/delete actions. Deleting a department with applications is
- * rejected by the API (archive instead) — the UI surfaces that message.
+ * publish/archive/delete actions. A department that still has applications can
+ * be deleted with a forced cascade after an explicit typed confirmation.
  */
 import {
   boot,
@@ -155,17 +155,24 @@ async function patchDepartment(department, payload, successMessage) {
 }
 
 async function deleteDepartment(department) {
+  const hasApplications = (department.applications_count || 0) > 0;
   const confirmed = await confirmDialog({
     title: 'حذف القسم نهائيًا',
-    message: `سيتم حذف «${department.name}» نهائيًا. لا يمكن حذف قسم لديه طلبات تقديم؛ في هذه الحالة استخدم الأرشفة.\n\nهل تريد المتابعة؟`,
+    message: hasApplications
+      ? `سيتم حذف «${department.name}» و${formatNumber(
+          department.applications_count
+        )} طلب/طلبات مرتبطة به نهائيًا. لا يمكن التراجع عن هذه العملية.`
+      : `سيتم حذف «${department.name}» نهائيًا. لا يمكن التراجع عن هذه العملية.`,
     confirmLabel: 'حذف نهائي',
     danger: true,
+    requireText: hasApplications ? department.name : '',
   });
   if (!confirmed) return;
 
   try {
-    await api(`/api/admin/departments/${department.id}`, { method: 'DELETE' });
-    toast('تم حذف القسم.');
+    const suffix = hasApplications ? '?force=true' : '';
+    await api(`/api/admin/departments/${department.id}${suffix}`, { method: 'DELETE' });
+    toast(hasApplications ? 'تم حذف القسم والطلبات المرتبطة به.' : 'تم حذف القسم.');
     if (filters.page > 1) filters.page -= 1;
     writeToUrl();
     load();

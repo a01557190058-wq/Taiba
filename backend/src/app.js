@@ -119,6 +119,8 @@ function createApp() {
   app.get('/about', sendPage('about.html'));
   app.get('/departments', sendPage('departments.html'));
   app.get('/student-life', sendPage('student-life.html'));
+  app.get('/news', sendPage('news.html'));
+  app.get('/news/:slug', sendPage('news-article.html'));
   app.get('/departments/:slug', sendPage('department.html'));
   app.get('/admission', sendPage('admission.html'));
   app.get('/apply', sendPage('apply.html'));
@@ -130,6 +132,9 @@ function createApp() {
   app.get('/admin/departments/:id/edit', sendAdminPage('department-form.html'));
   app.get('/admin/applications', sendAdminPage('applications.html'));
   app.get('/admin/applications/:id', sendAdminPage('application.html'));
+  app.get('/admin/news', sendAdminPage('news.html'));
+  app.get('/admin/news/new', sendAdminPage('news-form.html'));
+  app.get('/admin/news/:id/edit', sendAdminPage('news-form.html'));
   app.get('/admin/content', sendAdminPage('content.html'));
   app.get('/admin/demo-data', sendAdminPage('demo-data.html'));
 

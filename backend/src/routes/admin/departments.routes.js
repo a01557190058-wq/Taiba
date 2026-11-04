@@ -50,7 +50,8 @@ router.patch('/:id', validate(departmentUpdateSchema), (req, res, next) => {
 router.delete('/:id', (req, res, next) => {
   try {
     const id = parseId(req.params.id, 'معرّف القسم');
-    return res.json({ data: service.remove(id) });
+    const force = req.query.force === 'true' || req.query.force === '1';
+    return res.json({ data: service.remove(id, { force }) });
   } catch (error) {
     return next(error);
   }

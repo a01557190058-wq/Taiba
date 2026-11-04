@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>مدرسة طيبة تكنولوجي | تعليم تقني تطبيقي</title>
   <meta name="description" content="مدرسة طيبة تكنولوجي — بيئة تعليمية تقنية تجريبية تجمع بين الأساس النظري والتطبيق العملي في البرمجة والهندسة والتقنيات الصناعية.">
-  <meta name="theme-color" content="#082c40">
+  <meta name="theme-color" content="#111838">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/assets/fonts/cairo-arabic.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/css/website.css">
@@ -29,6 +29,7 @@
           <li><a class="site-nav__link" href="/about">عن المدرسة</a></li>
           <li><a class="site-nav__link" href="/departments">الأقسام</a></li>
           <li><a class="site-nav__link" href="/student-life">الحياة الطلابية</a></li>
+          <li><a class="site-nav__link" href="/news">الأخبار</a></li>
           <li><a class="site-nav__link" href="/admission">القبول</a></li>
           <li><a class="site-nav__link" href="#contact">تواصل معنا</a></li>
         </ul>
@@ -215,6 +216,25 @@
         </div>
 
         <div class="department-grid reveal" id="featured-departments" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ================= LATEST NEWS ================= -->
+    <section class="section" id="news">
+      <div class="container">
+        <div class="section-head__row">
+          <div class="section-head section-head--flush">
+            <span class="eyebrow">آخر المستجدات</span>
+            <h2 class="section-title">أخبار وأنشطة من داخل المدرسة</h2>
+            <p class="section-lead">
+              أحدث الأخبار المنشورة من لوحة التحكم: أنشطة الأقسام، الورش العملية،
+              والمشروعات الطلابية.
+            </p>
+          </div>
+          <a class="btn btn-outline" href="/news">كل الأخبار</a>
+        </div>
+
+        <div class="news-grid" id="latest-news" aria-live="polite"></div>
       </div>
     </section>
 
@@ -432,6 +452,7 @@
             <li><a href="/about">عن المدرسة</a></li>
             <li><a href="/departments">الأقسام</a></li>
             <li><a href="/student-life">الحياة الطلابية</a></li>
+            <li><a href="/news">الأخبار</a></li>
             <li><a href="/admission">القبول والتقديم</a></li>
             <li><a href="/apply">نموذج التقديم</a></li>
           </ul>

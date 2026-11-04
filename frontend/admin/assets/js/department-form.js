@@ -507,21 +507,30 @@ function renderForm(department) {
       className: 'btn btn-danger-outline',
       attrs: { type: 'button', id: 'delete-department' },
     }, [icon('trash', 16), el('span', { text: 'حذف القسم نهائيًا' })]);
-    deleteButton.disabled = hasApplications;
 
     deleteButton.addEventListener('click', async () => {
       const confirmed = await confirmDialog({
         title: 'حذف القسم نهائيًا',
-        message: `سيتم حذف «${department.name}» نهائيًا ولا يمكن التراجع. هل تريد المتابعة؟`,
+        message: hasApplications
+          ? `سيتم حذف «${department.name}» و${formatNumber(
+              department.applications_count
+            )} طلب/طلبات مرتبطة به نهائيًا. لا يمكن التراجع عن هذه العملية.`
+          : `سيتم حذف «${department.name}» نهائيًا ولا يمكن التراجع. هل تريد المتابعة؟`,
         confirmLabel: 'حذف نهائي',
         danger: true,
+        requireText: hasApplications ? department.name : '',
       });
       if (!confirmed) return;
 
       setButtonBusy(deleteButton, true, 'جارٍ الحذف…');
       try {
-        await api(`/api/admin/departments/${department.id}`, { method: 'DELETE' });
-        toast('تم حذف القسم.');
+        const suffix = hasApplications ? '?force=true' : '';
+        await api(`/api/admin/departments/${department.id}${suffix}`, { method: 'DELETE' });
+        toast(
+          hasApplications
+            ? 'تم حذف القسم والطلبات المرتبطة به.'
+            : 'تم حذف القسم.'
+        );
         window.setTimeout(() => {
           window.location.href = '/admin/departments';
         }, 550);
@@ -540,7 +549,11 @@ function renderForm(department) {
         el('div', { className: 'panel__head' }, [
           el('div', {}, [
             el('h3', { text: 'منطقة الخطر' }),
-            el('p', { text: 'الحذف نهائي؛ استخدم الأرشفة إذا كان القسم مرتبطًا بطلبات.' }),
+            el('p', {
+              text: hasApplications
+                ? 'حذف القسم سيحذف طلباته المرتبطة به أيضًا. راجع العدد قبل المتابعة.'
+                : 'الحذف نهائي ولا يمكن التراجع عنه.',
+            }),
           ]),
         ]),
         el('div', { className: 'panel__body' }, [
@@ -548,9 +561,9 @@ function renderForm(department) {
             ? el('div', { className: 'notice notice--danger' }, [
                 icon('alert', 18),
                 el('span', {
-                  text: `لا يمكن حذف هذا القسم لوجود ${formatNumber(
+                  text: `هذا القسم مرتبط بـ ${formatNumber(
                     department.applications_count
-                  )} طلب/طلبات مرتبطة به. ألغِ نشره أو أرشِفه للحفاظ على سجل الطلبات.`,
+                  )} طلب/طلبات. الحذف الكامل سيحذف القسم وكل طلباته نهائيًا. إن أردت الاحتفاظ بسجل الطلبات، ألغِ نشره أو أرشِفه بدلًا من ذلك.`,
                 }),
               ])
             : el('div', { className: 'notice' }, [

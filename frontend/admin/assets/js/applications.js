@@ -4,6 +4,7 @@
  */
 import {
   boot,
+  api,
   request,
   qs,
   el,
@@ -14,6 +15,8 @@ import {
   pageHead,
   paginationBar,
   emptyState,
+  confirmDialog,
+  toast,
   debounce,
 } from './admin.js';
 
@@ -193,7 +196,36 @@ function buildFilters() {
 // ---------------------------------------------------------------------------
 // Table
 // ---------------------------------------------------------------------------
+async function deleteApplication(application) {
+  const confirmed = await confirmDialog({
+    title: application.is_demo ? 'حذف طلب تجريبي' : 'حذف طلب حقيقي',
+    message: application.is_demo
+      ? `سيتم حذف الطلب ${application.reference_number} نهائيًا. اكتب رقم الطلب للتأكيد.`
+      : `هذا طلب حقيقي (${application.reference_number}). سيتم حذفه نهائيًا ولا يمكن التراجع. اكتب رقم الطلب للتأكيد.`,
+    confirmLabel: 'حذف نهائي',
+    danger: true,
+    requireText: application.reference_number,
+  });
+  if (!confirmed) return;
+
+  try {
+    await api(`/api/admin/applications/${application.id}`, { method: 'DELETE' });
+    toast(application.is_demo ? 'تم حذف الطلب التجريبي.' : 'تم حذف الطلب.');
+    if (filters.page > 1) filters.page -= 1;
+    writeToUrl();
+    load();
+  } catch (error) {
+    toast(error.message || 'تعذّر حذف الطلب.', 'error');
+  }
+}
+
 function buildRow(application) {
+  const remove = el('button', {
+    className: 'btn btn-danger-outline btn-sm',
+    attrs: { type: 'button', title: 'حذف الطلب' },
+  }, [icon('trash', 15), el('span', { text: 'حذف' })]);
+  remove.addEventListener('click', () => deleteApplication(application));
+
   return el('tr', {}, [
     el('td', { className: 'cell-ref', text: application.reference_number }),
     el('td', {}, [
@@ -210,6 +242,7 @@ function buildRow(application) {
           className: 'btn btn-outline btn-sm',
           attrs: { href: `/admin/applications/${application.id}` },
         }, [icon('eye', 15), el('span', { text: 'عرض' })]),
+        remove,
       ]),
     ]),
   ]);

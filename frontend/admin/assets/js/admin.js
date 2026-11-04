@@ -38,6 +38,8 @@ const ICONS = {
   inbox:
     '<path d="M4 13h4l2 3h4l2-3h4"/><path d="M5 5h14l2 8v6H3v-6l2-8Z"/>',
   file: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/>',
+  news:
+    '<path d="M4 5h13v14H4z"/><path d="M17 9h3v7a2 2 0 0 1-2 2h-1"/><path d="M7 8h7M7 12h7M7 16h4"/>',
   database:
     '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>',
   external:
@@ -124,6 +126,13 @@ export function departmentStateBadge(department) {
     return el('span', { className: 'badge badge--archived', text: 'مؤرشف' });
   }
   if (department.is_published) {
+    return el('span', { className: 'badge badge--published', text: 'منشور' });
+  }
+  return el('span', { className: 'badge badge--draft', text: 'مسودة' });
+}
+
+export function newsStateBadge(item) {
+  if (item.is_published) {
     return el('span', { className: 'badge badge--published', text: 'منشور' });
   }
   return el('span', { className: 'badge badge--draft', text: 'مسودة' });
@@ -276,6 +285,7 @@ const NAV_ITEMS = [
   { key: 'dashboard', href: '/admin/dashboard', label: 'نظرة عامة', icon: 'dashboard' },
   { key: 'departments', href: '/admin/departments', label: 'الأقسام', icon: 'layers' },
   { key: 'applications', href: '/admin/applications', label: 'طلبات التقديم', icon: 'inbox' },
+  { key: 'news', href: '/admin/news', label: 'الأخبار', icon: 'news' },
   { key: 'content', href: '/admin/content', label: 'المحتوى والأسئلة', icon: 'file' },
   { key: 'demo', href: '/admin/demo-data', label: 'البيانات التجريبية', icon: 'database' },
 ];

@@ -1,6 +1,6 @@
 /**
  * Application detail: read-only applicant data, status workflow, internal
- * admin notes and demo-only deletion. Real applications can never be deleted.
+ * admin notes and full deletion (any application, after typed confirmation).
  */
 import {
   boot,
@@ -237,61 +237,56 @@ function render() {
   ]);
 
   // --- Danger zone ---------------------------------------------------------
-  let dangerBody;
-  if (application.is_demo) {
-    const deleteButton = el('button', {
-      className: 'btn btn-danger-outline',
-      attrs: { type: 'button', id: 'delete-application' },
-    }, [icon('trash', 15), el('span', { text: 'حذف الطلب التجريبي' })]);
+  const deleteButton = el('button', {
+    className: 'btn btn-danger-outline',
+    attrs: { type: 'button', id: 'delete-application' },
+  }, [icon('trash', 15), el('span', { text: 'حذف الطلب نهائيًا' })]);
 
-    deleteButton.addEventListener('click', async () => {
-      const confirmed = await confirmDialog({
-        title: 'حذف طلب تجريبي',
-        message: `سيتم حذف الطلب ${application.reference_number} نهائيًا. هذه العملية مسموحة للطلبات التجريبية فقط. هل تريد المتابعة؟`,
-        confirmLabel: 'حذف نهائي',
-        danger: true,
-      });
-      if (!confirmed) return;
-
-      setButtonBusy(deleteButton, true, 'جارٍ الحذف…');
-      try {
-        await api(`/api/admin/applications/${application.id}`, { method: 'DELETE' });
-        toast('تم حذف الطلب التجريبي.');
-        window.setTimeout(() => {
-          window.location.href = '/admin/applications';
-        }, 550);
-      } catch (error) {
-        setAlert(alertBox, {
-          type: 'error',
-          message: error.message || 'تعذّر حذف الطلب.',
-        });
-        setButtonBusy(deleteButton, false);
-      }
+  deleteButton.addEventListener('click', async () => {
+    const confirmed = await confirmDialog({
+      title: application.is_demo ? 'حذف طلب تجريبي' : 'حذف طلب حقيقي',
+      message: application.is_demo
+        ? `سيتم حذف الطلب ${application.reference_number} نهائيًا. اكتب رقم الطلب للتأكيد.`
+        : `هذا طلب حقيقي (${application.reference_number}). سيتم حذفه نهائيًا من قاعدة البيانات ولا يمكن التراجع. اكتب رقم الطلب للتأكيد.`,
+      confirmLabel: 'حذف نهائي',
+      danger: true,
+      requireText: application.reference_number,
     });
+    if (!confirmed) return;
 
-    dangerBody = [
-      el('div', { className: 'notice notice--danger' }, [
-        icon('alert', 18),
-        el('span', { text: 'هذا طلب تجريبي (is_demo). حذفه مسموح ولن يؤثر على الطلبات الحقيقية.' }),
-      ]),
-      el('div', { className: 'form-actions' }, [deleteButton]),
-    ];
-  } else {
-    dangerBody = [
-      el('div', { className: 'notice' }, [
-        icon('info', 18),
-        el('span', {
-          text: 'هذا طلب حقيقي. لا يسمح النظام بحذفه للحفاظ على سجل الطلبات؛ يمكنك تغيير حالته أو إضافة ملاحظات بدلًا من ذلك.',
-        }),
-      ]),
-    ];
-  }
+    setButtonBusy(deleteButton, true, 'جارٍ الحذف…');
+    try {
+      await api(`/api/admin/applications/${application.id}`, { method: 'DELETE' });
+      toast(application.is_demo ? 'تم حذف الطلب التجريبي.' : 'تم حذف الطلب.');
+      window.setTimeout(() => {
+        window.location.href = '/admin/applications';
+      }, 550);
+    } catch (error) {
+      setAlert(alertBox, {
+        type: 'error',
+        message: error.message || 'تعذّر حذف الطلب.',
+      });
+      setButtonBusy(deleteButton, false);
+    }
+  });
+
+  const dangerBody = [
+    el('div', { className: application.is_demo ? 'notice notice--danger' : 'notice notice--danger' }, [
+      icon('alert', 18),
+      el('span', {
+        text: application.is_demo
+          ? 'هذا طلب تجريبي (is_demo). حذفه نهائي ولن يؤثر على الطلبات الحقيقية.'
+          : 'هذا طلب حقيقي. الحذف نهائي ويحذف السجل بالكامل؛ يمكنك بدلًا من ذلك تغيير حالته أو إضافة ملاحظات.',
+      }),
+    ]),
+    el('div', { className: 'form-actions' }, [deleteButton]),
+  ];
 
   const dangerPanel = el('section', { className: 'panel mt-2' }, [
     el('div', { className: 'panel__head' }, [
       el('div', {}, [
         el('h3', { text: 'إجراءات حساسة' }),
-        el('p', { text: 'الحذف النهائي متاح للبيانات التجريبية فقط.' }),
+        el('p', { text: 'الحذف النهائي متاح لجميع الطلبات بعد تأكيد كتابي.' }),
       ]),
     ]),
     el('div', { className: 'panel__body' }, dangerBody),

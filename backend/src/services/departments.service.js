@@ -175,22 +175,31 @@ function update(id, payload) {
 }
 
 /**
- * Hard delete is only allowed when no application references the department.
- * Otherwise the caller is told to archive it instead, preserving history.
+ * Full administrative control over departments.
+ * - Without `force`, a department that still has applications is protected.
+ * - With `force`, its applications are deleted first and then the department,
+ *   inside a single transaction. The dashboard requires a typed confirmation
+ *   before sending `force`.
  */
-function remove(id) {
+function remove(id, { force = false } = {}) {
   const department = getById(id);
   if (!department) throw HttpError.notFound('القسم غير موجود.');
 
-  if (department.applications_count > 0) {
+  if (department.applications_count > 0 && !force) {
     throw HttpError.conflict(
       'DEPARTMENT_HAS_APPLICATIONS',
-      `لا يمكن حذف «${department.name}» لوجود ${department.applications_count} طلب/طلبات مرتبطة به. يمكنك أرشفته أو إلغاء نشره بدلًا من الحذف.`
+      `يحتوي «${department.name}» على ${department.applications_count} طلب/طلبات مرتبطة به. يمكنك أرشفته، أو تأكيد الحذف الكامل لحذف القسم وطلباته معًا.`
     );
   }
 
-  db.run('DELETE FROM departments WHERE id = ?', [id]);
-  return { id };
+  return db.transaction(() => {
+    const deletedApplications = db.run('DELETE FROM applications WHERE department_id = ?', [id]);
+    db.run('DELETE FROM departments WHERE id = ?', [id]);
+    return {
+      id,
+      deleted_applications: Number(deletedApplications.changes),
+    };
+  });
 }
 
 function countPublished() {

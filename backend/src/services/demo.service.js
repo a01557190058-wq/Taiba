@@ -2,7 +2,7 @@
 
 const db = require('../db');
 const content = require('./content.service');
-const { DEMO_DEPARTMENTS, DEMO_APPLICATIONS } = require('../db/demo-data');
+const { DEMO_DEPARTMENTS, DEMO_APPLICATIONS, DEMO_NEWS } = require('../db/demo-data');
 
 /**
  * Idempotent demo seeding. Records are matched by their natural keys
@@ -16,6 +16,7 @@ function seedDemoData() {
     applications_inserted: 0,
     faqs_inserted: 0,
     content_inserted: 0,
+    news_inserted: 0,
   };
 
   db.transaction(() => {
@@ -105,6 +106,30 @@ function seedDemoData() {
       );
       summary.applications_inserted += 1;
     }
+
+    // --- Demo news ---------------------------------------------------------
+    for (const item of DEMO_NEWS) {
+      const exists = db.get('SELECT id FROM news WHERE slug = ?', [item.slug]);
+      if (exists) continue;
+      db.run(
+        `INSERT INTO news
+           (title, slug, summary, body, category, image_url,
+            is_published, is_featured, is_demo, published_at, sort_order)
+         VALUES (?, ?, ?, ?, ?, ?, 1, ?, 1, ?, ?)`,
+        [
+          item.title,
+          item.slug,
+          item.summary,
+          item.body,
+          item.category,
+          item.image_url,
+          item.is_featured ? 1 : 0,
+          item.published_at,
+          item.sort_order,
+        ]
+      );
+      summary.news_inserted += 1;
+    }
   });
 
   return summary;
@@ -119,20 +144,28 @@ function getDemoSummary() {
     `SELECT id, reference_number, full_name, department_name_snapshot, status, submitted_at
        FROM applications WHERE is_demo = 1 ORDER BY submitted_at DESC`
   );
+  const news = db.all(
+    `SELECT id, title, slug, category, is_published, published_at
+       FROM news WHERE is_demo = 1 ORDER BY published_at DESC, id DESC`
+  );
   const counts = db.get(
     `SELECT
        (SELECT COUNT(*) FROM departments WHERE is_demo = 1) AS demo_departments,
        (SELECT COUNT(*) FROM applications WHERE is_demo = 1) AS demo_applications,
+       (SELECT COUNT(*) FROM news WHERE is_demo = 1) AS demo_news,
        (SELECT COUNT(*) FROM departments WHERE is_demo = 0) AS real_departments,
-       (SELECT COUNT(*) FROM applications WHERE is_demo = 0) AS real_applications`
+       (SELECT COUNT(*) FROM applications WHERE is_demo = 0) AS real_applications,
+       (SELECT COUNT(*) FROM news WHERE is_demo = 0) AS real_news`
   );
 
   return {
     counts: {
       demo_departments: counts.demo_departments,
       demo_applications: counts.demo_applications,
+      demo_news: counts.demo_news,
       real_departments: counts.real_departments,
       real_applications: counts.real_applications,
+      real_news: counts.real_news,
     },
     departments: departments.map((row) => ({
       ...row,
@@ -140,6 +173,7 @@ function getDemoSummary() {
       is_active: Boolean(row.is_active),
     })),
     applications,
+    news: news.map((row) => ({ ...row, is_published: Boolean(row.is_published) })),
   };
 }
 
@@ -151,11 +185,19 @@ function getDemoSummary() {
  * Real applications are never touched.
  */
 function cleanupDemoData() {
-  const result = { deleted_applications: 0, deleted_departments: 0, archived_departments: 0 };
+  const result = {
+    deleted_applications: 0,
+    deleted_departments: 0,
+    archived_departments: 0,
+    deleted_news: 0,
+  };
 
   db.transaction(() => {
     const deletedApps = db.run('DELETE FROM applications WHERE is_demo = 1');
     result.deleted_applications = Number(deletedApps.changes);
+
+    const deletedNews = db.run('DELETE FROM news WHERE is_demo = 1');
+    result.deleted_news = Number(deletedNews.changes);
 
     const demoDepartments = db.all('SELECT id, name FROM departments WHERE is_demo = 1');
     for (const department of demoDepartments) {

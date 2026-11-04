@@ -19,11 +19,15 @@ test('demo records are explicitly identifiable', async () => {
 
   assert.equal(res.body.data.counts.demo_departments, 10);
   assert.equal(res.body.data.counts.demo_applications, 8);
+  assert.equal(res.body.data.counts.demo_news, 6);
   assert.equal(res.body.data.counts.real_departments, 0);
   assert.equal(res.body.data.counts.real_applications, 0);
+  assert.equal(res.body.data.counts.real_news, 0);
   assert.equal(res.body.data.departments.length, 10);
   assert.equal(res.body.data.applications.length, 8);
+  assert.equal(res.body.data.news.length, 6);
   assert.ok(res.body.data.applications.every((row) => row.reference_number.startsWith('DEMO-')));
+  assert.ok(res.body.data.news.every((row) => row.slug.startsWith('demo-')));
 });
 
 test('seeding is idempotent and never duplicates demo records', async () => {
@@ -33,13 +37,16 @@ test('seeding is idempotent and never duplicates demo records', async () => {
   assert.equal(first.status, 200);
   assert.equal(first.body.data.summary.departments_inserted, 0);
   assert.equal(first.body.data.summary.applications_inserted, 0);
+  assert.equal(first.body.data.summary.news_inserted, 0);
 
   const second = await agent.post('/api/admin/demo-data/seed').set('x-csrf-token', token);
   assert.equal(second.body.data.overview.counts.demo_departments, 10);
   assert.equal(second.body.data.overview.counts.demo_applications, 8);
+  assert.equal(second.body.data.overview.counts.demo_news, 6);
 
   assert.equal(db.get('SELECT COUNT(*) AS count FROM departments').count, 10);
   assert.equal(db.get('SELECT COUNT(*) AS count FROM applications').count, 8);
+  assert.equal(db.get('SELECT COUNT(*) AS count FROM news').count, 6);
 });
 
 test('demo cleanup removes only demo records and preserves real records', async () => {
@@ -57,6 +64,19 @@ test('demo cleanup removes only demo records and preserves real records', async 
   const realApplicationId = db.get('SELECT id FROM applications WHERE is_demo = 0').id;
 
   const { agent, token } = await adminAgent();
+  const realNews = await agent
+    .post('/api/admin/news')
+    .set('x-csrf-token', token)
+    .send({
+      title: 'خبر حقيقي يجب ألا يُحذف مع البيانات التجريبية',
+      slug: 'real-news-preserved',
+      summary: 'ملخص خبر حقيقي أُنشئ أثناء اختبار تنظيف البيانات التجريبية.',
+      body: 'نص خبر حقيقي أُنشئ أثناء الاختبار للتأكد من أن تنظيف البيانات التجريبية لا يمس السجلات الحقيقية إطلاقًا.',
+      category: 'إعلانات',
+      is_published: true,
+    });
+  assert.equal(realNews.status, 201);
+
   const res = await agent
     .post('/api/admin/demo-data/cleanup')
     .set('x-csrf-token', token)
@@ -64,11 +84,14 @@ test('demo cleanup removes only demo records and preserves real records', async 
 
   assert.equal(res.status, 200);
   assert.equal(res.body.data.deleted_applications, 8);
+  assert.equal(res.body.data.deleted_news, 6);
   assert.equal(res.body.data.deleted_departments, 9, 'departments without real applications are deleted');
   assert.equal(res.body.data.archived_departments, 1, 'demo department with a real application is archived');
 
-  // Real records are intact.
+  // Real records are intact, including news.
   assert.ok(db.get('SELECT id FROM applications WHERE id = ?', [realApplicationId]));
+  assert.ok(db.get('SELECT id FROM news WHERE id = ?', [realNews.body.data.id]));
+  assert.equal(db.get('SELECT COUNT(*) AS count FROM news WHERE is_demo = 1').count, 0);
   const department = db.get('SELECT * FROM departments WHERE id = ?', [realDepartmentId]);
   assert.ok(department, 'department referenced by a real application must not be deleted');
   assert.equal(department.is_published, 0);
@@ -110,6 +133,7 @@ test('demo reset deletes demo records then restores the dataset', async () => {
     .send({ confirm: 'DELETE_DEMO_DATA' });
   assert.equal(cleanup.status, 200);
   assert.equal(db.get('SELECT COUNT(*) AS count FROM departments WHERE is_demo = 1').count, 0);
+  assert.equal(db.get('SELECT COUNT(*) AS count FROM news WHERE is_demo = 1').count, 0);
 
   const reset = await agent
     .post('/api/admin/demo-data/reset')
@@ -118,12 +142,15 @@ test('demo reset deletes demo records then restores the dataset', async () => {
   assert.equal(reset.status, 200);
   assert.equal(reset.body.data.seed.departments_inserted, 10);
   assert.equal(reset.body.data.seed.applications_inserted, 8);
+  assert.equal(reset.body.data.seed.news_inserted, 6);
   assert.equal(reset.body.data.seed.faqs_inserted, 0, 'content is not duplicated on reset');
   assert.equal(reset.body.data.seed.content_inserted, 0);
   assert.equal(reset.body.data.overview.counts.demo_departments, 10);
+  assert.equal(reset.body.data.overview.counts.demo_news, 6);
 
   assert.equal(db.get('SELECT COUNT(*) AS count FROM departments').count, 10);
   assert.equal(db.get('SELECT COUNT(*) AS count FROM applications').count, 8);
+  assert.equal(db.get('SELECT COUNT(*) AS count FROM news').count, 6);
 
   // A second reset is still idempotent.
   const again = await agent
