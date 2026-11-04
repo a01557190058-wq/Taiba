@@ -37,49 +37,54 @@
 }
 
 :root {
-  --ink-900: #1e1b2e;
-  --ink-800: #2a2540;
-  --ink-700: #3a3355;
-  --ink-600: #554d6b;
-  --ink-500: #6b6478;
-  --ink-400: #756d60;
+  --ink-900: #102a43;
+  --ink-800: #17395a;
+  --ink-700: #21507a;
+  --ink-600: #3c6488;
+  --ink-500: #56728c;
+  --ink-400: #6e879c;
 
-  --teal-800: #1b1f3b;
-  --teal-700: #33327e;
-  --teal-600: #4a489b;
-  --teal-500: #6a67c4;
-  --teal-200: #cfc9ea;
-  --teal-100: #e3dff4;
-  --teal-50: #f1eefa;
+  --teal-800: #0e4c7a;
+  --teal-700: #1769aa;
+  --teal-600: #1f7fc4;
+  --teal-500: #3e97d6;
+  --teal-200: #bbd8ef;
+  --teal-100: #dcebf7;
+  --teal-50: #eef6fc;
 
-  --navy-950: #12152b;
-  --navy-900: #1b1f3b;
-  --navy-800: #262b4e;
+  --navy-950: #0b1f33;
+  --navy-900: #102a43;
+  --navy-800: #163a5c;
 
-  --gold-600: #a5842f;
-  --gold-500: #c2a14a;
-  --gold-100: #f3e8c8;
+  --gold-600: #c79a00;
+  --gold-500: #ffc928;
+  --gold-100: #fff3cc;
 
-  --amber-600: #8a5e0f;
-  --amber-100: #f5e4bf;
-  --amber-50: #fcf6e8;
+  --amber-600: #8a5a00;
+  --amber-100: #ffe9a8;
+  --amber-50: #fff9e8;
 
-  --red-700: #a32a22;
-  --red-100: #fbe3de;
-  --red-50: #fdf4f1;
+  --red-700: #b3202b;
+  --red-600: #e63946;
+  --red-100: #fbdde0;
+  --red-50: #fdf1f2;
 
-  --green-700: #2f6b4f;
-  --green-100: #dcefe3;
-  --green-50: #f2f9f4;
+  --green-700: #1e7a4c;
+  --green-100: #d7f0e1;
+  --green-50: #effaf4;
 
-  --bg: #f7f2e8;
-  --bg-soft: #f1eadb;
-  --bg-muted: #e9e0ce;
-  --line: #e3d9c6;
-  --line-strong: #d3c5ac;
+  --bg: #f4f7fa;
+  --bg-soft: #edf2f7;
+  --bg-muted: #e3eaf2;
+  --line: #dce5ee;
+  --line-strong: #c6d4e2;
 
-  --surface: #fffcf6;
-  --ivory: #fffcf6;
+  --surface: #ffffff;
+  --ivory: #ffffff;
+
+  /* Eight-point Islamic star lattice (royal-blue lines, gold nodes), inlined as
+     an SVG data URI so it costs no extra request and works under the strict CSP. */
+  --pattern-tile: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'120'%20height%3D'120'%20viewBox%3D'0%200%20120%20120'%3E%3Cg%20fill%3D'none'%20stroke%3D'%231769AA'%20stroke-opacity%3D'0.10'%20stroke-width%3D'1'%3E%3Cpath%20d%3D'M36%2036h48v48H36z'%2F%3E%3Cpath%20d%3D'M60%2026L94%2060L60%2094L26%2060z'%2F%3E%3Cpath%20d%3D'M60%2026V0M94%2060h26M60%2094v26M26%2060H0'%2F%3E%3Cpath%20d%3D'M36%2036L0%200M84%2036L120%200M84%2084L120%20120M36%2084L0%20120'%2F%3E%3C%2Fg%3E%3Cg%20fill%3D'%23FFC928'%20fill-opacity%3D'0.30'%3E%3Ccircle%20cx%3D'60'%20cy%3D'60'%20r%3D'2.4'%2F%3E%3Ccircle%20cx%3D'0'%20cy%3D'0'%20r%3D'2.4'%2F%3E%3Ccircle%20cx%3D'120'%20cy%3D'0'%20r%3D'2.4'%2F%3E%3Ccircle%20cx%3D'120'%20cy%3D'120'%20r%3D'2.4'%2F%3E%3Ccircle%20cx%3D'0'%20cy%3D'120'%20r%3D'2.4'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 
   --radius-sm: 12px;
   --radius: 18px;
@@ -87,10 +92,10 @@
   --radius-xl: 38px;
   --radius-pill: 999px;
 
-  --shadow-xs: 0 1px 2px rgba(27, 31, 59, 0.06);
-  --shadow-sm: 0 6px 18px rgba(27, 31, 59, 0.08);
-  --shadow-md: 0 20px 44px rgba(27, 31, 59, 0.12);
-  --shadow-lg: 0 36px 80px rgba(27, 31, 59, 0.18);
+  --shadow-xs: 0 1px 2px rgba(16, 42, 67, 0.06);
+  --shadow-sm: 0 6px 18px rgba(16, 42, 67, 0.08);
+  --shadow-md: 0 20px 44px rgba(16, 42, 67, 0.12);
+  --shadow-lg: 0 36px 80px rgba(16, 42, 67, 0.18);
 
   --container: 1200px;
   --font: 'Cairo', 'Segoe UI', 'Tahoma', 'Noto Kufi Arabic', sans-serif;
@@ -111,17 +116,18 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   overflow-x: clip;
-  /* A soft, fixed ambient canvas behind every transparent section. Keeping the
-     gradients on the root avoids extra markup and stays CSP-safe. */
-  background-color: #faf6ee;
+  /* A fixed ambient canvas: an eight-point Islamic star lattice drawn in royal
+     blue and gold over a light background. The tile is an inline SVG data URI,
+     so it needs no extra request and stays inside the strict CSP. */
+  background-color: #f4f7fa;
   background-image:
-    radial-gradient(1200px 780px at 90% -12%, rgba(51, 50, 126, 0.13), transparent 62%),
-    radial-gradient(1000px 700px at -12% 104%, rgba(194, 161, 74, 0.18), transparent 58%),
-    radial-gradient(820px 620px at 48% 42%, rgba(226, 214, 186, 0.32), transparent 66%),
-    linear-gradient(180deg, #faf6ee 0%, #f3ecde 46%, #faf6ee 100%);
+    radial-gradient(1200px 780px at 90% -12%, rgba(23, 105, 170, 0.12), transparent 62%),
+    radial-gradient(1000px 700px at -12% 104%, rgba(255, 201, 40, 0.16), transparent 58%),
+    var(--pattern-tile),
+    linear-gradient(180deg, #f4f7fa 0%, #e9f0f7 46%, #f4f7fa 100%);
   background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
+  background-repeat: no-repeat, no-repeat, repeat, no-repeat;
+  background-size: auto, auto, 120px 120px, auto;
 }
 
 body {
@@ -184,7 +190,7 @@ button {
 }
 
 :focus-visible {
-  outline: 3px solid rgba(51, 50, 126, 0.45);
+  outline: 3px solid rgba(23, 105, 170, 0.45);
   outline-offset: 2px;
   border-radius: 6px;
 }
@@ -208,15 +214,21 @@ button {
      the neighbouring white sections instead of ending in a hard edge. */
   background: linear-gradient(
     180deg,
-    rgba(247, 242, 232, 0) 0%,
-    rgba(241, 234, 219, 0.9) 12%,
-    rgba(241, 234, 219, 0.9) 88%,
-    rgba(247, 242, 232, 0) 100%
+    rgba(244, 247, 250, 0) 0%,
+    rgba(237, 242, 247, 0.9) 12%,
+    rgba(237, 242, 247, 0.9) 88%,
+    rgba(244, 247, 250, 0) 100%
   );
 }
 
 .section--tight {
   padding-block: 4rem;
+}
+
+/* The hidden attribute must win over component display rules (buttons,
+   alerts, steppers) so toggling `.hidden` in JS always hides the element. */
+[hidden] {
+  display: none !important;
 }
 
 .visually-hidden {
@@ -298,7 +310,7 @@ button {
 
 .btn-primary {
   --btn-bg: var(--teal-700);
-  box-shadow: 0 8px 20px rgba(51, 50, 126, 0.26);
+  box-shadow: 0 8px 20px rgba(23, 105, 170, 0.26);
 }
 
 .btn-primary:hover {
@@ -359,10 +371,10 @@ button {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 252, 246, 0.84);
+  background: rgba(255, 255, 255, 0.84);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
   backdrop-filter: blur(18px) saturate(150%);
-  border-bottom: 1px solid rgba(227, 217, 198, 0.9);
+  border-bottom: 1px solid rgba(220, 229, 238, 0.9);
 }
 
 .site-header__inner {
@@ -512,19 +524,18 @@ button {
   overflow: hidden;
   padding-block: 4.5rem 5rem;
   background:
-    radial-gradient(900px 520px at 88% -10%, rgba(51, 50, 126, 0.16), transparent 62%),
-    radial-gradient(760px 460px at 2% 112%, rgba(194, 161, 74, 0.2), transparent 60%),
-    radial-gradient(620px 420px at 55% 40%, rgba(226, 214, 186, 0.3), transparent 66%),
-    linear-gradient(180deg, rgba(255, 252, 246, 0.96) 0%, rgba(247, 242, 232, 0.92) 55%, rgba(250, 246, 238, 0.55) 100%);
+    radial-gradient(900px 520px at 88% -10%, rgba(23, 105, 170, 0.16), transparent 62%),
+    radial-gradient(760px 460px at 2% 112%, rgba(255, 201, 40, 0.2), transparent 60%),
+    radial-gradient(620px 420px at 55% 40%, rgba(187, 216, 239, 0.3), transparent 66%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(244, 247, 250, 0.92) 55%, rgba(244, 247, 250, 0.55) 100%);
 }
 
 .hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(51, 50, 126, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(51, 50, 126, 0.055) 1px, transparent 1px);
-  background-size: 52px 52px;
+  background-image: var(--pattern-tile);
+  background-size: 104px 104px;
   mask-image: radial-gradient(ellipse 74% 92% at 72% 18%, #000 0%, transparent 74%);
   -webkit-mask-image: radial-gradient(ellipse 74% 92% at 72% 18%, #000 0%, transparent 74%);
   pointer-events: none;
@@ -558,7 +569,7 @@ button {
   height: 8px;
   border-radius: 50%;
   background: var(--teal-500);
-  box-shadow: 0 0 0 4px rgba(51, 50, 126, 0.18);
+  box-shadow: 0 0 0 4px rgba(23, 105, 170, 0.18);
   margin-inline-start: 0.3rem;
 }
 
@@ -581,7 +592,7 @@ button {
   inset-inline: 0;
   bottom: 0.06em;
   height: 0.28em;
-  background: rgba(194, 161, 74, 0.32);
+  background: rgba(255, 201, 40, 0.32);
   border-radius: 999px;
   z-index: -1;
 }
@@ -944,6 +955,7 @@ button {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1.2rem;
   counter-reset: step;
+  overflow: clip;
 }
 
 .step {
@@ -1069,7 +1081,7 @@ button {
 
 .contact-card__aside {
   background: var(--navy-900);
-  color: #f3eee2;
+  color: #ffffff;
   padding: 2.6rem;
   display: flex;
   flex-direction: column;
@@ -1084,7 +1096,7 @@ button {
 }
 
 .contact-card__aside p {
-  color: rgba(243, 238, 226, 0.72);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.92rem;
   line-height: 1.9;
 }
@@ -1139,19 +1151,18 @@ button {
   overflow: hidden;
   padding-block: 3.4rem 3rem;
   background:
-    radial-gradient(720px 340px at 90% -10%, rgba(51, 50, 126, 0.14), transparent 62%),
-    radial-gradient(540px 280px at 4% 120%, rgba(194, 161, 74, 0.18), transparent 60%),
-    linear-gradient(180deg, rgba(255, 252, 246, 0.92), rgba(245, 238, 226, 0.84));
-  border-bottom: 1px solid rgba(211, 197, 172, 0.6);
+    radial-gradient(720px 340px at 90% -10%, rgba(23, 105, 170, 0.14), transparent 62%),
+    radial-gradient(540px 280px at 4% 120%, rgba(255, 201, 40, 0.18), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(237, 242, 247, 0.84));
+  border-bottom: 1px solid rgba(198, 212, 226, 0.6);
 }
 
 .page-hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(51, 50, 126, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(51, 50, 126, 0.045) 1px, transparent 1px);
-  background-size: 54px 54px;
+  background-image: var(--pattern-tile);
+  background-size: 112px 112px;
   mask-image: radial-gradient(ellipse 82% 100% at 86% 0%, #000 0%, transparent 72%);
   -webkit-mask-image: radial-gradient(ellipse 82% 100% at 86% 0%, #000 0%, transparent 72%);
   pointer-events: none;
@@ -1266,7 +1277,7 @@ button {
 
 .select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23756d60' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2356728c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: left 0.9rem center;
   padding-inline-end: 0.95rem;
@@ -1278,7 +1289,7 @@ button {
 .textarea:focus {
   outline: none;
   border-color: var(--teal-600);
-  box-shadow: 0 0 0 4px rgba(51, 50, 126, 0.15);
+  box-shadow: 0 0 0 4px rgba(23, 105, 170, 0.15);
 }
 
 .input[aria-invalid='true'],
@@ -1391,13 +1402,17 @@ button {
 
 .alert--error {
   background: var(--red-50);
-  border-color: #e7c2b9;
+  border-color: #f0c4c8;
   color: var(--red-700);
+}
+
+.alert--error svg {
+  color: var(--red-600);
 }
 
 .alert--success {
   background: var(--green-50);
-  border-color: #bfdccb;
+  border-color: #bfe3cf;
   color: var(--green-700);
 }
 
@@ -1409,12 +1424,12 @@ button {
 
 .alert--warning {
   background: var(--amber-50);
-  border-color: #e7d6a4;
+  border-color: #ffe9a8;
   color: var(--amber-600);
 }
 
 .alert--warning strong {
-  color: #8a5305;
+  color: #8a5a00;
 }
 
 .demo-banner {
@@ -1424,8 +1439,8 @@ button {
   padding: 0.85rem 1.1rem;
   border-radius: var(--radius-sm);
   background: var(--amber-50);
-  border: 1px dashed #e0cda6;
-  color: #7a4a04;
+  border: 1px dashed #f2d98a;
+  color: #8a5a00;
   font-size: 0.86rem;
   line-height: 1.7;
 }
@@ -1441,7 +1456,7 @@ button {
 .skeleton-card {
   height: 340px;
   border-radius: var(--radius);
-  background: linear-gradient(100deg, #ede6d8 20%, #f8f3e9 40%, #ede6d8 60%);
+  background: linear-gradient(100deg, #e7eef6 20%, #f3f7fb 40%, #e7eef6 60%);
   background-size: 220% 100%;
   animation: shimmer 1.4s infinite linear;
   border: 1px solid var(--line);
@@ -1494,14 +1509,14 @@ button {
 .spinner {
   width: 22px;
   height: 22px;
-  border: 3px solid rgba(255, 252, 246, 0.35);
+  border: 3px solid rgba(255, 255, 255, 0.35);
   border-top-color: var(--ivory);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
 
 .spinner--dark {
-  border-color: rgba(51, 50, 126, 0.2);
+  border-color: rgba(23, 105, 170, 0.2);
   border-top-color: var(--teal-700);
 }
 
@@ -1685,7 +1700,7 @@ button {
    -------------------------------------------------------------------------- */
 .site-footer {
   background: var(--navy-900);
-  color: rgba(243, 238, 226, 0.75);
+  color: rgba(255, 255, 255, 0.75);
   padding-block: 4rem 0;
   margin-top: 0;
 }
@@ -1740,7 +1755,7 @@ button {
 }
 
 .footer-links a {
-  color: rgba(243, 238, 226, 0.72);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.88rem;
 }
 
@@ -1775,9 +1790,9 @@ button {
   justify-content: space-between;
   gap: 1rem;
   padding-block: 1.4rem;
-  border-top: 1px solid rgba(255, 252, 246, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.78rem;
-  color: rgba(243, 238, 226, 0.55);
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .footer-bottom .demo-flag {
@@ -1786,8 +1801,8 @@ button {
   gap: 0.4rem;
   padding: 0.25rem 0.7rem;
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(194, 161, 74, 0.45);
-  color: #e7d6a4;
+  border: 1px solid rgba(255, 201, 40, 0.45);
+  color: #ffe9a8;
   font-size: 0.72rem;
 }
 
@@ -1864,17 +1879,17 @@ button {
 }
 
 .callout--warning {
-  border-color: #e0cda6;
+  border-color: #f2d98a;
   background: var(--amber-50);
 }
 
 .callout--warning h2,
 .callout--warning h3 {
-  color: #7a4a04;
+  color: #8a5a00;
 }
 
 .callout--warning p {
-  color: #7a4a04;
+  color: #8a5a00;
 }
 
 .info-grid {
@@ -1957,7 +1972,7 @@ button {
 .skeleton-line {
   height: 64px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(100deg, #ede6d8 20%, #f8f3e9 40%, #ede6d8 60%);
+  background: linear-gradient(100deg, #e7eef6 20%, #f3f7fb 40%, #e7eef6 60%);
   background-size: 220% 100%;
   animation: shimmer 1.4s infinite linear;
   border: 1px solid var(--line);
@@ -1966,13 +1981,13 @@ button {
   padding: 1rem;
   text-align: center;
   background: var(--amber-50);
-  color: #7a4a04;
+  color: #8a5a00;
   font-size: 0.9rem;
 }
 .note-xs {
   margin-top: 0.9rem;
   font-size: 0.78rem;
-  color: rgba(243, 238, 226, 0.55);
+  color: rgba(255, 255, 255, 0.55);
 }
 
 /* --------------------------------------------------------------------------
@@ -2020,12 +2035,12 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
    -------------------------------------------------------------------------- */
 .hero {
   padding-block: 5rem 5.5rem;
-  border-bottom: 1px solid rgba(211, 197, 172, 0.55);
+  border-bottom: 1px solid rgba(198, 212, 226, 0.55);
   background:
-    radial-gradient(940px 520px at 88% -12%, rgba(51, 50, 126, 0.16), transparent 62%),
-    radial-gradient(780px 470px at 2% 112%, rgba(194, 161, 74, 0.2), transparent 60%),
-    radial-gradient(620px 420px at 55% 42%, rgba(226, 214, 186, 0.3), transparent 66%),
-    linear-gradient(180deg, rgba(255, 252, 246, 0.96) 0%, rgba(247, 242, 232, 0.92) 52%, rgba(250, 246, 238, 0.55) 100%);
+    radial-gradient(940px 520px at 88% -12%, rgba(23, 105, 170, 0.16), transparent 62%),
+    radial-gradient(780px 470px at 2% 112%, rgba(255, 201, 40, 0.2), transparent 60%),
+    radial-gradient(620px 420px at 55% 42%, rgba(187, 216, 239, 0.3), transparent 66%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(244, 247, 250, 0.92) 52%, rgba(244, 247, 250, 0.55) 100%);
 }
 
 .hero__bg {
@@ -2048,7 +2063,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   height: 340px;
   inset-inline-start: -120px;
   top: -80px;
-  background: radial-gradient(circle, rgba(51, 50, 126, 0.5), transparent 70%);
+  background: radial-gradient(circle, rgba(23, 105, 170, 0.5), transparent 70%);
 }
 
 .hero__orb--2 {
@@ -2056,7 +2071,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   height: 300px;
   inset-inline-end: -90px;
   bottom: -110px;
-  background: radial-gradient(circle, rgba(194, 161, 74, 0.45), transparent 70%);
+  background: radial-gradient(circle, rgba(255, 201, 40, 0.45), transparent 70%);
   animation-delay: -6s;
 }
 
@@ -2065,7 +2080,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   height: 220px;
   inset-inline-end: 42%;
   top: 8%;
-  background: radial-gradient(circle, rgba(226, 214, 186, 0.55), transparent 70%);
+  background: radial-gradient(circle, rgba(187, 216, 239, 0.55), transparent 70%);
   animation-delay: -12s;
 }
 
@@ -2141,8 +2156,8 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   border-radius: 50%;
   background: radial-gradient(
     closest-side,
-    rgba(51, 50, 126, 0.22),
-    rgba(194, 161, 74, 0.16) 55%,
+    rgba(23, 105, 170, 0.22),
+    rgba(255, 201, 40, 0.16) 55%,
     transparent 76%
   );
   filter: blur(18px);
@@ -2153,8 +2168,8 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   position: relative;
   padding: 0.9rem;
   border-radius: var(--radius-xl);
-  background: linear-gradient(150deg, rgba(255, 252, 246, 0.92), rgba(241, 234, 219, 0.78));
-  border: 1px solid rgba(211, 197, 172, 0.9);
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.92), rgba(237, 242, 247, 0.78));
+  border: 1px solid rgba(198, 212, 226, 0.9);
   box-shadow: var(--shadow-lg);
 }
 
@@ -2172,7 +2187,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   gap: 0.65rem;
   padding: 0.7rem 1rem;
   border-radius: var(--radius);
-  background: rgba(255, 252, 246, 0.94);
+  background: rgba(255, 255, 255, 0.94);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(8px);
@@ -2225,7 +2240,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   padding: 2.6rem 2.4rem;
   border-radius: var(--radius-xl);
   background:
-    radial-gradient(600px 240px at 92% 0%, rgba(194, 161, 74, 0.24), transparent 65%),
+    radial-gradient(600px 240px at 92% 0%, rgba(255, 201, 40, 0.24), transparent 65%),
     linear-gradient(135deg, var(--navy-950), var(--navy-800) 70%);
   color: var(--ivory);
   box-shadow: var(--shadow-lg);
@@ -2239,8 +2254,8 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(255, 252, 246, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 252, 246, 0.05) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 42px 42px;
   mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 78%);
   pointer-events: none;
@@ -2252,7 +2267,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   display: grid;
   gap: 0.2rem;
   padding-inline-start: 1.2rem;
-  border-inline-start: 1px solid rgba(255, 252, 246, 0.14);
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .stats-band__item:first-child {
@@ -2278,7 +2293,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 
 .stats-band__label {
   font-size: 0.82rem;
-  color: rgba(243, 238, 226, 0.72);
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .stats-band__cta {
@@ -2313,8 +2328,8 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 }
 
 .feature__icon {
-  background: linear-gradient(140deg, var(--teal-50), #f7efdc);
-  box-shadow: inset 0 0 0 1px rgba(51, 50, 126, 0.12);
+  background: linear-gradient(140deg, var(--teal-50), #eef6fc);
+  box-shadow: inset 0 0 0 1px rgba(23, 105, 170, 0.12);
 }
 
 .feature:hover .feature__icon {
@@ -2338,7 +2353,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 45%, rgba(4, 25, 37, 0.55));
+  background: linear-gradient(180deg, transparent 45%, rgba(11, 31, 51, 0.55));
   opacity: 0;
   transition: opacity 0.3s var(--ease);
 }
@@ -2354,7 +2369,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   z-index: 2;
   padding: 0.25rem 0.7rem;
   border-radius: var(--radius-pill);
-  background: rgba(255, 252, 246, 0.92);
+  background: rgba(255, 255, 255, 0.92);
   color: var(--teal-800);
   font-size: 0.7rem;
   font-weight: 700;
@@ -2421,7 +2436,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   inset-inline-start: 0;
   margin: 0;
   background: linear-gradient(140deg, var(--navy-900), var(--teal-800));
-  box-shadow: 0 8px 18px rgba(27, 31, 59, 0.18);
+  box-shadow: 0 8px 18px rgba(16, 42, 67, 0.18);
 }
 
 .step::after {
@@ -2519,7 +2534,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: linear-gradient(140deg, var(--teal-100), #f3e8c8);
+  background: linear-gradient(140deg, var(--teal-100), #fff3cc);
   color: var(--teal-800);
   font-weight: 800;
   font-size: 0.95rem;
@@ -2556,7 +2571,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   padding: 1.7rem;
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  background: linear-gradient(160deg, var(--surface), #f7f0e2);
+  background: linear-gradient(160deg, var(--surface), #eef6fc);
   transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease),
     border-color 0.25s var(--ease);
 }
@@ -2607,8 +2622,8 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   padding: 3rem 3.2rem;
   border-radius: var(--radius-xl);
   background:
-    radial-gradient(520px 220px at 88% 20%, rgba(194, 161, 74, 0.3), transparent 65%),
-    linear-gradient(135deg, var(--navy-950), #2a2c5e 62%, var(--teal-800));
+    radial-gradient(520px 220px at 88% 20%, rgba(255, 201, 40, 0.3), transparent 65%),
+    linear-gradient(135deg, var(--navy-950), #163a5c 62%, var(--teal-800));
   color: var(--ivory);
   box-shadow: var(--shadow-lg);
 }
@@ -2617,7 +2632,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 252, 246, 0.14) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px);
   background-size: 26px 26px;
   mask-image: linear-gradient(90deg, #000, transparent 70%);
   opacity: 0.5;
@@ -2633,7 +2648,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 .cta-band p {
   position: relative;
   margin-top: 0.6rem;
-  color: rgba(243, 238, 226, 0.75);
+  color: rgba(255, 255, 255, 0.75);
   font-size: 0.95rem;
   line-height: 1.85;
   max-width: 38rem;
@@ -2648,30 +2663,30 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 
 .cta-band .btn-primary {
   --btn-bg: var(--gold-500);
-  --btn-color: #3a2600;
-  box-shadow: 0 12px 28px rgba(194, 161, 74, 0.35);
+  --btn-color: #102a43;
+  box-shadow: 0 12px 28px rgba(255, 201, 40, 0.35);
 }
 
 .cta-band .btn-primary:hover {
-  --btn-bg: #d8b85e;
+  --btn-bg: #ffd75e;
 }
 
 .cta-band .btn-outline {
   --btn-color: var(--ivory);
-  --btn-border: rgba(255, 252, 246, 0.35);
+  --btn-border: rgba(255, 255, 255, 0.35);
 }
 
 .cta-band .btn-outline:hover {
   --btn-color: var(--ivory);
   --btn-border: var(--ivory);
-  background: rgba(255, 252, 246, 0.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* --------------------------------------------------------------------------
    Header states & back-to-top
    -------------------------------------------------------------------------- */
 .site-header.is-scrolled {
-  box-shadow: 0 10px 30px rgba(27, 31, 59, 0.1);
+  box-shadow: 0 10px 30px rgba(16, 42, 67, 0.1);
   border-bottom-color: transparent;
 }
 
@@ -2687,7 +2702,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   height: 46px;
   border-radius: 50%;
   border: 1px solid var(--line);
-  background: rgba(255, 252, 246, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   color: var(--ink-700);
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(8px);
@@ -2758,7 +2773,9 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   }
 }
 
-@media (max-width: 900px) {
+/* Seven navigation links plus the brand and header actions need roughly
+   1020px; below that the menu collapses so the header never overflows. */
+@media (max-width: 1100px) {
   .site-nav {
     position: absolute;
     top: 100%;
@@ -2794,7 +2811,9 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   .header-actions .admin-link {
     display: none;
   }
+}
 
+@media (max-width: 1024px) {
   .split,
   .contact-card,
   .apply-layout {
@@ -2946,7 +2965,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
     border-inline-start: 0;
     padding-inline-start: 0;
     padding-block-end: 1rem;
-    border-bottom: 1px solid rgba(255, 252, 246, 0.12);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   }
 
   .stats-band__item:last-of-type {
@@ -2983,17 +3002,17 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 .section--news {
   background: linear-gradient(
     180deg,
-    rgba(247, 242, 232, 0) 0%,
-    rgba(241, 234, 219, 0.85) 50%,
-    rgba(247, 242, 232, 0) 100%
+    rgba(244, 247, 250, 0) 0%,
+    rgba(237, 242, 247, 0.85) 50%,
+    rgba(244, 247, 250, 0) 100%
   );
 }
 
 .page-hero--news {
   background:
-    radial-gradient(760px 360px at 90% -10%, rgba(51, 50, 126, 0.16), transparent 64%),
-    radial-gradient(540px 280px at 4% 120%, rgba(194, 161, 74, 0.2), transparent 60%),
-    linear-gradient(180deg, rgba(255, 252, 246, 0.94), rgba(245, 238, 226, 0.86));
+    radial-gradient(760px 360px at 90% -10%, rgba(23, 105, 170, 0.16), transparent 64%),
+    radial-gradient(540px 280px at 4% 120%, rgba(255, 201, 40, 0.2), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(237, 242, 247, 0.86));
 }
 
 .news-toolbar {
@@ -3039,7 +3058,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   background: linear-gradient(135deg, var(--teal-700), var(--teal-500));
   border-color: transparent;
   color: var(--ivory);
-  box-shadow: 0 12px 26px -14px rgba(51, 50, 126, 0.45);
+  box-shadow: 0 12px 26px -14px rgba(23, 105, 170, 0.45);
 }
 
 .news-grid {
@@ -3088,13 +3107,13 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   position: absolute;
   inset-block-start: 0.85rem;
   inset-inline-start: 0.85rem;
-  background: linear-gradient(135deg, var(--gold-500), #d8b85e);
-  color: #3a2600;
+  background: linear-gradient(135deg, var(--gold-500), #ffd75e);
+  color: #102a43;
   font-size: 0.72rem;
   font-weight: 800;
   padding: 0.3rem 0.7rem;
   border-radius: var(--radius-pill);
-  box-shadow: 0 10px 20px -12px rgba(58, 38, 0, 0.35);
+  box-shadow: 0 10px 20px -12px rgba(16, 42, 67, 0.35);
 }
 
 .news-card__body {
@@ -3296,8 +3315,8 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 
 .article-meta__pill--gold {
   background: var(--gold-100);
-  border-color: #e7d6a4;
-  color: #7a4d00;
+  border-color: #ffe9a8;
+  color: #102a43;
 }
 
 .article-meta__item {
@@ -3359,5 +3378,418 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 
   .news-filters {
     gap: 0.45rem;
+  }
+}
+
+/* ==========================================================================
+   Premium interaction layer
+   Shared motion tokens, focus states, hero choreography and micro-interactions.
+   Everything here animates transform/opacity only and is disabled by the
+   prefers-reduced-motion block above.
+   ========================================================================== */
+:root {
+  --motion-fast: 160ms;
+  --motion-base: 260ms;
+  --motion-slow: 560ms;
+  --motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Keep anchored sections clear of the sticky header. */
+section[id],
+[id][data-scroll-anchor],
+.scroll-anchor {
+  scroll-margin-top: 6.5rem;
+}
+
+::selection {
+  background: rgba(23, 105, 170, 0.18);
+  color: var(--ink-900);
+}
+
+h1,
+h2,
+h3,
+.section-title,
+.hero__title,
+.page-hero h1 {
+  text-wrap: balance;
+}
+
+p,
+.section-lead,
+.hero__subtitle {
+  text-wrap: pretty;
+}
+
+/* Visible, high-contrast keyboard focus for every interactive element. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid rgba(23, 105, 170, 0.45);
+  outline-offset: 2px;
+}
+
+.site-header :where(a, button):focus-visible,
+.hero :where(a, button):focus-visible {
+  outline-color: rgba(255, 201, 40, 0.75);
+}
+
+/* --------------------------------------------------------------------------
+   Navigation underline
+   -------------------------------------------------------------------------- */
+@media (min-width: 1101px) and (hover: hover) {
+  .site-nav__link {
+    position: relative;
+    transition: color var(--motion-base) var(--motion-ease),
+      background-color var(--motion-base) var(--motion-ease);
+  }
+
+  .site-nav__link::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0.85rem;
+    bottom: 0.18rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--teal-600);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform var(--motion-base) var(--motion-ease-out);
+  }
+
+  .site-nav__link:hover::after,
+  .site-nav__link[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Buttons: press feedback and icon nudge
+   -------------------------------------------------------------------------- */
+.btn {
+  will-change: transform;
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.975);
+}
+
+.btn svg {
+  transition: transform var(--motion-base) var(--motion-ease-out);
+}
+
+.btn:hover svg {
+  transform: translateX(-2px);
+}
+
+html[dir='ltr'] .btn:hover svg {
+  transform: translateX(2px);
+}
+
+.btn-ghost:hover svg,
+.btn-outline:hover svg {
+  transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   Hero choreography
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .hero__content > * {
+    animation: hero-rise var(--motion-slow) var(--motion-ease-out) both;
+  }
+
+  .hero__content > *:nth-child(2) { animation-delay: 0.06s; }
+  .hero__content > *:nth-child(3) { animation-delay: 0.13s; }
+  .hero__content > *:nth-child(4) { animation-delay: 0.2s; }
+  .hero__content > *:nth-child(5) { animation-delay: 0.27s; }
+  .hero__content > *:nth-child(6) { animation-delay: 0.34s; }
+
+  .hero__media {
+    animation: hero-media-in 0.9s var(--motion-ease-out) 0.16s both;
+  }
+
+  .stats-band.reveal.is-visible .stats-band__item {
+    animation: hero-rise var(--motion-slow) var(--motion-ease-out) both;
+  }
+
+  .stats-band.reveal.is-visible .stats-band__item:nth-child(2) { animation-delay: 0.08s; }
+  .stats-band.reveal.is-visible .stats-band__item:nth-child(3) { animation-delay: 0.16s; }
+  .stats-band.reveal.is-visible .stats-band__item:nth-child(4) { animation-delay: 0.24s; }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-media-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Pointer parallax: ui.js writes --px/--py in the -1..1 range on `.hero`.
+   `translate` composes with the existing transform keyframes. */
+.hero__media-frame,
+.hero__float,
+.hero__orb {
+  translate: calc(var(--px, 0) * 12px) calc(var(--py, 0) * 12px);
+  transition: translate 0.55s var(--motion-ease-out);
+}
+
+.hero__orb--1 { translate: calc(var(--px, 0) * 22px) calc(var(--py, 0) * 22px); }
+.hero__orb--2 { translate: calc(var(--px, 0) * -18px) calc(var(--py, 0) * -18px); }
+.hero__orb--3 { translate: calc(var(--px, 0) * 14px) calc(var(--py, 0) * -14px); }
+
+/* --------------------------------------------------------------------------
+   Cards and surfaces
+   -------------------------------------------------------------------------- */
+.card,
+.department-card,
+.news-card,
+.feature,
+.quote-card {
+  transition: transform var(--motion-base) var(--motion-ease),
+    box-shadow var(--motion-base) var(--motion-ease),
+    border-color var(--motion-base) var(--motion-ease);
+}
+
+.feature:hover .feature__icon,
+.department-card:hover .department-card__icon {
+  transform: translateY(-2px) scale(1.04);
+}
+
+.feature__icon,
+.department-card__icon {
+  transition: transform var(--motion-base) var(--motion-ease-out),
+    background-color var(--motion-base) var(--motion-ease),
+    color var(--motion-base) var(--motion-ease);
+}
+
+.department-card:hover .card-link svg,
+.card-link:hover svg {
+  transform: translateX(-3px);
+}
+
+.card-link svg {
+  transition: transform var(--motion-base) var(--motion-ease-out);
+}
+
+/* Stat panel items get a quiet highlight on hover. */
+.stat-panel__item {
+  transition: background-color var(--motion-base) var(--motion-ease),
+    transform var(--motion-base) var(--motion-ease);
+}
+
+.stat-panel__item:hover {
+  background: rgba(23, 105, 170, 0.06);
+}
+
+/* --------------------------------------------------------------------------
+   Section rhythm
+   -------------------------------------------------------------------------- */
+.section-head .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-head .eyebrow::before {
+  content: '';
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+/* Reserve intrinsic space so lazy images never shift the layout. */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Contact page: single-panel variant of the split contact card. */
+.contact-card--stack {
+  grid-template-columns: 1fr;
+}
+
+.contact-card--stack .contact-card__main {
+  padding: 2.2rem;
+}
+
+/* --------------------------------------------------------------------------
+   Small-screen guard: keep animation budget light
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px), (hover: none) {
+  .hero__media-frame,
+  .hero__float,
+  .hero__orb {
+    translate: none;
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__content > *,
+  .hero__media,
+  .stats-band.reveal.is-visible .stats-band__item {
+    animation: none;
+  }
+
+  .hero__media-frame,
+  .hero__float,
+  .hero__orb {
+    translate: none;
+    transition: none;
+  }
+}
+/* --------------------------------------------------------------------------
+   Multi-step application form
+   The stepper only appears once apply.js adds `.is-stepper`, so the form stays
+   a single visible page when scripts are unavailable.
+   -------------------------------------------------------------------------- */
+.form-steps {
+  display: none;
+  gap: 0;
+  margin: 0 0 1.9rem;
+  padding: 0;
+  list-style: none;
+}
+
+.is-stepper .form-steps {
+  display: flex;
+}
+
+.form-steps__item {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.55rem;
+  padding-inline-end: 1.1rem;
+  color: var(--ink-400);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.form-steps__item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  inset-inline-end: 0.15rem;
+  top: 50%;
+  width: 0.8rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--line-strong);
+  transform: translateY(-50%);
+}
+
+.form-steps__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink-500);
+  font-size: 0.85rem;
+  font-weight: 800;
+  transition: background-color var(--motion-base) var(--motion-ease),
+    border-color var(--motion-base) var(--motion-ease),
+    color var(--motion-base) var(--motion-ease),
+    box-shadow var(--motion-base) var(--motion-ease);
+}
+
+.form-steps__item.is-active {
+  color: var(--ink-900);
+}
+
+.form-steps__item.is-active .form-steps__num {
+  border-color: var(--teal-700);
+  background: var(--teal-700);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(23, 105, 170, 0.28);
+}
+
+.form-steps__item.is-complete {
+  color: var(--teal-800);
+}
+
+.form-steps__item.is-complete .form-steps__num {
+  border-color: var(--teal-200);
+  background: var(--teal-50);
+  color: var(--teal-800);
+}
+
+.form-steps__item.is-complete:not(:last-child)::after {
+  background: var(--teal-500);
+}
+
+.form-step {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.form-step[hidden] {
+  display: none;
+}
+
+.form-step legend {
+  width: 100%;
+  padding: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .form-step:not([hidden]) {
+    animation: step-in var(--motion-base) var(--motion-ease-out) both;
+  }
+}
+
+@keyframes step-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .form-steps__item {
+    justify-content: center;
+    padding-inline-end: 0.5rem;
+  }
+
+  .form-steps__label {
+    display: none;
+  }
+
+  .form-steps__item:not(:last-child)::after {
+    inset-inline-end: 0;
+    width: 0.5rem;
   }
 }

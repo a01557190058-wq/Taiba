@@ -3,7 +3,7 @@
  * editable school content that appears in the header/footer/contact blocks.
  */
 import { api } from './api.js';
-import { qs, qsa, initNav, initMotion, setYear } from './ui.js';
+import { qsa, initNav, initMotion, setYear } from './ui.js';
 
 initNav();
 initMotion();
@@ -18,18 +18,18 @@ export const schoolContentPromise = api('/api/school-content')
       if (key && typeof content[key] === 'string') node.textContent = content[key];
     });
 
-    const phoneNode = qs('[data-contact="phone"]');
-    if (phoneNode && content.contact_phone) {
+    qsa('[data-contact="phone"]').forEach((phoneNode) => {
+      if (!content.contact_phone) return;
       phoneNode.textContent = content.contact_phone;
       const digits = content.contact_phone.replace(/[^\d+]/g, '');
       if (digits.length >= 7) phoneNode.setAttribute('href', `tel:${digits}`);
-    }
+    });
 
-    const emailNode = qs('[data-contact="email"]');
-    if (emailNode && content.contact_email) {
+    qsa('[data-contact="email"]').forEach((emailNode) => {
+      if (!content.contact_email) return;
       emailNode.textContent = content.contact_email;
       emailNode.setAttribute('href', `mailto:${content.contact_email}`);
-    }
+    });
 
     return data;
   })

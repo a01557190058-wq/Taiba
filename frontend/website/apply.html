@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>نموذج التقديم | مدرسة طيبة تكنولوجي</title>
   <meta name="description" content="املأ نموذج التقديم في مدرسة طيبة تكنولوجي واختر القسم المناسب. إرسال الطلب لا يعني القبول النهائي.">
-  <meta name="theme-color" content="#1B1F3B">
+  <meta name="theme-color" content="#102A43">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/assets/fonts/cairo-arabic.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/css/website.css">
@@ -30,7 +30,7 @@
           <li><a class="site-nav__link" href="/student-life">الحياة الطلابية</a></li>
           <li><a class="site-nav__link" href="/news">الأخبار</a></li>
           <li><a class="site-nav__link" href="/admission">القبول</a></li>
-          <li><a class="site-nav__link" href="/#contact">تواصل معنا</a></li>
+          <li><a class="site-nav__link" href="/contact">تواصل معنا</a></li>
         </ul>
       </nav>
       <div class="header-actions">
@@ -68,66 +68,90 @@
             <div class="alert" id="form-alert" role="alert" hidden></div>
 
             <form id="application-form" novalidate>
-              <div class="form-grid">
-                <h2 class="form-section-title">بيانات المتقدم</h2>
+              <ol class="form-steps" data-form-steps aria-label="خطوات نموذج التقديم">
+                <li class="form-steps__item is-active" data-step-indicator="1" aria-current="step">
+                  <span class="form-steps__num">1</span>
+                  <span class="form-steps__label">بيانات المتقدم</span>
+                </li>
+                <li class="form-steps__item" data-step-indicator="2">
+                  <span class="form-steps__num">2</span>
+                  <span class="form-steps__label">اختيار القسم</span>
+                </li>
+                <li class="form-steps__item" data-step-indicator="3">
+                  <span class="form-steps__num">3</span>
+                  <span class="form-steps__label">المراجعة والإرسال</span>
+                </li>
+              </ol>
 
-                <div class="form-field">
-                  <label class="form-label" for="full_name">الاسم الكامل <span class="req" aria-hidden="true">*</span></label>
-                  <input class="input" id="full_name" name="full_name" type="text" autocomplete="name" maxlength="100" required aria-describedby="error-full_name">
-                  <p class="field-error" id="error-full_name"></p>
+              <fieldset class="form-step" data-step="1">
+                <legend class="form-section-title">بيانات المتقدم</legend>
+                <div class="form-grid">
+                  <div class="form-field">
+                    <label class="form-label" for="full_name">الاسم الكامل <span class="req" aria-hidden="true">*</span></label>
+                    <input class="input" id="full_name" name="full_name" type="text" autocomplete="name" maxlength="100" required aria-describedby="error-full_name">
+                    <p class="field-error" id="error-full_name"></p>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="form-label" for="phone">رقم الهاتف <span class="req" aria-hidden="true">*</span></label>
+                    <input class="input" id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" required dir="ltr" aria-describedby="hint-phone error-phone">
+                    <p class="form-hint" id="hint-phone">أدخل 7 إلى 15 رقمًا، ويمكن استخدام رمز الدولة.</p>
+                    <p class="field-error" id="error-phone"></p>
+                  </div>
+
+                  <div class="form-field form-field--full">
+                    <label class="form-label" for="email">البريد الإلكتروني <span class="text-muted text-small">(اختياري)</span></label>
+                    <input class="input" id="email" name="email" type="email" autocomplete="email" maxlength="120" dir="ltr" aria-describedby="error-email">
+                    <p class="field-error" id="error-email"></p>
+                  </div>
                 </div>
+              </fieldset>
 
-                <div class="form-field">
-                  <label class="form-label" for="phone">رقم الهاتف <span class="req" aria-hidden="true">*</span></label>
-                  <input class="input" id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" required dir="ltr" aria-describedby="hint-phone error-phone">
-                  <p class="form-hint" id="hint-phone">أدخل 7 إلى 15 رقمًا، ويمكن استخدام رمز الدولة.</p>
-                  <p class="field-error" id="error-phone"></p>
+              <fieldset class="form-step" data-step="2">
+                <legend class="form-section-title">اختيار القسم</legend>
+                <div class="form-grid">
+                  <div class="form-field form-field--full">
+                    <label class="form-label" for="department_id">القسم المطلوب <span class="req" aria-hidden="true">*</span></label>
+                    <select class="select" id="department_id" name="department_id" required aria-describedby="hint-department error-department_id">
+                      <option value="">جارٍ تحميل الأقسام…</option>
+                    </select>
+                    <p class="form-hint" id="hint-department">تُعرض هنا الأقسام المنشورة والمتاحة للتقديم فقط.</p>
+                    <p class="field-error" id="error-department_id"></p>
+                  </div>
+
+                  <div class="form-field form-field--full">
+                    <label class="form-label" for="previous_education">المؤهل أو المرحلة الدراسية السابقة <span class="text-muted text-small">(اختياري)</span></label>
+                    <input class="input" id="previous_education" name="previous_education" type="text" maxlength="150" aria-describedby="error-previous_education">
+                    <p class="field-error" id="error-previous_education"></p>
+                  </div>
                 </div>
+              </fieldset>
 
-                <div class="form-field form-field--full">
-                  <label class="form-label" for="email">البريد الإلكتروني <span class="text-muted text-small">(اختياري)</span></label>
-                  <input class="input" id="email" name="email" type="email" autocomplete="email" maxlength="120" dir="ltr" aria-describedby="error-email">
-                  <p class="field-error" id="error-email"></p>
+              <fieldset class="form-step" data-step="3">
+                <legend class="form-section-title">معلومات إضافية</legend>
+                <div class="form-grid">
+                  <div class="form-field form-field--full">
+                    <label class="form-label" for="additional_notes">ملاحظات إضافية <span class="text-muted text-small">(اختياري)</span></label>
+                    <textarea class="textarea" id="additional_notes" name="additional_notes" maxlength="1000" aria-describedby="error-additional_notes"></textarea>
+                    <p class="field-error" id="error-additional_notes"></p>
+                  </div>
+
+                  <div class="form-field form-field--full">
+                    <label class="checkbox" for="consent">
+                      <input type="checkbox" id="consent" name="consent" required aria-describedby="error-consent">
+                      <span>
+                        أوافق على معالجة البيانات المقدمة لمراجعة طلب التقديم والتواصل معي بخصوصه،
+                        وأفهم أن إرسال الطلب لا يعني القبول النهائي.
+                      </span>
+                    </label>
+                    <p class="field-error" id="error-consent"></p>
+                  </div>
                 </div>
-
-                <h2 class="form-section-title">اختيار القسم</h2>
-
-                <div class="form-field form-field--full">
-                  <label class="form-label" for="department_id">القسم المطلوب <span class="req" aria-hidden="true">*</span></label>
-                  <select class="select" id="department_id" name="department_id" required aria-describedby="hint-department error-department_id">
-                    <option value="">جارٍ تحميل الأقسام…</option>
-                  </select>
-                  <p class="form-hint" id="hint-department">تُعرض هنا الأقسام المنشورة والمتاحة للتقديم فقط.</p>
-                  <p class="field-error" id="error-department_id"></p>
-                </div>
-
-                <h2 class="form-section-title">معلومات إضافية</h2>
-
-                <div class="form-field form-field--full">
-                  <label class="form-label" for="previous_education">المؤهل أو المرحلة الدراسية السابقة <span class="text-muted text-small">(اختياري)</span></label>
-                  <input class="input" id="previous_education" name="previous_education" type="text" maxlength="150" aria-describedby="error-previous_education">
-                  <p class="field-error" id="error-previous_education"></p>
-                </div>
-
-                <div class="form-field form-field--full">
-                  <label class="form-label" for="additional_notes">ملاحظات إضافية <span class="text-muted text-small">(اختياري)</span></label>
-                  <textarea class="textarea" id="additional_notes" name="additional_notes" maxlength="1000" aria-describedby="error-additional_notes"></textarea>
-                  <p class="field-error" id="error-additional_notes"></p>
-                </div>
-
-                <div class="form-field form-field--full">
-                  <label class="checkbox" for="consent">
-                    <input type="checkbox" id="consent" name="consent" required aria-describedby="error-consent">
-                    <span>
-                      أوافق على معالجة البيانات المقدمة لمراجعة طلب التقديم والتواصل معي بخصوصه،
-                      وأفهم أن إرسال الطلب لا يعني القبول النهائي.
-                    </span>
-                  </label>
-                  <p class="field-error" id="error-consent"></p>
-                </div>
-              </div>
+              </fieldset>
 
               <div class="form-actions">
+                <button class="btn btn-outline" type="button" id="prev-step" hidden>السابق</button>
+                <button class="btn btn-primary" type="button" id="next-step" hidden>التالي</button>
                 <button class="btn btn-primary" type="submit" id="submit-button">
                   <span id="submit-label">إرسال الطلب</span>
                 </button>
@@ -207,6 +231,7 @@
             <li><a href="/news">الأخبار</a></li>
             <li><a href="/admission">القبول والتقديم</a></li>
             <li><a href="/apply">نموذج التقديم</a></li>
+            <li><a href="/contact">تواصل معنا</a></li>
           </ul>
         </div>
         <div>

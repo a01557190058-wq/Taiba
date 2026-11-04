@@ -18,6 +18,18 @@ const departmentSelect = qs('#department_id');
 const referenceValue = qs('#reference-value');
 const successSummary = qs('#success-summary');
 const copyButton = qs('#copy-reference');
+const nextButton = qs('#next-step');
+const prevButton = qs('#prev-step');
+const stepNodes = form ? Array.from(form.querySelectorAll('[data-step]')) : [];
+const stepIndicators = Array.from(document.querySelectorAll('[data-step-indicator]'));
+
+const STEP_FIELDS = {
+  1: ['full_name', 'phone', 'email'],
+  2: ['department_id', 'previous_education'],
+  3: ['additional_notes', 'consent'],
+};
+
+let currentStep = 1;
 
 const ARABIC_DIGITS = {
   '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4', '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9',
@@ -101,6 +113,73 @@ function validateAll() {
     if (message) errors.push({ name, message });
   }
   return errors;
+}
+
+/** Validate only the fields that belong to the given wizard step. */
+function validateStep(step) {
+  const names = STEP_FIELDS[step] || [];
+  const errors = [];
+  for (const name of names) {
+    const message = validateField(name);
+    if (message) errors.push({ name, message });
+  }
+  return errors;
+}
+
+function focusField(name) {
+  const field = getField(name);
+  if (field && typeof field.focus === 'function') {
+    field.focus();
+    if (typeof field.scrollIntoView === 'function') {
+      field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+}
+
+function stepForField(name) {
+  return Object.keys(STEP_FIELDS).find((step) => STEP_FIELDS[step].includes(name)) || '1';
+}
+
+/** Show one wizard step and sync the progress indicators. */
+function showStep(step, moveFocus = true) {
+  if (!stepNodes.length) return;
+  const total = stepNodes.length;
+  currentStep = Math.min(Math.max(Number(step) || 1, 1), total);
+
+  stepNodes.forEach((node) => {
+    node.hidden = Number(node.dataset.step) !== currentStep;
+  });
+
+  stepIndicators.forEach((node) => {
+    const value = Number(node.dataset.stepIndicator);
+    node.classList.toggle('is-active', value === currentStep);
+    node.classList.toggle('is-complete', value < currentStep);
+    if (value === currentStep) node.setAttribute('aria-current', 'step');
+    else node.removeAttribute('aria-current');
+  });
+
+  if (prevButton) prevButton.hidden = currentStep === 1;
+  if (nextButton) nextButton.hidden = currentStep === total;
+  if (submitButton) submitButton.hidden = currentStep !== total;
+
+  if (!moveFocus) return;
+  const activeStep = stepNodes[currentStep - 1];
+  const firstField = activeStep ? activeStep.querySelector('input, select, textarea') : null;
+  if (firstField) firstField.focus({ preventScroll: true });
+}
+
+function goNext() {
+  const errors = validateStep(currentStep);
+  if (errors.length) {
+    setAlert(alertBox, {
+      type: 'error',
+      message: 'يرجى تصحيح الحقول المعلّمة قبل الانتقال إلى الخطوة التالية.',
+    });
+    focusField(errors[0].name);
+    return;
+  }
+  setAlert(alertBox, {});
+  showStep(currentStep + 1);
 }
 
 function setBusy(isBusy) {
@@ -194,10 +273,15 @@ async function handleSubmit(event) {
   event.preventDefault();
   setAlert(alertBox, {});
 
+  if (stepNodes.length > 1 && currentStep < stepNodes.length) {
+    goNext();
+    return;
+  }
+
   const errors = validateAll();
   if (errors.length) {
-    const first = getField(errors[0].name);
-    if (first && typeof first.focus === 'function') first.focus();
+    if (stepNodes.length > 1) showStep(stepForField(errors[0].name));
+    focusField(errors[0].name);
     setAlert(alertBox, {
       type: 'error',
       message: 'يرجى تصحيح الحقول المعلّمة قبل إرسال الطلب.',
@@ -222,6 +306,11 @@ async function handleSubmit(event) {
   } catch (error) {
     if (error instanceof ApiError) {
       applyServerFieldErrors(error.fields);
+      const firstErrorName = error.fields && Object.keys(error.fields)[0];
+      if (firstErrorName) {
+        if (stepNodes.length > 1) showStep(stepForField(firstErrorName), false);
+        focusField(firstErrorName);
+      }
       if (error.code === 'DUPLICATE_APPLICATION') {
         setAlert(alertBox, { type: 'warning', message: error.message });
       } else {
@@ -244,6 +333,18 @@ async function handleSubmit(event) {
 // ---------------------------------------------------------------------------
 if (form) {
   form.addEventListener('submit', handleSubmit);
+
+  if (stepNodes.length > 1) {
+    form.classList.add('is-stepper');
+    showStep(1, false);
+    if (nextButton) nextButton.addEventListener('click', goNext);
+    if (prevButton) {
+      prevButton.addEventListener('click', () => {
+        setAlert(alertBox, {});
+        showStep(currentStep - 1);
+      });
+    }
+  }
 
   const names = Object.keys(validators);
   for (const name of names) {

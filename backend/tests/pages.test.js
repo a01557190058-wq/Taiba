@@ -16,6 +16,7 @@ const PUBLIC_PAGES = [
   ['/admission', 'القبول والتقديم'],
   ['/apply', 'نموذج التقديم'],
   ['/news', 'أخبار المدرسة'],
+  ['/contact', 'تواصل معنا'],
 ];
 
 test('public pages are served as HTML with their expected heading', async () => {
@@ -39,6 +40,13 @@ test('the news page is linked from the home page navigation and footer', async (
   assert.equal(res.status, 200);
   const links = res.text.match(/href="\/news"/g) || [];
   assert.ok(links.length >= 2, 'expected header and footer links to /news');
+});
+
+test('the contact page is linked from the home page navigation and footer', async () => {
+  const res = await request(app).get('/');
+  assert.equal(res.status, 200);
+  const links = res.text.match(/href="\/contact"/g) || [];
+  assert.ok(links.length >= 2, 'expected header and footer links to /contact');
 });
 
 test('unknown public routes render the custom 404 page', async () => {

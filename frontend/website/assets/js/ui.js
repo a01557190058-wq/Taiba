@@ -330,10 +330,47 @@ function initStaticCounters() {
   nodes.forEach((node) => observer.observe(node));
 }
 
+/** Pointer-driven hero parallax. Desktop pointers only, disabled with reduced motion. */
+function initHeroParallax() {
+  const hero = qs('.hero');
+  if (!hero) return;
+  if (REDUCED_MOTION()) return;
+  if (typeof window.matchMedia !== 'function') return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  let frame = 0;
+  let nextX = 0;
+  let nextY = 0;
+
+  const apply = () => {
+    frame = 0;
+    hero.style.setProperty('--px', nextX.toFixed(3));
+    hero.style.setProperty('--py', nextY.toFixed(3));
+  };
+
+  hero.addEventListener('pointermove', (event) => {
+    const rect = hero.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    nextX = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+    nextY = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+    if (!frame) frame = requestAnimationFrame(apply);
+  }, { passive: true });
+
+  hero.addEventListener('pointerleave', () => {
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
+    nextX = 0;
+    nextY = 0;
+    hero.style.setProperty('--px', '0');
+    hero.style.setProperty('--py', '0');
+  });
+}
+
 /** Header elevation, back-to-top button and counters shared by all pages. */
 export function initMotion() {
   initReveal();
   initStaticCounters();
+  initHeroParallax();
 
   const header = qs('.site-header');
   if (header) {

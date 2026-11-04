@@ -132,6 +132,7 @@ function createApp() {
   app.get('/departments/:slug', sendPage('department.html'));
   app.get('/admission', sendPage('admission.html'));
   app.get('/apply', sendPage('apply.html'));
+  app.get('/contact', sendPage('contact.html'));
 
   app.get(['/admin', '/admin/', '/admin/login'], sendAdminPage('login.html'));
   app.get('/admin/dashboard', sendAdminPage('dashboard.html'));
