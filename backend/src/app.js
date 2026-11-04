@@ -126,7 +126,6 @@ function createApp() {
   app.get('/', sendPage('index.html'));
   app.get('/about', sendPage('about.html'));
   app.get('/departments', sendPage('departments.html'));
-  app.get('/student-life', sendPage('student-life.html'));
   app.get('/news', sendPage('news.html'));
   app.get('/news/:slug', sendPage('news-article.html'));
   app.get('/departments/:slug', sendPage('department.html'));
