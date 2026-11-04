@@ -5,7 +5,7 @@
       <stop offset="1" stop-color="#0369a1" />
     </linearGradient>
     <pattern id="dots" width="30" height="30" patternUnits="userSpaceOnUse">
-      <circle cx="2" cy="2" r="1.7" fill="#ffffff" opacity="0.13" />
+      <circle cx="2" cy="2" r="1.7" fill="#FFFCF6" opacity="0.13" />
     </pattern>
     <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
       <stop offset="0" stop-color="#7dd3fc" stop-opacity="0.35" />
@@ -14,7 +14,7 @@
   </defs>
   <rect width="640" height="420" fill="url(#bg)" />
   <rect width="640" height="420" fill="url(#dots)" />
-  <circle cx="470" cy="90" r="170" fill="#ffffff" opacity="0.05" />
+  <circle cx="470" cy="90" r="170" fill="#FFFCF6" opacity="0.05" />
   <circle cx="110" cy="380" r="140" fill="#7dd3fc" opacity="0.12" />
   <circle cx="320" cy="212" r="168" fill="url(#glow)" />
   <g transform="translate(320 212)" fill="none" stroke="#f4fdfc" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">

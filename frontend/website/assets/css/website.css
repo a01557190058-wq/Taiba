@@ -37,46 +37,49 @@
 }
 
 :root {
-  --ink-900: #141a33;
-  --ink-800: #1b2447;
-  --ink-700: #2a3560;
-  --ink-600: #4a5680;
-  --ink-500: #6b7699;
-  --ink-400: #9aa3bd;
+  --ink-900: #1e1b2e;
+  --ink-800: #2a2540;
+  --ink-700: #3a3355;
+  --ink-600: #554d6b;
+  --ink-500: #6b6478;
+  --ink-400: #756d60;
 
-  --teal-800: #312e81;
-  --teal-700: #4338ca;
-  --teal-600: #5b4bd6;
-  --teal-500: #7c6cf0;
-  --teal-200: #c9c2f8;
-  --teal-100: #e3dffc;
-  --teal-50: #f3f1ff;
+  --teal-800: #1b1f3b;
+  --teal-700: #33327e;
+  --teal-600: #4a489b;
+  --teal-500: #6a67c4;
+  --teal-200: #cfc9ea;
+  --teal-100: #e3dff4;
+  --teal-50: #f1eefa;
 
-  --navy-950: #0a0f2c;
-  --navy-900: #111838;
-  --navy-800: #1a2350;
+  --navy-950: #12152b;
+  --navy-900: #1b1f3b;
+  --navy-800: #262b4e;
 
-  --gold-600: #c98a12;
-  --gold-500: #f2b544;
-  --gold-100: #fdf0d4;
+  --gold-600: #a5842f;
+  --gold-500: #c2a14a;
+  --gold-100: #f3e8c8;
 
-  --amber-600: #b9720a;
-  --amber-100: #fdf0d5;
-  --amber-50: #fffaf0;
+  --amber-600: #8a5e0f;
+  --amber-100: #f5e4bf;
+  --amber-50: #fcf6e8;
 
-  --red-700: #b42318;
-  --red-100: #fee4e2;
-  --red-50: #fff5f4;
+  --red-700: #a32a22;
+  --red-100: #fbe3de;
+  --red-50: #fdf4f1;
 
-  --green-700: #15803d;
-  --green-100: #dcfce7;
-  --green-50: #f2fdf5;
+  --green-700: #2f6b4f;
+  --green-100: #dcefe3;
+  --green-50: #f2f9f4;
 
-  --bg: #fbfaff;
-  --bg-soft: #f5f3ff;
-  --bg-muted: #ece9fb;
-  --line: #e4e0f5;
-  --line-strong: #d2ccef;
+  --bg: #f7f2e8;
+  --bg-soft: #f1eadb;
+  --bg-muted: #e9e0ce;
+  --line: #e3d9c6;
+  --line-strong: #d3c5ac;
+
+  --surface: #fffcf6;
+  --ivory: #fffcf6;
 
   --radius-sm: 12px;
   --radius: 18px;
@@ -84,10 +87,10 @@
   --radius-xl: 38px;
   --radius-pill: 999px;
 
-  --shadow-xs: 0 1px 2px rgba(20, 26, 51, 0.06);
-  --shadow-sm: 0 6px 18px rgba(20, 26, 51, 0.07);
-  --shadow-md: 0 20px 44px rgba(20, 26, 51, 0.1);
-  --shadow-lg: 0 36px 80px rgba(20, 26, 51, 0.16);
+  --shadow-xs: 0 1px 2px rgba(27, 31, 59, 0.06);
+  --shadow-sm: 0 6px 18px rgba(27, 31, 59, 0.08);
+  --shadow-md: 0 20px 44px rgba(27, 31, 59, 0.12);
+  --shadow-lg: 0 36px 80px rgba(27, 31, 59, 0.18);
 
   --container: 1200px;
   --font: 'Cairo', 'Segoe UI', 'Tahoma', 'Noto Kufi Arabic', sans-serif;
@@ -107,14 +110,15 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
   /* A soft, fixed ambient canvas behind every transparent section. Keeping the
      gradients on the root avoids extra markup and stays CSP-safe. */
-  background-color: #f7f6ff;
+  background-color: #faf6ee;
   background-image:
-    radial-gradient(1200px 780px at 90% -12%, rgba(91, 75, 214, 0.16), transparent 62%),
-    radial-gradient(1000px 700px at -12% 104%, rgba(242, 181, 68, 0.13), transparent 58%),
-    radial-gradient(820px 620px at 48% 42%, rgba(56, 189, 248, 0.07), transparent 66%),
-    linear-gradient(180deg, #fbfaff 0%, #f5f3ff 46%, #fbfaff 100%);
+    radial-gradient(1200px 780px at 90% -12%, rgba(51, 50, 126, 0.13), transparent 62%),
+    radial-gradient(1000px 700px at -12% 104%, rgba(194, 161, 74, 0.18), transparent 58%),
+    radial-gradient(820px 620px at 48% 42%, rgba(226, 214, 186, 0.32), transparent 66%),
+    linear-gradient(180deg, #faf6ee 0%, #f3ecde 46%, #faf6ee 100%);
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
@@ -180,7 +184,7 @@ button {
 }
 
 :focus-visible {
-  outline: 3px solid rgba(91, 75, 214, 0.45);
+  outline: 3px solid rgba(51, 50, 126, 0.45);
   outline-offset: 2px;
   border-radius: 6px;
 }
@@ -204,10 +208,10 @@ button {
      the neighbouring white sections instead of ending in a hard edge. */
   background: linear-gradient(
     180deg,
-    rgba(247, 246, 253, 0) 0%,
-    rgba(243, 241, 255, 0.9) 12%,
-    rgba(243, 241, 255, 0.9) 88%,
-    rgba(247, 246, 253, 0) 100%
+    rgba(247, 242, 232, 0) 0%,
+    rgba(241, 234, 219, 0.9) 12%,
+    rgba(241, 234, 219, 0.9) 88%,
+    rgba(247, 242, 232, 0) 100%
   );
 }
 
@@ -233,7 +237,7 @@ button {
   top: -4rem;
   z-index: 200;
   background: var(--navy-900);
-  color: #fff;
+  color: var(--ivory);
   padding: 0.65rem 1.2rem;
   border-radius: var(--radius-sm);
   transition: top 0.2s var(--ease);
@@ -241,7 +245,7 @@ button {
 
 .skip-link:focus {
   top: 1rem;
-  color: #fff;
+  color: var(--ivory);
 }
 
 .text-muted {
@@ -257,7 +261,7 @@ button {
    -------------------------------------------------------------------------- */
 .btn {
   --btn-bg: var(--teal-700);
-  --btn-color: #fff;
+  --btn-color: var(--ivory);
   --btn-border: transparent;
   display: inline-flex;
   align-items: center;
@@ -294,7 +298,7 @@ button {
 
 .btn-primary {
   --btn-bg: var(--teal-700);
-  box-shadow: 0 8px 20px rgba(10, 111, 121, 0.22);
+  box-shadow: 0 8px 20px rgba(51, 50, 126, 0.26);
 }
 
 .btn-primary:hover {
@@ -355,10 +359,10 @@ button {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 252, 246, 0.84);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
   backdrop-filter: blur(18px) saturate(150%);
-  border-bottom: 1px solid rgba(228, 224, 245, 0.9);
+  border-bottom: 1px solid rgba(227, 217, 198, 0.9);
 }
 
 .site-header__inner {
@@ -456,7 +460,7 @@ button {
   height: 44px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
   align-items: center;
   justify-content: center;
 }
@@ -508,18 +512,18 @@ button {
   overflow: hidden;
   padding-block: 4.5rem 5rem;
   background:
-    radial-gradient(900px 520px at 88% -10%, rgba(91, 75, 214, 0.2), transparent 62%),
-    radial-gradient(760px 460px at 2% 112%, rgba(242, 181, 68, 0.16), transparent 60%),
-    radial-gradient(620px 420px at 55% 40%, rgba(56, 189, 248, 0.09), transparent 66%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(247, 245, 255, 0.88) 55%, rgba(251, 250, 255, 0.45) 100%);
+    radial-gradient(900px 520px at 88% -10%, rgba(51, 50, 126, 0.16), transparent 62%),
+    radial-gradient(760px 460px at 2% 112%, rgba(194, 161, 74, 0.2), transparent 60%),
+    radial-gradient(620px 420px at 55% 40%, rgba(226, 214, 186, 0.3), transparent 66%),
+    linear-gradient(180deg, rgba(255, 252, 246, 0.96) 0%, rgba(247, 242, 232, 0.92) 55%, rgba(250, 246, 238, 0.55) 100%);
 }
 
 .hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(67, 56, 202, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(67, 56, 202, 0.05) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(51, 50, 126, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(51, 50, 126, 0.055) 1px, transparent 1px);
   background-size: 52px 52px;
   mask-image: radial-gradient(ellipse 74% 92% at 72% 18%, #000 0%, transparent 74%);
   -webkit-mask-image: radial-gradient(ellipse 74% 92% at 72% 18%, #000 0%, transparent 74%);
@@ -540,7 +544,7 @@ button {
   gap: 0.5rem;
   padding: 0.35rem 0.9rem 0.35rem 0.45rem;
   border-radius: var(--radius-pill);
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-xs);
   color: var(--ink-700);
@@ -554,7 +558,7 @@ button {
   height: 8px;
   border-radius: 50%;
   background: var(--teal-500);
-  box-shadow: 0 0 0 4px rgba(91, 75, 214, 0.16);
+  box-shadow: 0 0 0 4px rgba(51, 50, 126, 0.18);
   margin-inline-start: 0.3rem;
 }
 
@@ -577,7 +581,7 @@ button {
   inset-inline: 0;
   bottom: 0.06em;
   height: 0.28em;
-  background: rgba(251, 191, 36, 0.35);
+  background: rgba(194, 161, 74, 0.32);
   border-radius: 999px;
   z-index: -1;
 }
@@ -726,7 +730,7 @@ button {
 }
 
 .card {
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow-xs);
@@ -785,7 +789,7 @@ button {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow-xs);
@@ -915,7 +919,7 @@ button {
 }
 
 .stat-panel__item {
-  background: #fff;
+  background: var(--surface);
   padding: 1.8rem 1.5rem;
 }
 
@@ -945,7 +949,7 @@ button {
 .step {
   position: relative;
   padding: 1.7rem 1.4rem;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   counter-increment: step;
@@ -960,7 +964,7 @@ button {
   height: 42px;
   border-radius: 13px;
   background: var(--navy-900);
-  color: #fff;
+  color: var(--ivory);
   font-size: 0.9rem;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -990,7 +994,7 @@ button {
 .faq-item {
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--surface);
   overflow: hidden;
   transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
@@ -1055,7 +1059,7 @@ button {
   overflow: hidden;
   border-radius: var(--radius-lg);
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
   box-shadow: var(--shadow-sm);
 }
 
@@ -1065,7 +1069,7 @@ button {
 
 .contact-card__aside {
   background: var(--navy-900);
-  color: #e8f6f6;
+  color: #f3eee2;
   padding: 2.6rem;
   display: flex;
   flex-direction: column;
@@ -1074,13 +1078,13 @@ button {
 }
 
 .contact-card__aside h3 {
-  color: #fff;
+  color: var(--ivory);
   font-size: 1.35rem;
   margin-bottom: 0.6rem;
 }
 
 .contact-card__aside p {
-  color: rgba(232, 246, 246, 0.72);
+  color: rgba(243, 238, 226, 0.72);
   font-size: 0.92rem;
   line-height: 1.9;
 }
@@ -1135,18 +1139,18 @@ button {
   overflow: hidden;
   padding-block: 3.4rem 3rem;
   background:
-    radial-gradient(720px 340px at 90% -10%, rgba(91, 75, 214, 0.18), transparent 62%),
-    radial-gradient(540px 280px at 4% 120%, rgba(242, 181, 68, 0.14), transparent 60%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(245, 243, 255, 0.82));
-  border-bottom: 1px solid rgba(210, 204, 239, 0.6);
+    radial-gradient(720px 340px at 90% -10%, rgba(51, 50, 126, 0.14), transparent 62%),
+    radial-gradient(540px 280px at 4% 120%, rgba(194, 161, 74, 0.18), transparent 60%),
+    linear-gradient(180deg, rgba(255, 252, 246, 0.92), rgba(245, 238, 226, 0.84));
+  border-bottom: 1px solid rgba(211, 197, 172, 0.6);
 }
 
 .page-hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(67, 56, 202, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(67, 56, 202, 0.045) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(51, 50, 126, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(51, 50, 126, 0.045) 1px, transparent 1px);
   background-size: 54px 54px;
   mask-image: radial-gradient(ellipse 82% 100% at 86% 0%, #000 0%, transparent 72%);
   -webkit-mask-image: radial-gradient(ellipse 82% 100% at 86% 0%, #000 0%, transparent 72%);
@@ -1202,7 +1206,7 @@ button {
    Forms
    -------------------------------------------------------------------------- */
 .form-card {
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
@@ -1248,7 +1252,7 @@ button {
   padding: 0.72rem 0.95rem;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--surface);
   font-size: 0.95rem;
   color: var(--ink-900);
   transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
@@ -1262,7 +1266,7 @@ button {
 
 .select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235a7683' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23756d60' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: left 0.9rem center;
   padding-inline-end: 0.95rem;
@@ -1274,7 +1278,7 @@ button {
 .textarea:focus {
   outline: none;
   border-color: var(--teal-600);
-  box-shadow: 0 0 0 4px rgba(91, 75, 214, 0.13);
+  box-shadow: 0 0 0 4px rgba(51, 50, 126, 0.15);
 }
 
 .input[aria-invalid='true'],
@@ -1387,13 +1391,13 @@ button {
 
 .alert--error {
   background: var(--red-50);
-  border-color: #f3c6c2;
+  border-color: #e7c2b9;
   color: var(--red-700);
 }
 
 .alert--success {
   background: var(--green-50);
-  border-color: #bbe8c9;
+  border-color: #bfdccb;
   color: var(--green-700);
 }
 
@@ -1405,7 +1409,7 @@ button {
 
 .alert--warning {
   background: var(--amber-50);
-  border-color: #f5dfae;
+  border-color: #e7d6a4;
   color: var(--amber-600);
 }
 
@@ -1420,7 +1424,7 @@ button {
   padding: 0.85rem 1.1rem;
   border-radius: var(--radius-sm);
   background: var(--amber-50);
-  border: 1px dashed #eccf95;
+  border: 1px dashed #e0cda6;
   color: #7a4a04;
   font-size: 0.86rem;
   line-height: 1.7;
@@ -1437,7 +1441,7 @@ button {
 .skeleton-card {
   height: 340px;
   border-radius: var(--radius);
-  background: linear-gradient(100deg, #eef4f5 20%, #f7fafb 40%, #eef4f5 60%);
+  background: linear-gradient(100deg, #ede6d8 20%, #f8f3e9 40%, #ede6d8 60%);
   background-size: 220% 100%;
   animation: shimmer 1.4s infinite linear;
   border: 1px solid var(--line);
@@ -1457,7 +1461,7 @@ button {
   padding: 3.5rem 1.5rem;
   border: 1px dashed var(--line-strong);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--surface);
 }
 
 .state-box__icon {
@@ -1490,14 +1494,14 @@ button {
 .spinner {
   width: 22px;
   height: 22px;
-  border: 3px solid rgba(255, 255, 255, 0.35);
-  border-top-color: #fff;
+  border: 3px solid rgba(255, 252, 246, 0.35);
+  border-top-color: var(--ivory);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
 
 .spinner--dark {
-  border-color: rgba(10, 111, 121, 0.2);
+  border-color: rgba(51, 50, 126, 0.2);
   border-top-color: var(--teal-700);
 }
 
@@ -1582,7 +1586,7 @@ button {
   padding: 1.8rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--surface);
   box-shadow: var(--shadow-sm);
 }
 
@@ -1681,7 +1685,7 @@ button {
    -------------------------------------------------------------------------- */
 .site-footer {
   background: var(--navy-900);
-  color: rgba(232, 246, 246, 0.75);
+  color: rgba(243, 238, 226, 0.75);
   padding-block: 4rem 0;
   margin-top: 0;
 }
@@ -1697,7 +1701,7 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 0.7rem;
-  color: #fff;
+  color: var(--ivory);
   margin-bottom: 1rem;
 }
 
@@ -1724,7 +1728,7 @@ button {
 }
 
 .footer-title {
-  color: #fff;
+  color: var(--ivory);
   font-size: 0.95rem;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -1736,12 +1740,12 @@ button {
 }
 
 .footer-links a {
-  color: rgba(232, 246, 246, 0.72);
+  color: rgba(243, 238, 226, 0.72);
   font-size: 0.88rem;
 }
 
 .footer-links a:hover {
-  color: #fff;
+  color: var(--ivory);
 }
 
 .footer-contact {
@@ -1771,9 +1775,9 @@ button {
   justify-content: space-between;
   gap: 1rem;
   padding-block: 1.4rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 252, 246, 0.1);
   font-size: 0.78rem;
-  color: rgba(232, 246, 246, 0.55);
+  color: rgba(243, 238, 226, 0.55);
 }
 
 .footer-bottom .demo-flag {
@@ -1782,8 +1786,8 @@ button {
   gap: 0.4rem;
   padding: 0.25rem 0.7rem;
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(251, 191, 36, 0.35);
-  color: #fcd34d;
+  border: 1px solid rgba(194, 161, 74, 0.45);
+  color: #e7d6a4;
   font-size: 0.72rem;
 }
 
@@ -1800,7 +1804,7 @@ button {
   padding: 0.9rem 1.1rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--surface);
   box-shadow: var(--shadow-sm);
 }
 
@@ -1860,7 +1864,7 @@ button {
 }
 
 .callout--warning {
-  border-color: #eccf95;
+  border-color: #e0cda6;
   background: var(--amber-50);
 }
 
@@ -1885,7 +1889,7 @@ button {
   padding: 1.3rem 1.4rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--surface);
 }
 
 .info-tile__label {
@@ -1953,7 +1957,7 @@ button {
 .skeleton-line {
   height: 64px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(100deg, #eef4f5 20%, #f7fafb 40%, #eef4f5 60%);
+  background: linear-gradient(100deg, #ede6d8 20%, #f8f3e9 40%, #ede6d8 60%);
   background-size: 220% 100%;
   animation: shimmer 1.4s infinite linear;
   border: 1px solid var(--line);
@@ -1968,7 +1972,7 @@ button {
 .note-xs {
   margin-top: 0.9rem;
   font-size: 0.78rem;
-  color: rgba(232, 246, 246, 0.55);
+  color: rgba(243, 238, 226, 0.55);
 }
 
 /* --------------------------------------------------------------------------
@@ -2016,12 +2020,12 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
    -------------------------------------------------------------------------- */
 .hero {
   padding-block: 5rem 5.5rem;
-  border-bottom: 1px solid rgba(210, 204, 239, 0.55);
+  border-bottom: 1px solid rgba(211, 197, 172, 0.55);
   background:
-    radial-gradient(940px 520px at 88% -12%, rgba(91, 75, 214, 0.22), transparent 62%),
-    radial-gradient(780px 470px at 2% 112%, rgba(242, 181, 68, 0.17), transparent 60%),
-    radial-gradient(620px 420px at 55% 42%, rgba(56, 189, 248, 0.09), transparent 66%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 245, 255, 0.9) 52%, rgba(251, 250, 255, 0.5) 100%);
+    radial-gradient(940px 520px at 88% -12%, rgba(51, 50, 126, 0.16), transparent 62%),
+    radial-gradient(780px 470px at 2% 112%, rgba(194, 161, 74, 0.2), transparent 60%),
+    radial-gradient(620px 420px at 55% 42%, rgba(226, 214, 186, 0.3), transparent 66%),
+    linear-gradient(180deg, rgba(255, 252, 246, 0.96) 0%, rgba(247, 242, 232, 0.92) 52%, rgba(250, 246, 238, 0.55) 100%);
 }
 
 .hero__bg {
@@ -2044,7 +2048,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   height: 340px;
   inset-inline-start: -120px;
   top: -80px;
-  background: radial-gradient(circle, rgba(91, 75, 214, 0.55), transparent 70%);
+  background: radial-gradient(circle, rgba(51, 50, 126, 0.5), transparent 70%);
 }
 
 .hero__orb--2 {
@@ -2052,7 +2056,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   height: 300px;
   inset-inline-end: -90px;
   bottom: -110px;
-  background: radial-gradient(circle, rgba(240, 180, 41, 0.45), transparent 70%);
+  background: radial-gradient(circle, rgba(194, 161, 74, 0.45), transparent 70%);
   animation-delay: -6s;
 }
 
@@ -2061,7 +2065,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   height: 220px;
   inset-inline-end: 42%;
   top: 8%;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.35), transparent 70%);
+  background: radial-gradient(circle, rgba(226, 214, 186, 0.55), transparent 70%);
   animation-delay: -12s;
 }
 
@@ -2083,7 +2087,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 }
 
 .hero__title .accent {
-  background: linear-gradient(120deg, var(--teal-700), #0891b2 55%, var(--teal-600));
+  background: linear-gradient(120deg, var(--teal-700), var(--teal-500) 42%, var(--gold-600) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -2137,8 +2141,8 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   border-radius: 50%;
   background: radial-gradient(
     closest-side,
-    rgba(91, 75, 214, 0.24),
-    rgba(56, 189, 248, 0.12) 55%,
+    rgba(51, 50, 126, 0.22),
+    rgba(194, 161, 74, 0.16) 55%,
     transparent 76%
   );
   filter: blur(18px);
@@ -2149,8 +2153,8 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   position: relative;
   padding: 0.9rem;
   border-radius: var(--radius-xl);
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.9), rgba(226, 245, 245, 0.75));
-  border: 1px solid rgba(201, 217, 220, 0.9);
+  background: linear-gradient(150deg, rgba(255, 252, 246, 0.92), rgba(241, 234, 219, 0.78));
+  border: 1px solid rgba(211, 197, 172, 0.9);
   box-shadow: var(--shadow-lg);
 }
 
@@ -2158,7 +2162,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   width: 100%;
   height: auto;
   border-radius: calc(var(--radius-xl) - 14px);
-  background: #fff;
+  background: var(--surface);
 }
 
 .hero__float {
@@ -2168,7 +2172,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   gap: 0.65rem;
   padding: 0.7rem 1rem;
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 252, 246, 0.94);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(8px);
@@ -2221,9 +2225,9 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   padding: 2.6rem 2.4rem;
   border-radius: var(--radius-xl);
   background:
-    radial-gradient(600px 240px at 92% 0%, rgba(91, 75, 214, 0.28), transparent 65%),
+    radial-gradient(600px 240px at 92% 0%, rgba(194, 161, 74, 0.24), transparent 65%),
     linear-gradient(135deg, var(--navy-950), var(--navy-800) 70%);
-  color: #fff;
+  color: var(--ivory);
   box-shadow: var(--shadow-lg);
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2235,8 +2239,8 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(255, 252, 246, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 252, 246, 0.05) 1px, transparent 1px);
   background-size: 42px 42px;
   mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 78%);
   pointer-events: none;
@@ -2248,7 +2252,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   display: grid;
   gap: 0.2rem;
   padding-inline-start: 1.2rem;
-  border-inline-start: 1px solid rgba(255, 255, 255, 0.14);
+  border-inline-start: 1px solid rgba(255, 252, 246, 0.14);
 }
 
 .stats-band__item:first-child {
@@ -2261,7 +2265,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.02em;
-  color: #fff;
+  color: var(--ivory);
   font-variant-numeric: tabular-nums;
 }
 
@@ -2274,7 +2278,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 
 .stats-band__label {
   font-size: 0.82rem;
-  color: rgba(232, 246, 246, 0.72);
+  color: rgba(243, 238, 226, 0.72);
 }
 
 .stats-band__cta {
@@ -2309,13 +2313,13 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 }
 
 .feature__icon {
-  background: linear-gradient(140deg, var(--teal-50), #e6f7fb);
-  box-shadow: inset 0 0 0 1px rgba(91, 75, 214, 0.12);
+  background: linear-gradient(140deg, var(--teal-50), #f7efdc);
+  box-shadow: inset 0 0 0 1px rgba(51, 50, 126, 0.12);
 }
 
 .feature:hover .feature__icon {
   background: linear-gradient(140deg, var(--teal-600), var(--teal-800));
-  color: #fff;
+  color: var(--ivory);
   transform: translateY(-2px);
 }
 
@@ -2350,7 +2354,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   z-index: 2;
   padding: 0.25rem 0.7rem;
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 252, 246, 0.92);
   color: var(--teal-800);
   font-size: 0.7rem;
   font-weight: 700;
@@ -2388,7 +2392,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 
 .department-card:hover .department-card__arrow {
   background: var(--teal-700);
-  color: #fff;
+  color: var(--ivory);
   transform: translateX(-4px);
 }
 
@@ -2417,7 +2421,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   inset-inline-start: 0;
   margin: 0;
   background: linear-gradient(140deg, var(--navy-900), var(--teal-800));
-  box-shadow: 0 8px 18px rgba(6, 36, 52, 0.18);
+  box-shadow: 0 8px 18px rgba(27, 31, 59, 0.18);
 }
 
 .step::after {
@@ -2468,7 +2472,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   padding: 2rem 1.8rem 1.7rem;
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
   box-shadow: var(--shadow-xs);
   transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease),
     border-color 0.25s var(--ease);
@@ -2515,7 +2519,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: linear-gradient(140deg, var(--teal-100), #e0f2fe);
+  background: linear-gradient(140deg, var(--teal-100), #f3e8c8);
   color: var(--teal-800);
   font-weight: 800;
   font-size: 0.95rem;
@@ -2552,7 +2556,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   padding: 1.7rem;
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  background: linear-gradient(160deg, #ffffff, #f7f5ff);
+  background: linear-gradient(160deg, var(--surface), #f7f0e2);
   transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease),
     border-color 0.25s var(--ease);
 }
@@ -2603,9 +2607,9 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   padding: 3rem 3.2rem;
   border-radius: var(--radius-xl);
   background:
-    radial-gradient(520px 220px at 88% 20%, rgba(240, 180, 41, 0.28), transparent 65%),
-    linear-gradient(135deg, var(--navy-950), #0a3d52 65%, var(--teal-800));
-  color: #fff;
+    radial-gradient(520px 220px at 88% 20%, rgba(194, 161, 74, 0.3), transparent 65%),
+    linear-gradient(135deg, var(--navy-950), #2a2c5e 62%, var(--teal-800));
+  color: var(--ivory);
   box-shadow: var(--shadow-lg);
 }
 
@@ -2613,7 +2617,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(255, 252, 246, 0.14) 1px, transparent 1px);
   background-size: 26px 26px;
   mask-image: linear-gradient(90deg, #000, transparent 70%);
   opacity: 0.5;
@@ -2629,7 +2633,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 .cta-band p {
   position: relative;
   margin-top: 0.6rem;
-  color: rgba(232, 246, 246, 0.75);
+  color: rgba(243, 238, 226, 0.75);
   font-size: 0.95rem;
   line-height: 1.85;
   max-width: 38rem;
@@ -2645,29 +2649,29 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 .cta-band .btn-primary {
   --btn-bg: var(--gold-500);
   --btn-color: #3a2600;
-  box-shadow: 0 12px 28px rgba(240, 180, 41, 0.35);
+  box-shadow: 0 12px 28px rgba(194, 161, 74, 0.35);
 }
 
 .cta-band .btn-primary:hover {
-  --btn-bg: #ffc945;
+  --btn-bg: #d8b85e;
 }
 
 .cta-band .btn-outline {
-  --btn-color: #fff;
-  --btn-border: rgba(255, 255, 255, 0.35);
+  --btn-color: var(--ivory);
+  --btn-border: rgba(255, 252, 246, 0.35);
 }
 
 .cta-band .btn-outline:hover {
-  --btn-color: #fff;
-  --btn-border: #fff;
-  background: rgba(255, 255, 255, 0.1);
+  --btn-color: var(--ivory);
+  --btn-border: var(--ivory);
+  background: rgba(255, 252, 246, 0.1);
 }
 
 /* --------------------------------------------------------------------------
    Header states & back-to-top
    -------------------------------------------------------------------------- */
 .site-header.is-scrolled {
-  box-shadow: 0 10px 30px rgba(6, 36, 52, 0.09);
+  box-shadow: 0 10px 30px rgba(27, 31, 59, 0.1);
   border-bottom-color: transparent;
 }
 
@@ -2683,7 +2687,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   height: 46px;
   border-radius: 50%;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 252, 246, 0.95);
   color: var(--ink-700);
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(8px);
@@ -2759,7 +2763,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
     position: absolute;
     top: 100%;
     inset-inline: 0;
-    background: #fff;
+    background: var(--surface);
     border-bottom: 1px solid var(--line);
     box-shadow: var(--shadow-md);
     padding: 0.8rem 1.25rem 1.1rem;
@@ -2942,7 +2946,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
     border-inline-start: 0;
     padding-inline-start: 0;
     padding-block-end: 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid rgba(255, 252, 246, 0.12);
   }
 
   .stats-band__item:last-of-type {
@@ -2979,17 +2983,17 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 .section--news {
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(247, 245, 255, 0.85) 50%,
-    rgba(255, 255, 255, 0) 100%
+    rgba(247, 242, 232, 0) 0%,
+    rgba(241, 234, 219, 0.85) 50%,
+    rgba(247, 242, 232, 0) 100%
   );
 }
 
 .page-hero--news {
   background:
-    radial-gradient(760px 360px at 90% -10%, rgba(91, 75, 214, 0.2), transparent 64%),
-    radial-gradient(540px 280px at 4% 120%, rgba(242, 181, 68, 0.17), transparent 60%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(245, 243, 255, 0.84));
+    radial-gradient(760px 360px at 90% -10%, rgba(51, 50, 126, 0.16), transparent 64%),
+    radial-gradient(540px 280px at 4% 120%, rgba(194, 161, 74, 0.2), transparent 60%),
+    linear-gradient(180deg, rgba(255, 252, 246, 0.94), rgba(245, 238, 226, 0.86));
 }
 
 .news-toolbar {
@@ -3015,7 +3019,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 
 .news-filter {
   border: 1px solid var(--line-strong);
-  background: #ffffff;
+  background: var(--surface);
   color: var(--ink-600);
   border-radius: var(--radius-pill);
   padding: 0.45rem 1rem;
@@ -3034,8 +3038,8 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 .news-filter.is-active {
   background: linear-gradient(135deg, var(--teal-700), var(--teal-500));
   border-color: transparent;
-  color: #ffffff;
-  box-shadow: 0 12px 26px -14px rgba(67, 56, 202, 0.85);
+  color: var(--ivory);
+  box-shadow: 0 12px 26px -14px rgba(51, 50, 126, 0.45);
 }
 
 .news-grid {
@@ -3048,7 +3052,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #ffffff;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
@@ -3084,13 +3088,13 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   position: absolute;
   inset-block-start: 0.85rem;
   inset-inline-start: 0.85rem;
-  background: linear-gradient(135deg, var(--gold-600), var(--gold-500));
+  background: linear-gradient(135deg, var(--gold-500), #d8b85e);
   color: #3a2600;
   font-size: 0.72rem;
   font-weight: 800;
   padding: 0.3rem 0.7rem;
   border-radius: var(--radius-pill);
-  box-shadow: 0 10px 20px -12px rgba(58, 38, 0, 0.7);
+  box-shadow: 0 10px 20px -12px rgba(58, 38, 0, 0.35);
 }
 
 .news-card__body {
@@ -3292,7 +3296,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 
 .article-meta__pill--gold {
   background: var(--gold-100);
-  border-color: #f6dfa6;
+  border-color: #e7d6a4;
   color: #7a4d00;
 }
 
