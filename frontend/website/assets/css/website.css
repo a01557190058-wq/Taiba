@@ -72,11 +72,11 @@
   --green-100: #dcfce7;
   --green-50: #f2fdf5;
 
-  --bg: #ffffff;
-  --bg-soft: #f7f6fd;
-  --bg-muted: #efedfa;
-  --line: #e6e3f4;
-  --line-strong: #d4cff0;
+  --bg: #fbfaff;
+  --bg-soft: #f5f3ff;
+  --bg-muted: #ece9fb;
+  --line: #e4e0f5;
+  --line-strong: #d2ccef;
 
   --radius-sm: 12px;
   --radius: 18px;
@@ -107,6 +107,17 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  /* A soft, fixed ambient canvas behind every transparent section. Keeping the
+     gradients on the root avoids extra markup and stays CSP-safe. */
+  background-color: #f7f6ff;
+  background-image:
+    radial-gradient(1200px 780px at 90% -12%, rgba(91, 75, 214, 0.16), transparent 62%),
+    radial-gradient(1000px 700px at -12% 104%, rgba(242, 181, 68, 0.13), transparent 58%),
+    radial-gradient(820px 620px at 48% 42%, rgba(56, 189, 248, 0.07), transparent 66%),
+    linear-gradient(180deg, #fbfaff 0%, #f5f3ff 46%, #fbfaff 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 body {
@@ -115,7 +126,7 @@ body {
   font-size: 1rem;
   line-height: 1.75;
   color: var(--ink-900);
-  background: var(--bg);
+  background: transparent;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -189,7 +200,15 @@ button {
 }
 
 .section--soft {
-  background: var(--bg-soft);
+  /* Translucent so the ambient canvas shows through and the band blends into
+     the neighbouring white sections instead of ending in a hard edge. */
+  background: linear-gradient(
+    180deg,
+    rgba(247, 246, 253, 0) 0%,
+    rgba(243, 241, 255, 0.9) 12%,
+    rgba(243, 241, 255, 0.9) 88%,
+    rgba(247, 246, 253, 0) 100%
+  );
 }
 
 .section--tight {
@@ -336,9 +355,10 @@ button {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  border-bottom: 1px solid rgba(228, 224, 245, 0.9);
 }
 
 .site-header__inner {
@@ -488,19 +508,21 @@ button {
   overflow: hidden;
   padding-block: 4.5rem 5rem;
   background:
-    radial-gradient(900px 480px at 88% -10%, rgba(91, 75, 214, 0.14), transparent 65%),
-    radial-gradient(700px 420px at 4% 108%, rgba(251, 191, 36, 0.1), transparent 60%),
-    #fff;
+    radial-gradient(900px 520px at 88% -10%, rgba(91, 75, 214, 0.2), transparent 62%),
+    radial-gradient(760px 460px at 2% 112%, rgba(242, 181, 68, 0.16), transparent 60%),
+    radial-gradient(620px 420px at 55% 40%, rgba(56, 189, 248, 0.09), transparent 66%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(247, 245, 255, 0.88) 55%, rgba(251, 250, 255, 0.45) 100%);
 }
 
 .hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(14, 140, 147, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(14, 140, 147, 0.055) 1px, transparent 1px);
-  background-size: 46px 46px;
-  mask-image: radial-gradient(ellipse at 50% 40%, #000 10%, transparent 72%);
+  background-image: linear-gradient(rgba(67, 56, 202, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(67, 56, 202, 0.05) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(ellipse 74% 92% at 72% 18%, #000 0%, transparent 74%);
+  -webkit-mask-image: radial-gradient(ellipse 74% 92% at 72% 18%, #000 0%, transparent 74%);
   pointer-events: none;
 }
 
@@ -1113,9 +1135,27 @@ button {
   overflow: hidden;
   padding-block: 3.4rem 3rem;
   background:
-    radial-gradient(700px 300px at 90% 0%, rgba(91, 75, 214, 0.13), transparent 65%),
-    var(--bg-soft);
-  border-bottom: 1px solid var(--line);
+    radial-gradient(720px 340px at 90% -10%, rgba(91, 75, 214, 0.18), transparent 62%),
+    radial-gradient(540px 280px at 4% 120%, rgba(242, 181, 68, 0.14), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(245, 243, 255, 0.82));
+  border-bottom: 1px solid rgba(210, 204, 239, 0.6);
+}
+
+.page-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(67, 56, 202, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(67, 56, 202, 0.045) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: radial-gradient(ellipse 82% 100% at 86% 0%, #000 0%, transparent 72%);
+  -webkit-mask-image: radial-gradient(ellipse 82% 100% at 86% 0%, #000 0%, transparent 72%);
+  pointer-events: none;
+}
+
+.page-hero > .container {
+  position: relative;
+  z-index: 1;
 }
 
 .page-hero__inner {
@@ -1976,10 +2016,12 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
    -------------------------------------------------------------------------- */
 .hero {
   padding-block: 5rem 5.5rem;
+  border-bottom: 1px solid rgba(210, 204, 239, 0.55);
   background:
-    radial-gradient(900px 480px at 88% -10%, rgba(91, 75, 214, 0.16), transparent 62%),
-    radial-gradient(720px 420px at 2% 110%, rgba(240, 180, 41, 0.13), transparent 60%),
-    linear-gradient(180deg, #ffffff 0%, #f7f5ff 100%);
+    radial-gradient(940px 520px at 88% -12%, rgba(91, 75, 214, 0.22), transparent 62%),
+    radial-gradient(780px 470px at 2% 112%, rgba(242, 181, 68, 0.17), transparent 60%),
+    radial-gradient(620px 420px at 55% 42%, rgba(56, 189, 248, 0.09), transparent 66%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 245, 255, 0.9) 52%, rgba(251, 250, 255, 0.5) 100%);
 }
 
 .hero__bg {
@@ -2085,6 +2127,22 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 .hero__media {
   position: relative;
   z-index: 1;
+}
+
+.hero__media::before {
+  content: '';
+  position: absolute;
+  inset: -10% -8% -12% -8%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(91, 75, 214, 0.24),
+    rgba(56, 189, 248, 0.12) 55%,
+    transparent 76%
+  );
+  filter: blur(18px);
+  pointer-events: none;
 }
 
 .hero__media-frame {
@@ -2654,13 +2712,6 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 /* --------------------------------------------------------------------------
    Premium page hero for inner pages
    -------------------------------------------------------------------------- */
-.page-hero {
-  background:
-    radial-gradient(700px 320px at 88% -10%, rgba(91, 75, 214, 0.16), transparent 62%),
-    radial-gradient(520px 260px at 6% 120%, rgba(240, 180, 41, 0.12), transparent 60%),
-    linear-gradient(180deg, #ffffff, #f7f5ff);
-}
-
 .page-hero h1 {
   letter-spacing: -0.025em;
 }
@@ -2926,14 +2977,19 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
    News (listing + article)
    -------------------------------------------------------------------------- */
 .section--news {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfaff 70%, #ffffff 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(247, 245, 255, 0.85) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
 
 .page-hero--news {
   background:
-    radial-gradient(760px 340px at 90% -10%, rgba(91, 75, 214, 0.18), transparent 64%),
-    radial-gradient(520px 260px at 4% 120%, rgba(242, 181, 68, 0.16), transparent 60%),
-    linear-gradient(180deg, #ffffff, #f7f5ff);
+    radial-gradient(760px 360px at 90% -10%, rgba(91, 75, 214, 0.2), transparent 64%),
+    radial-gradient(540px 280px at 4% 120%, rgba(242, 181, 68, 0.17), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(245, 243, 255, 0.84));
 }
 
 .news-toolbar {
