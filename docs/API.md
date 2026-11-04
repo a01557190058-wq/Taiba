@@ -138,7 +138,43 @@
 
 ### `GET /api/news/:slug`
 
-يعيد خبرًا منشورًا مع حقل `related` يحتوي حتى 3 أخبار ذات صلة. غير المنشور أو غير الموجود يعيد `404 NOT_FOUND`.
+يعيد خبرًا منشورًا مع حقل `related` يحتوي حتى 3 أخبار ذات صلة، وحقل `media` لوسائط الخبر (صور المعرض وروابط الفيديو). غير المنشور أو غير الموجود يعيد `404 NOT_FOUND`.
+
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "...",
+    "slug": "...",
+    "image_url": "/assets/uploads/news/1699999999-abc123.jpg",
+    "media": [
+      {
+        "id": 10,
+        "type": "image",
+        "url": "/assets/uploads/news/1699999999-def456.jpg",
+        "caption": "صورة من النشاط",
+        "sort_order": 0,
+        "provider": null,
+        "embed_url": null
+      },
+      {
+        "id": 11,
+        "type": "video",
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "caption": "ملخص الفعالية",
+        "sort_order": 1,
+        "provider": "youtube",
+        "embed_url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"
+      }
+    ],
+    "related": []
+  }
+}
+```
+
+- `image_url` يُستخدم كصورة غلاف. إن تُرك فارغًا، يُستخدم أول ملف صورة في `media` تلقائيًا.
+- `provider` أحد `youtube` أو `vimeo` أو `file`، و`embed_url` متاح لمزوّدي الفيديو المضمّن فقط.
+- الفيديو يُقبل برابط فقط: YouTube أو Vimeo أو ملف MP4/WebM/OGG/MOV مباشر.
 
 ### `GET /api/school-content`
 
@@ -274,10 +310,46 @@
 ### الأخبار
 
 - `GET /api/admin/news` — قائمة كاملة مع `q` و`state` (`published` / `draft` / `featured`) و`is_demo` والترقيم.
-- `POST /api/admin/news` — الحقول: `title`، `slug` (اختياري)، `summary`، `body`، `category`، `image_url`، `is_published`، `is_featured`، `published_at`، `sort_order`.
-- `GET /api/admin/news/:id` — بيانات خبر واحد.
-- `PATCH /api/admin/news/:id` — أي مجموعة من الحقول أعلاه.
-- `DELETE /api/admin/news/:id` — حذف نهائي لأي خبر، تجريبي أو حقيقي.
+- `POST /api/admin/news` — الحقول: `title`، `slug` (اختياري)، `summary`، `body`، `category`، `image_url`، `media`، `is_published`، `is_featured`، `published_at`، `sort_order`.
+- `POST /api/admin/news/uploads` — رفع صور بصيغة `multipart/form-data` تحت الحقل `images` (حتى 6 ملفات في الطلب).
+- `GET /api/admin/news/:id` — بيانات خبر واحد مع `media`.
+- `PATCH /api/admin/news/:id` — أي مجموعة من الحقول أعلاه؛ عند إرسال `media` تُستبدل القائمة كاملة.
+- `DELETE /api/admin/news/:id` — حذف نهائي لأي خبر، تجريبي أو حقيقي، مع حذف ملفاته المرفوعة غير المستخدمة.
+
+`media` مصفوفة عناصر بالشكل التالي (حتى 20 عنصرًا: 12 صورة و8 فيديوهات كحد أقصى):
+
+```json
+{
+  "type": "image",
+  "url": "/assets/uploads/news/1699999999-abc123.jpg",
+  "caption": "وصف اختياري",
+  "sort_order": 0
+}
+```
+
+- `type`: `image` أو `video`.
+- `url`: للصورة مسار محلي يبدأ بـ `/` أو رابط `http(s)://`؛ للفيديو رابط YouTube/Vimeo أو ملف فيديو مباشر.
+- `caption`: اختياري حتى 200 حرف.
+- `sort_order`: عدد صحيح يحدد ترتيب العرض.
+
+استجابة الرفع:
+
+```json
+{
+  "data": {
+    "files": [
+      {
+        "url": "/assets/uploads/news/1699999999-abc123.jpg",
+        "name": "photo.jpg",
+        "size": 48213,
+        "mime": "image/jpeg"
+      }
+    ]
+  }
+}
+```
+
+قيود الرفع: JPG/PNG/WebP/GIF فقط (SVG مرفوض)، و5 ميجابايت لكل صورة. تُولَّد أسماء الملفات على الخادم ولا يُستخدم اسم العميل. الملفات المرفوعة تُخزَّن في `frontend/website/assets/uploads/news/` افتراضيًا، ويمكن تغيير المجلد بـ `NEWS_UPLOADS_DIR`.
 
 قواعد الحقول:
 

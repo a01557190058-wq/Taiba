@@ -25,6 +25,10 @@ coverage/
 backend/tests/.tmp/
 .tmp/
 
+# Uploaded news images (runtime data, not source)
+frontend/website/assets/uploads/news/*
+!frontend/website/assets/uploads/news/.gitkeep
+
 # Editors / OS
 .vscode/
 .idea/

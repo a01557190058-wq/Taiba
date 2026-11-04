@@ -66,6 +66,12 @@ const config = {
     databaseDir: path.join(PROJECT_ROOT, 'database'),
     schema: path.join(PROJECT_ROOT, 'database', 'schema.sql'),
     db: resolveDbPath(),
+    // Uploaded news images live with the public assets so express.static can
+    // serve them. Override with NEWS_UPLOADS_DIR when the project folder is
+    // read-only (for example on some PaaS deployments).
+    newsUploads: process.env.NEWS_UPLOADS_DIR
+      ? path.resolve(BACKEND_ROOT, process.env.NEWS_UPLOADS_DIR)
+      : path.join(PROJECT_ROOT, 'frontend', 'website', 'assets', 'uploads', 'news'),
   },
   session: {
     name: 'taiba.sid',
@@ -96,6 +102,9 @@ const config = {
     jsonBody: '100kb',
     urlEncodedBody: '50kb',
     formFields: 100,
+    // News image uploads (per file / per request).
+    uploadFileBytes: int(process.env.NEWS_UPLOAD_MAX_BYTES, 5 * 1024 * 1024),
+    uploadFilesPerRequest: 6,
   },
 };
 

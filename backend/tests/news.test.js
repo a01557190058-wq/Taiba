@@ -7,7 +7,15 @@
  */
 const { test, beforeEach, after } = require('node:test');
 const assert = require('node:assert/strict');
-const { db, resetDatabase, anonymousAgent, adminAgent } = require('./helpers');
+const fs = require('node:fs');
+const path = require('node:path');
+const {
+  db,
+  resetDatabase,
+  anonymousAgent,
+  adminAgent,
+  UPLOADS_DIR,
+} = require('./helpers');
 
 beforeEach(() => resetDatabase());
 
@@ -33,6 +41,27 @@ async function createNews(agent, token, overrides = {}) {
     .post('/api/admin/news')
     .set('x-csrf-token', token)
     .send(validNews(overrides));
+}
+
+// A 1x1 transparent PNG, enough for multer's MIME check.
+const PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=',
+  'base64'
+);
+
+function uploadImages(agent, token, files = [{}]) {
+  const request = agent.post('/api/admin/news/uploads').set('x-csrf-token', token);
+  for (const file of files) {
+    request.attach('images', file.buffer || PNG, {
+      filename: file.filename || 'image.png',
+      contentType: file.contentType || 'image/png',
+    });
+  }
+  return request;
+}
+
+function uploadedPath(url) {
+  return path.join(UPLOADS_DIR, path.basename(url));
 }
 
 test('an administrator can create a news item and it starts as real data', async () => {
@@ -253,6 +282,172 @@ test('unknown public news slugs return a clean 404', async () => {
   const res = await visitor.get('/api/news/does-not-exist');
   assert.equal(res.status, 404);
   assert.equal(res.body.error.code, 'NOT_FOUND');
+});
+
+// ---------------------------------------------------------------------------
+// Media: gallery images, video links and image uploads
+// ---------------------------------------------------------------------------
+test('news media stores images and video links with server-side provider data', async () => {
+  const { agent, token } = await adminAgent();
+  const res = await createNews(agent, token, {
+    slug: 'media-news',
+    image_url: '',
+    media: [
+      {
+        type: 'image',
+        url: '/assets/img/departments/programming.svg',
+        caption: 'صورة من المعرض',
+        sort_order: 0,
+      },
+      {
+        type: 'video',
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        caption: 'فيديو YouTube',
+        sort_order: 1,
+      },
+      {
+        type: 'video',
+        url: 'https://vimeo.com/123456789',
+        caption: 'فيديو Vimeo',
+        sort_order: 2,
+      },
+    ],
+  });
+
+  assert.equal(res.status, 201);
+  const news = res.body.data;
+  assert.equal(news.media.length, 3);
+  assert.equal(news.media[0].type, 'image');
+  assert.equal(news.media[0].caption, 'صورة من المعرض');
+  assert.equal(news.media[1].provider, 'youtube');
+  assert.match(news.media[1].embed_url, /^https:\/\/www\.youtube-nocookie\.com\/embed\//);
+  assert.equal(news.media[2].provider, 'vimeo');
+  assert.equal(news.media[2].embed_url, 'https://player.vimeo.com/video/123456789');
+
+  // Without an explicit cover, the first gallery image becomes the cover.
+  assert.equal(news.image_url, '/assets/img/departments/programming.svg');
+
+  const { agent: visitor } = await anonymousAgent();
+  const detail = await visitor.get('/api/news/media-news');
+  assert.equal(detail.status, 200);
+  assert.equal(detail.body.data.media.length, 3);
+  assert.equal(detail.body.data.media[1].provider, 'youtube');
+});
+
+test('news media validation rejects unsupported image and video URLs', async () => {
+  const { agent, token } = await adminAgent();
+
+  const badImage = await createNews(agent, token, {
+    slug: 'bad-media-image',
+    media: [{ type: 'image', url: 'javascript:alert(1)' }],
+  });
+  assert.equal(badImage.status, 400);
+  assert.ok(
+    Object.keys(badImage.body.error.fields).some((key) => key.startsWith('media'))
+  );
+
+  const badVideo = await createNews(agent, token, {
+    slug: 'bad-media-video',
+    media: [{ type: 'video', url: 'https://example.com/watch' }],
+  });
+  assert.equal(badVideo.status, 400);
+  assert.ok(
+    Object.keys(badVideo.body.error.fields).some((key) => key.startsWith('media'))
+  );
+
+  const tooManyImages = await createNews(agent, token, {
+    slug: 'too-many-media',
+    media: Array.from({ length: 13 }, () => ({
+      type: 'image',
+      url: '/assets/img/departments/programming.svg',
+    })),
+  });
+  assert.equal(tooManyImages.status, 400);
+});
+
+test('image upload requires authentication and a CSRF token', async () => {
+  const { agent: visitor, token } = await anonymousAgent();
+  const unauthorized = await uploadImages(visitor, token);
+  assert.equal(unauthorized.status, 401);
+
+  const { agent } = await adminAgent();
+  const noCsrf = await agent
+    .post('/api/admin/news/uploads')
+    .attach('images', PNG, { filename: 'photo.png', contentType: 'image/png' });
+  assert.equal(noCsrf.status, 403);
+});
+
+test('image upload accepts raster formats and rejects SVG', async () => {
+  const { agent, token } = await adminAgent();
+
+  const ok = await uploadImages(agent, token, [
+    { filename: 'photo.jpg', contentType: 'image/jpeg' },
+  ]);
+  assert.equal(ok.status, 201);
+  const file = ok.body.data.files[0];
+  assert.match(file.url, /^\/assets\/uploads\/news\/[A-Za-z0-9._-]+\.jpg$/);
+  assert.equal(file.mime, 'image/jpeg');
+  assert.ok(file.size > 0);
+  assert.ok(fs.existsSync(uploadedPath(file.url)));
+
+  const svg = await uploadImages(agent, token, [
+    { filename: 'vector.svg', contentType: 'image/svg+xml' },
+  ]);
+  assert.equal(svg.status, 400);
+  assert.equal(svg.body.error.code, 'VALIDATION_ERROR');
+});
+
+test('image upload enforces the per-file size limit', async () => {
+  const { agent, token } = await adminAgent();
+  const tooLarge = Buffer.alloc(5 * 1024 * 1024 + 64, 1);
+  const res = await uploadImages(agent, token, [
+    { buffer: tooLarge, filename: 'huge.png', contentType: 'image/png' },
+  ]);
+  assert.equal(res.status, 413);
+  assert.equal(res.body.error.code, 'FILE_TOO_LARGE');
+});
+
+test('updating news replaces media and deletes unreferenced uploads', async () => {
+  const { agent, token } = await adminAgent();
+  const upload = await uploadImages(agent, token);
+  const fileUrl = upload.body.data.files[0].url;
+
+  const created = await createNews(agent, token, {
+    slug: 'media-update',
+    image_url: '',
+    media: [{ type: 'image', url: fileUrl, caption: 'قديمة' }],
+  });
+  assert.equal(created.status, 201);
+  assert.equal(created.body.data.image_url, fileUrl);
+  assert.ok(fs.existsSync(uploadedPath(fileUrl)));
+
+  const updated = await agent
+    .patch(`/api/admin/news/${created.body.data.id}`)
+    .set('x-csrf-token', token)
+    .send({ image_url: '', media: [] });
+  assert.equal(updated.status, 200);
+  assert.equal(updated.body.data.media.length, 0);
+  assert.equal(updated.body.data.image_url, '');
+  assert.equal(fs.existsSync(uploadedPath(fileUrl)), false);
+});
+
+test('deleting news removes its uploaded image files', async () => {
+  const { agent, token } = await adminAgent();
+  const upload = await uploadImages(agent, token);
+  const fileUrl = upload.body.data.files[0].url;
+
+  const created = await createNews(agent, token, {
+    slug: 'media-delete',
+    image_url: fileUrl,
+    media: [],
+  });
+  assert.ok(fs.existsSync(uploadedPath(fileUrl)));
+
+  const deleted = await agent
+    .delete(`/api/admin/news/${created.body.data.id}`)
+    .set('x-csrf-token', token);
+  assert.equal(deleted.status, 200);
+  assert.equal(fs.existsSync(uploadedPath(fileUrl)), false);
 });
 
 after(() => db.closeDatabase());

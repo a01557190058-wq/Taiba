@@ -143,7 +143,7 @@ requireAdmin  →  requireCsrf  →  validate(schema)  →  route handler
 
 | الرأس | القيمة |
 | --- | --- |
-| `Content-Security-Policy` | `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'` |
+| `Content-Security-Policy` | `default-src 'self'; base-uri 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; media-src 'self' https:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-src https://www.youtube-nocookie.com https://www.youtube.com https://player.vimeo.com; frame-ancestors 'none'; object-src 'none'` |
 | `X-Content-Type-Options` | `nosniff` |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
 | `X-Frame-Options` | مقيّد عبر `frame-ancestors 'none'` |
@@ -151,6 +151,15 @@ requireAdmin  →  requireCsrf  →  validate(schema)  →  route handler
 | `X-Powered-By` | محذوف |
 
 في الإنتاج تُضاف `upgrade-insecure-requests` إلى CSP. لا توجد أي سكربتات أو أنماط مضمّنة في صفحات المشروع، لذلك تعمل السياسة الصارمة دون استثناءات.
+
+### رفع صور الأخبار
+
+- **النوع:** يُقبل `image/jpeg` و`image/png` و`image/webp` و`image/gif` فقط. **SVG مرفوض** لأنه قد يحمل سكربتات ويُقدَّم من أصل الموقع نفسه.
+- **الحجم والعدد:** 5 ميجابايت لكل صورة (قابل للتغيير بـ `NEWS_UPLOAD_MAX_BYTES`)، و6 صور كحد أقصى في الطلب.
+- **الأسماء:** تُولَّد على الخادم (`timestamp-random.ext`) ولا يُستخدم اسم العميل أو امتداده، ما يمنع Path Traversal وDouble Extension.
+- **التخزين:** داخل `frontend/website/assets/uploads/news/` ليخدمها `express.static` مباشرة. يمكن نقلها بـ `NEWS_UPLOADS_DIR`.
+- **التنظيف:** عند تحديث الخبر أو حذفه تُحذف ملفات الصور التي لم تبقَ مرجعية في قاعدة البيانات. فشل الحذف لا يُفشل العملية الأساسية.
+- **الفيديو:** لا يُرفع أي ملف فيديو؛ تُخزَّن روابط فقط، وتُقيَّد `frame-src` على YouTube وVimeo، ويُستخدم نطاق `youtube-nocookie.com` لتقليل التتبّع.
 
 ### CORS
 
@@ -255,7 +264,7 @@ node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 - **لا يوجد سجل تدقيق (audit log)** لتغييرات الإدارة.
 - **حدود المعدل في الذاكرة**؛ عند تشغيل أكثر من نسخة خلف موازن تحميل يجب استخدام مخزن مشترك (Redis مثلًا).
 - **SQLite** بكاتب واحد؛ مناسب للحجم الحالي، وليس للتوسع الأفقي الكبير.
-- **لا رفع ملفات** ولا مرفقات للطلبات، ما يقلّل سطح الهجوم لكنه يحدّ من الوظائف.
+- **لا رفع مرفقات لطلبات التقديم**؛ رفع الصور مقصور على وسائط الأخبار من لوحة التحكم، ولا يُقبل SVG.
 - **لا إشعارات بريدية أو SMS** للمتقدمين؛ الحالة تُدار داخل لوحة التحكم فقط.
 - **لا نسخ احتياطي تلقائي** داخل التطبيق؛ يجب جدولته على مستوى الخادم.
 - **تصدير CSV** يُبنى في الذاكرة ويقتصر على 5000 سجل لكل تصدير.

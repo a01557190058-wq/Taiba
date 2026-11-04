@@ -6,6 +6,7 @@
  */
 const { z } = require('zod');
 const { cleanText, normalizePhone, slugify } = require('../lib/text');
+const { isImageUrl, isVideoUrl } = require('../lib/media');
 
 const arabic = {
   required: (label) => `${label} مطلوب.`,
@@ -178,6 +179,50 @@ const publishedAtField = z
   })
   .transform((value) => (value === '' ? null : new Date(value).toISOString()));
 
+const newsMediaItemSchema = z
+  .object({
+    type: z.enum(['image', 'video'], {
+      errorMap: () => ({ message: 'نوع الوسيط يجب أن يكون صورة أو فيديو.' }),
+    }),
+    url: z
+      .string({ required_error: 'رابط الوسيط مطلوب.' })
+      .transform((value) => cleanText(value))
+      .refine((value) => value.length > 0, { message: 'رابط الوسيط مطلوب.' })
+      .refine((value) => value.length <= 500, { message: 'رابط الوسيط طويل جدًا.' }),
+    caption: optionalText('وصف الوسيط', 200),
+    sort_order: sortOrderField.default(0),
+  })
+  .superRefine((item, ctx) => {
+    if (item.type === 'image' && !isImageUrl(item.url)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['url'],
+        message: 'رابط الصورة غير صالح. استخدم صورة مرفوعة أو رابطًا يبدأ بـ http(s)://.',
+      });
+    }
+    if (item.type === 'video' && !isVideoUrl(item.url)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['url'],
+        message: 'رابط الفيديو غير مدعوم. استخدم رابط YouTube أو Vimeo أو ملف MP4/WebM مباشر.',
+      });
+    }
+  });
+
+const newsMediaSchema = z
+  .array(newsMediaItemSchema)
+  .max(20, { message: 'يمكن إضافة 20 وسيطًا كحد أقصى لكل خبر.' })
+  .superRefine((items, ctx) => {
+    const images = items.filter((item) => item.type === 'image').length;
+    const videos = items.filter((item) => item.type === 'video').length;
+    if (images > 12) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'يمكن إضافة 12 صورة كحد أقصى.' });
+    }
+    if (videos > 8) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'يمكن إضافة 8 فيديوهات كحد أقصى.' });
+    }
+  });
+
 const newsCreateSchema = z.object({
   title: text('عنوان الخبر', { min: 3, max: 160 }),
   slug: z.union([slugField, z.literal('')]).optional(),
@@ -185,6 +230,7 @@ const newsCreateSchema = z.object({
   body: text('نص الخبر', { min: 20, max: 12000 }),
   category: optionalText('التصنيف', 80),
   image_url: imageUrlField,
+  media: newsMediaSchema.default([]),
   is_published: booleanField.default(false),
   is_featured: booleanField.default(false),
   published_at: publishedAtField,
@@ -199,6 +245,7 @@ const newsUpdateSchema = z
     body: text('نص الخبر', { min: 20, max: 12000 }).optional(),
     category: optionalText('التصنيف', 80).optional(),
     image_url: imageUrlField.optional(),
+    media: newsMediaSchema.optional(),
     is_published: booleanField.optional(),
     is_featured: booleanField.optional(),
     published_at: publishedAtField.optional(),

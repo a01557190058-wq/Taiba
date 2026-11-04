@@ -17,8 +17,15 @@ const DB_PATH = path.join(
   `taiba-test-${process.pid}-${crypto.randomBytes(4).toString('hex')}.sqlite`
 );
 
+// Uploaded news images are written outside the project during tests.
+const UPLOADS_DIR = path.join(
+  os.tmpdir(),
+  `taiba-test-uploads-${process.pid}-${crypto.randomBytes(4).toString('hex')}`
+);
+
 process.env.NODE_ENV = 'test';
 process.env.DB_PATH = DB_PATH;
+process.env.NEWS_UPLOADS_DIR = UPLOADS_DIR;
 process.env.SESSION_SECRET = 'test-session-secret-that-is-long-enough-0123456789';
 process.env.LOGIN_RATE_LIMIT_MAX = '1000';
 process.env.APPLICATION_RATE_LIMIT_MAX = '1000';
@@ -46,6 +53,10 @@ function removeDatabaseFiles() {
   }
 }
 
+function removeUploadsDir() {
+  fs.rmSync(UPLOADS_DIR, { recursive: true, force: true });
+}
+
 function insertAdmin() {
   db.run('DELETE FROM admins');
   db.run(
@@ -58,6 +69,7 @@ function insertAdmin() {
 function resetDatabase({ seed = true } = {}) {
   db.closeDatabase();
   removeDatabaseFiles();
+  removeUploadsDir();
   migrate({ silent: true });
   if (seed) seedDemoData();
   insertAdmin();
@@ -120,10 +132,12 @@ module.exports = {
   config,
   ADMIN,
   DB_PATH,
+  UPLOADS_DIR,
   resetDatabase,
   getCsrf,
   anonymousAgent,
   adminAgent,
   submitApplication,
   removeDatabaseFiles,
+  removeUploadsDir,
 };

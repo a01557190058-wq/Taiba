@@ -152,6 +152,28 @@ CREATE INDEX IF NOT EXISTS idx_news_demo
   ON news (is_demo);
 
 -- ---------------------------------------------------------------------------
+-- News media (gallery images and video links)
+--   type = 'image' : uploaded file or external image URL
+--   type = 'video' : YouTube/Vimeo link or direct video file URL
+--   Deleting a news item removes its media rows automatically.
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS news_media (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  news_id    INTEGER NOT NULL
+               REFERENCES news (id)
+               ON DELETE CASCADE ON UPDATE CASCADE,
+  type       TEXT NOT NULL CHECK (type IN ('image', 'video')),
+  url        TEXT NOT NULL,
+  caption    TEXT NOT NULL DEFAULT '',
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+  CHECK (length(trim(url)) > 0)
+);
+
+CREATE INDEX IF NOT EXISTS idx_news_media_news
+  ON news_media (news_id, sort_order, id);
+
+-- ---------------------------------------------------------------------------
 -- Server-side sessions (custom store, survives restarts)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS sessions (

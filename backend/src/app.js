@@ -35,9 +35,17 @@ function createApp() {
           scriptSrc: ["'self'"],
           styleSrc: ["'self'"],
           imgSrc: ["'self'", 'data:', 'https:'],
+          mediaSrc: ["'self'", 'https:'],
           fontSrc: ["'self'"],
           connectSrc: ["'self'"],
           formAction: ["'self'"],
+          // Only the video providers supported by the news editor may be
+          // embedded. No arbitrary third-party frames.
+          frameSrc: [
+            'https://www.youtube-nocookie.com',
+            'https://www.youtube.com',
+            'https://player.vimeo.com',
+          ],
           frameAncestors: ["'none'"],
           objectSrc: ["'none'"],
           ...(config.isProduction ? { upgradeInsecureRequests: [] } : {}),

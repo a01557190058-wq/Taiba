@@ -120,6 +120,94 @@ function renderAside(article) {
   );
 }
 
+function renderGallery(images) {
+  if (!images.length) return null;
+
+  const grid = el(
+    'div',
+    { className: 'article-gallery__grid' },
+    images.map((item, index) => {
+      const image = el('img', {
+        attrs: {
+          src: item.url,
+          alt: item.caption || `صورة ${index + 1} من معرض الخبر`,
+          loading: 'lazy',
+        },
+      });
+      image.addEventListener('error', () => {
+        image.src = '/assets/img/departments/default.svg';
+      });
+
+      return el('figure', { className: 'article-gallery__item' }, [
+        el(
+          'a',
+          {
+            className: 'article-gallery__link',
+            attrs: { href: item.url, target: '_blank', rel: 'noopener noreferrer' },
+          },
+          [image]
+        ),
+        item.caption ? el('figcaption', { text: item.caption }) : null,
+      ]);
+    })
+  );
+
+  return el(
+    'section',
+    { className: 'article-gallery', attrs: { 'aria-label': 'معرض صور الخبر' } },
+    [el('h2', { className: 'article-section-title', text: 'معرض الصور' }), grid]
+  );
+}
+
+function renderVideo(item, index) {
+  const frame = el('div', { className: 'article-video__frame' });
+
+  if ((item.provider === 'youtube' || item.provider === 'vimeo') && item.embed_url) {
+    frame.append(
+      el('iframe', {
+        attrs: {
+          src: item.embed_url,
+          title: item.caption || `فيديو ${index + 1} من الخبر`,
+          loading: 'lazy',
+          allow:
+            'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
+          allowfullscreen: true,
+          referrerpolicy: 'strict-origin-when-cross-origin',
+        },
+      })
+    );
+  } else {
+    frame.append(
+      el('video', {
+        className: 'article-video__player',
+        attrs: { src: item.url, controls: true, preload: 'metadata', playsinline: true },
+      })
+    );
+  }
+
+  return el('figure', { className: 'article-video' }, [
+    frame,
+    item.caption ? el('figcaption', { text: item.caption }) : null,
+  ]);
+}
+
+function renderVideos(videos) {
+  if (!videos.length) return null;
+
+  return el(
+    'section',
+    { className: 'article-videos', attrs: { 'aria-label': 'فيديوهات الخبر' } },
+    [
+      el('h2', { className: 'article-section-title', text: 'فيديوهات الخبر' }),
+      el(
+        'div',
+        { className: 'article-videos__list' },
+        videos.map((item, index) => renderVideo(item, index))
+      ),
+    ]
+  );
+}
+
 function renderArticle(article) {
   document.title = `${article.title} | مدرسة طيبة تكنولوجي`;
   if (titleNode) titleNode.textContent = article.title;
@@ -157,7 +245,19 @@ function renderArticle(article) {
       : [el('p', { text: 'لم يُضف نص تفصيلي لهذا الخبر بعد.' })]
   );
 
-  body.replaceChildren(media, prose);
+  const mediaItems = Array.isArray(article.media) ? article.media : [];
+  const coverUrl = article.image_url || '';
+  const galleryImages = mediaItems.filter(
+    (item) => item.type === 'image' && item.url !== coverUrl
+  );
+  const videos = mediaItems.filter((item) => item.type === 'video');
+
+  body.replaceChildren(
+    media,
+    prose,
+    renderGallery(galleryImages),
+    renderVideos(videos)
+  );
 
   const related = Array.isArray(article.related) ? article.related : [];
   if (related.length && relatedSection && relatedGrid) {

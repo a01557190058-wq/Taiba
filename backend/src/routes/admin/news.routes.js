@@ -1,7 +1,11 @@
 'use strict';
 
+const crypto = require('node:crypto');
 const express = require('express');
+const multer = require('multer');
 const service = require('../../services/news.service');
+const mediaLib = require('../../lib/media');
+const config = require('../../config');
 const { validate } = require('../../middleware/validate');
 const { newsCreateSchema, newsUpdateSchema } = require('../../validators/schemas');
 const { parsePagination, buildMeta } = require('../../lib/pagination');
@@ -9,6 +13,66 @@ const { parseId } = require('../../lib/params');
 const HttpError = require('../../lib/http-error');
 
 const router = express.Router();
+
+// ---------------------------------------------------------------------------
+// Image uploads
+// ---------------------------------------------------------------------------
+// Only raster images are accepted. SVG is deliberately rejected: it can carry
+// scripts and would be served from our own origin. The browser-supplied MIME
+// type is the first filter; the generated filename and extension come from a
+// fixed allow-list, never from the client.
+const ALLOWED_IMAGE_TYPES = new Map([
+  ['image/jpeg', '.jpg'],
+  ['image/png', '.png'],
+  ['image/webp', '.webp'],
+  ['image/gif', '.gif'],
+]);
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination(req, file, callback) {
+      try {
+        callback(null, mediaLib.ensureUploadsDir());
+      } catch (error) {
+        callback(error);
+      }
+    },
+    filename(req, file, callback) {
+      const extension = ALLOWED_IMAGE_TYPES.get(file.mimetype) || '.jpg';
+      callback(null, `${Date.now()}-${crypto.randomBytes(8).toString('hex')}${extension}`);
+    },
+  }),
+  limits: {
+    fileSize: config.limits.uploadFileBytes,
+    files: config.limits.uploadFilesPerRequest,
+    fields: 4,
+  },
+  fileFilter(req, file, callback) {
+    if (!ALLOWED_IMAGE_TYPES.has(file.mimetype)) {
+      return callback(
+        HttpError.badRequest('صيغة الصورة غير مدعومة. استخدم JPG أو PNG أو WebP أو GIF.', {
+          image: 'صيغة الصورة غير مدعومة.',
+        })
+      );
+    }
+    return callback(null, true);
+  },
+});
+
+router.post('/uploads', (req, res, next) => {
+  upload.array('images', config.limits.uploadFilesPerRequest)(req, res, (error) => {
+    if (error) return next(error);
+
+    const files = (req.files || []).map((file) => ({
+      url: `${mediaLib.UPLOAD_URL_PREFIX}${file.filename}`,
+      name: file.originalname,
+      size: file.size,
+      mime: file.mimetype,
+    }));
+
+    return res.status(201).json({ data: { files } });
+  });
+});
 
 router.get('/', (req, res) => {
   const { page, limit } = parsePagination(req.query);

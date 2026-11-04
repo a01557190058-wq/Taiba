@@ -46,8 +46,14 @@ export async function request(path, { method = 'GET', body, headers = {}, retry 
   const options = { method, headers: requestHeaders, credentials: 'same-origin' };
 
   if (body !== undefined) {
-    requestHeaders['Content-Type'] = 'application/json';
-    options.body = JSON.stringify(body);
+    // FormData must be sent untouched so the browser adds the multipart
+    // boundary; setting a Content-Type header here would break the upload.
+    if (body instanceof FormData) {
+      options.body = body;
+    } else {
+      requestHeaders['Content-Type'] = 'application/json';
+      options.body = JSON.stringify(body);
+    }
   }
 
   if (!SAFE_METHODS.has(method)) {

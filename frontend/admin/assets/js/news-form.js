@@ -32,10 +32,6 @@ const admin = await boot({
 
 const fields = new Map();
 
-if (admin) {
-  init();
-}
-
 // ---------------------------------------------------------------------------
 // Field helpers
 // ---------------------------------------------------------------------------
@@ -158,6 +154,437 @@ function section(title, description, children) {
     ]),
     el('div', { className: 'panel__body' }, children),
   ]);
+}
+
+// ---------------------------------------------------------------------------
+// News media (cover, gallery images, video links)
+// ---------------------------------------------------------------------------
+const MAX_IMAGES = 12;
+const MAX_VIDEOS = 8;
+const MAX_UPLOAD_FILES = 6;
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+const VIDEO_PROVIDER_LABELS = {
+  youtube: 'YouTube',
+  vimeo: 'Vimeo',
+  file: 'ملف فيديو',
+};
+
+/** Mirrors the server-side video parser closely enough for instant feedback. */
+function detectVideoProvider(value) {
+  const url = String(value || '').trim();
+  if (!url) return null;
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+
+  const host = parsed.hostname.replace(/^www\./i, '').toLowerCase();
+  if (host === 'youtu.be') return 'youtube';
+  if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'music.youtube.com') {
+    return 'youtube';
+  }
+  if (host === 'vimeo.com' || host === 'player.vimeo.com') return 'vimeo';
+  if (/\.(mp4|webm|ogg|ogv|mov|m4v)(?:[?#].*)?$/i.test(parsed.pathname)) return 'file';
+  return null;
+}
+
+function checkImageFile(file) {
+  if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+    return 'صيغة الصورة غير مدعومة. استخدم JPG أو PNG أو WebP أو GIF.';
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    return 'حجم الصورة أكبر من 5 ميجابايت.';
+  }
+  return '';
+}
+
+async function uploadImages(files) {
+  const formData = new FormData();
+  for (const file of files) formData.append('images', file);
+  const data = await api('/api/admin/news/uploads', { method: 'POST', body: formData });
+  return data && Array.isArray(data.files) ? data.files : [];
+}
+
+/**
+ * Builds the media panel and keeps its state in sync with the form.
+ * `getMedia()` returns the array sent to the API; images keep their gallery
+ * order, videos follow them.
+ */
+function mediaEditor({ article, imageField }) {
+  const existing = Array.isArray(article?.media) ? article.media : [];
+  const gallery = existing
+    .filter((item) => item.type === 'image')
+    .map((item) => ({ url: item.url, caption: item.caption || '' }));
+  const videos = existing
+    .filter((item) => item.type === 'video')
+    .map((item) => ({ url: item.url, caption: item.caption || '' }));
+
+  // --- Cover ---------------------------------------------------------------
+  const coverImage = el('img', {
+    className: 'cover-upload__image',
+    attrs: { alt: 'معاينة صورة الغلاف', loading: 'lazy', hidden: true },
+  });
+  const coverEmpty = el('span', {
+    className: 'cover-upload__empty',
+    text: 'لا توجد صورة غلاف — ارفع صورة أو ألصق رابطًا في حقل رابط الصورة.',
+  });
+  const coverPreview = el('div', { className: 'cover-upload__preview' }, [coverImage, coverEmpty]);
+
+  const coverInput = el('input', {
+    className: 'visually-hidden',
+    attrs: {
+      type: 'file',
+      accept: 'image/jpeg,image/png,image/webp,image/gif',
+      id: 'cover-upload',
+      tabindex: '-1',
+    },
+  });
+  const coverButton = el(
+    'button',
+    { className: 'btn btn-outline btn-sm', attrs: { type: 'button' } },
+    [icon('plus', 16), el('span', { text: 'رفع صورة غلاف' })]
+  );
+
+  function syncCoverPreview() {
+    const url = imageField.input.value.trim();
+    if (!url) {
+      coverImage.hidden = true;
+      coverImage.removeAttribute('src');
+      coverEmpty.hidden = false;
+      coverEmpty.textContent =
+        'لا توجد صورة غلاف — ارفع صورة أو ألصق رابطًا في حقل رابط الصورة.';
+      return;
+    }
+    coverEmpty.hidden = true;
+    coverImage.hidden = false;
+    coverImage.src = url;
+  }
+
+  coverImage.addEventListener('error', () => {
+    coverImage.hidden = true;
+    coverEmpty.hidden = false;
+    coverEmpty.textContent = 'تعذّر عرض صورة الغلاف. تحقق من الرابط.';
+  });
+  imageField.input.addEventListener('input', syncCoverPreview);
+
+  coverButton.addEventListener('click', () => coverInput.click());
+  coverInput.addEventListener('change', async () => {
+    const file = coverInput.files && coverInput.files[0];
+    coverInput.value = '';
+    if (!file) return;
+
+    const problem = checkImageFile(file);
+    if (problem) {
+      toast(problem, 'error');
+      return;
+    }
+
+    setButtonBusy(coverButton, true, 'جارٍ رفع الصورة…');
+    try {
+      const [uploaded] = await uploadImages([file]);
+      if (uploaded) {
+        imageField.input.value = uploaded.url;
+        imageField.clearError();
+        syncCoverPreview();
+        toast('تم رفع صورة الغلاف.');
+      }
+    } catch (error) {
+      toast(error.message || 'تعذّر رفع صورة الغلاف. حاول مرة أخرى.', 'error');
+    } finally {
+      setButtonBusy(coverButton, false);
+    }
+  });
+
+  // --- Gallery -------------------------------------------------------------
+  const galleryList = el('div', { className: 'media-grid' });
+  const galleryEmpty = el('p', { className: 'hint' });
+  const galleryCount = el('span', { className: 'media-counter' });
+
+  function renderGallery() {
+    galleryList.replaceChildren(
+      ...gallery.map((item, index) => {
+        const thumb = el('img', {
+          className: 'media-card__thumb',
+          attrs: {
+            src: item.url,
+            alt: item.caption || `صورة ${index + 1} من معرض الخبر`,
+            loading: 'lazy',
+          },
+        });
+        thumb.addEventListener('error', () => {
+          thumb.src = '/assets/img/departments/default.svg';
+        });
+
+        const caption = el('input', {
+          className: 'input',
+          attrs: {
+            type: 'text',
+            maxlength: 200,
+            placeholder: 'وصف الصورة (اختياري)',
+            'aria-label': 'وصف الصورة',
+          },
+        });
+        caption.value = item.caption;
+        caption.addEventListener('input', () => {
+          item.caption = caption.value;
+        });
+
+        const remove = el(
+          'button',
+          { className: 'btn btn-danger-outline btn-sm', attrs: { type: 'button' } },
+          [icon('trash', 14), el('span', { text: 'إزالة' })]
+        );
+        remove.addEventListener('click', () => {
+          gallery.splice(index, 1);
+          renderGallery();
+        });
+
+        return el('div', { className: 'media-card' }, [
+          thumb,
+          el('div', { className: 'media-card__body' }, [caption, remove]),
+        ]);
+      })
+    );
+    galleryEmpty.hidden = gallery.length > 0;
+    galleryEmpty.textContent =
+      'لم تُضف صور إلى المعرض بعد. الصور المرفوعة تظهر أسفل نص الخبر.',
+    galleryCount.textContent = `${gallery.length} / ${MAX_IMAGES}`;
+  }
+
+  const galleryInput = el('input', {
+    className: 'visually-hidden',
+    attrs: {
+      type: 'file',
+      accept: 'image/jpeg,image/png,image/webp,image/gif',
+      multiple: true,
+      id: 'gallery-upload',
+      tabindex: '-1',
+    },
+  });
+  const galleryButton = el(
+    'button',
+    { className: 'btn btn-outline btn-sm', attrs: { type: 'button' } },
+    [icon('plus', 16), el('span', { text: 'رفع صور للمعرض' })]
+  );
+
+  galleryButton.addEventListener('click', () => galleryInput.click());
+  galleryInput.addEventListener('change', async () => {
+    let files = Array.from(galleryInput.files || []);
+    galleryInput.value = '';
+    if (!files.length) return;
+
+    const remaining = MAX_IMAGES - gallery.length;
+    if (remaining <= 0) {
+      toast(`وصلت إلى الحد الأقصى (${MAX_IMAGES} صورة).`, 'error');
+      return;
+    }
+    if (files.length > remaining) {
+      files = files.slice(0, remaining);
+      toast(`تم اختيار أول ${remaining} صور فقط بسبب الحد الأقصى.`, 'warning');
+    }
+
+    for (const file of files) {
+      const problem = checkImageFile(file);
+      if (problem) {
+        toast(problem, 'error');
+        return;
+      }
+    }
+
+    setButtonBusy(galleryButton, true, 'جارٍ رفع الصور…');
+    try {
+      let uploadedCount = 0;
+      for (let index = 0; index < files.length; index += MAX_UPLOAD_FILES) {
+        const batch = files.slice(index, index + MAX_UPLOAD_FILES);
+        const uploaded = await uploadImages(batch);
+        uploaded.forEach((file) => gallery.push({ url: file.url, caption: '' }));
+        uploadedCount += uploaded.length;
+      }
+      renderGallery();
+      toast(`تم رفع ${uploadedCount} صورة إلى المعرض.`);
+    } catch (error) {
+      renderGallery();
+      toast(error.message || 'تعذّر رفع الصور. حاول مرة أخرى.', 'error');
+    } finally {
+      setButtonBusy(galleryButton, false);
+    }
+  });
+
+  // --- Videos --------------------------------------------------------------
+  const videoList = el('div', { className: 'media-list' });
+  const videoEmpty = el('p', { className: 'hint' });
+  const videoCount = el('span', { className: 'media-counter' });
+
+  const videoUrl = el('input', {
+    className: 'input',
+    attrs: {
+      type: 'url',
+      dir: 'ltr',
+      placeholder: 'https://www.youtube.com/watch?v=…',
+      'aria-label': 'رابط الفيديو',
+      maxlength: 500,
+    },
+  });
+  const videoCaption = el('input', {
+    className: 'input',
+    attrs: {
+      type: 'text',
+      placeholder: 'وصف الفيديو (اختياري)',
+      'aria-label': 'وصف الفيديو',
+      maxlength: 200,
+    },
+  });
+  const videoAdd = el(
+    'button',
+    { className: 'btn btn-primary btn-sm', attrs: { type: 'button' } },
+    [icon('plus', 16), el('span', { text: 'إضافة فيديو' })]
+  );
+
+  function renderVideos() {
+    videoList.replaceChildren(
+      ...videos.map((item, index) => {
+        const provider = detectVideoProvider(item.url) || 'file';
+        const caption = el('input', {
+          className: 'input',
+          attrs: {
+            type: 'text',
+            maxlength: 200,
+            placeholder: 'وصف الفيديو (اختياري)',
+            'aria-label': 'وصف الفيديو',
+          },
+        });
+        caption.value = item.caption;
+        caption.addEventListener('input', () => {
+          item.caption = caption.value;
+        });
+
+        const remove = el(
+          'button',
+          { className: 'btn btn-danger-outline btn-sm', attrs: { type: 'button' } },
+          [icon('trash', 14), el('span', { text: 'إزالة' })]
+        );
+        remove.addEventListener('click', () => {
+          videos.splice(index, 1);
+          renderVideos();
+        });
+
+        return el('div', { className: 'media-list__item' }, [
+          el('span', { className: 'badge badge--published', text: VIDEO_PROVIDER_LABELS[provider] || 'فيديو' }),
+          el('div', { className: 'media-list__body' }, [
+            el('a', {
+              className: 'media-list__link',
+              attrs: { href: item.url, target: '_blank', rel: 'noopener noreferrer', dir: 'ltr' },
+              text: item.url,
+            }),
+            caption,
+          ]),
+          remove,
+        ]);
+      })
+    );
+    videoEmpty.hidden = videos.length > 0;
+    videoEmpty.textContent = 'لم تُضف فيديوهات بعد. أضف رابط YouTube أو Vimeo أو ملف MP4.';
+    videoCount.textContent = `${videos.length} / ${MAX_VIDEOS}`;
+  }
+
+  videoAdd.addEventListener('click', () => {
+    const url = videoUrl.value.trim();
+    if (!url) {
+      toast('أدخل رابط الفيديو أولًا.', 'error');
+      videoUrl.focus();
+      return;
+    }
+    if (!detectVideoProvider(url)) {
+      toast('رابط الفيديو غير مدعوم. استخدم YouTube أو Vimeo أو ملف MP4/WebM مباشر.', 'error');
+      videoUrl.focus();
+      return;
+    }
+    if (videos.length >= MAX_VIDEOS) {
+      toast(`وصلت إلى الحد الأقصى (${MAX_VIDEOS} فيديوهات).`, 'error');
+      return;
+    }
+    videos.push({ url, caption: videoCaption.value.trim() });
+    videoUrl.value = '';
+    videoCaption.value = '';
+    renderVideos();
+    videoUrl.focus();
+  });
+
+  videoUrl.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      videoAdd.click();
+    }
+  });
+
+  renderGallery();
+  renderVideos();
+  syncCoverPreview();
+
+  const node = section(
+    'صور وفيديو الخبر',
+    'ارفع صورًا من جهازك (حتى 5 ميجابايت للصورة)، وأضف الفيديوهات بروابط YouTube أو Vimeo أو ملف مباشر.',
+    [
+      el('div', { className: 'media-block' }, [
+        el('div', { className: 'media-block__head' }, [
+          el('h4', { text: 'صورة الغلاف' }),
+          el('span', { className: 'hint', text: 'تظهر أعلى صفحة الخبر وفي بطاقات الأخبار.' }),
+        ]),
+        el('div', { className: 'cover-upload' }, [
+          coverPreview,
+          el('div', { className: 'cover-upload__actions' }, [coverButton, coverInput]),
+        ]),
+      ]),
+      el('div', { className: 'media-block' }, [
+        el('div', { className: 'media-block__head' }, [
+          el('h4', { text: 'معرض الصور' }),
+          galleryCount,
+        ]),
+        el('p', { className: 'hint', text: 'الصور المرفوعة تظهر في معرض أسفل نص الخبر. يمكنك إضافة وصف لكل صورة.' }),
+        el('div', { className: 'media-block__actions' }, [galleryButton, galleryInput]),
+        galleryEmpty,
+        galleryList,
+      ]),
+      el('div', { className: 'media-block' }, [
+        el('div', { className: 'media-block__head' }, [
+          el('h4', { text: 'الفيديوهات' }),
+          videoCount,
+        ]),
+        el('p', { className: 'hint', text: 'الصق رابط الفيديو ثم أضفه. لا يتم رفع ملفات الفيديو إلى الخادم.' }),
+        el('div', { className: 'media-add' }, [
+          el('div', { className: 'media-add__url' }, [videoUrl]),
+          el('div', { className: 'media-add__caption' }, [videoCaption]),
+          videoAdd,
+        ]),
+        videoEmpty,
+        videoList,
+      ]),
+    ]
+  );
+
+  function getMedia() {
+    return [
+      ...gallery.map((item, index) => ({
+        type: 'image',
+        url: item.url,
+        caption: item.caption,
+        sort_order: index,
+      })),
+      ...videos.map((item, index) => ({
+        type: 'video',
+        url: item.url,
+        caption: item.caption,
+        sort_order: gallery.length + index,
+      })),
+    ];
+  }
+
+  return { node, getMedia };
 }
 
 function slugify(value) {
@@ -283,8 +710,10 @@ function renderForm(article) {
     value: article?.image_url || '',
     dir: 'ltr',
     maxlength: 500,
-    hint: 'اختياري — يبدأ بـ / أو https://. اتركه فارغًا لاستخدام الرسم الافتراضي.',
+    hint: 'اختياري — يمكنك رفع صورة الغلاف من قسم الوسائط بالأسفل، أو لصق رابط يبدأ بـ / أو https://.',
   });
+
+  const media = mediaEditor({ article, imageField });
 
   const publishedAtField = createField({
     id: 'published_at',
@@ -345,6 +774,7 @@ function renderForm(article) {
       el('div', { className: 'mt-2' }, [
         section('نص الخبر', 'المحتوى الكامل الذي يظهر في صفحة الخبر.', [bodyField.node]),
       ]),
+      el('div', { className: 'mt-2' }, [media.node]),
       el('div', { className: 'mt-2' }, [
         section('النشر والترتيب', 'تحكم في ظهور الخبر وترتيبه بين الأخبار الأخرى.', [
           el('div', { className: 'form-grid' }, [
@@ -410,6 +840,7 @@ function renderForm(article) {
       body: values.body,
       category: values.category,
       image_url: values.image_url,
+      media: media.getMedia(),
       sort_order: Number(values.sort_order),
       is_published: published.input.checked,
       is_featured: featured.input.checked,
@@ -572,4 +1003,9 @@ async function init() {
       el('div', { className: 'panel mt-2' }, [el('div', { className: 'panel__body' }, [alertBox])])
     );
   }
+}
+
+// Start only after every constant used by the form is initialised.
+if (admin) {
+  init();
 }

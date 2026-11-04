@@ -3,8 +3,31 @@
 const db = require('../db');
 const HttpError = require('../lib/http-error');
 const { slugify } = require('../lib/text');
+const mediaLib = require('../lib/media');
 
 const PUBLIC_FILTER = 'n.is_published = 1';
+
+// First gallery image is used as a cover when the news item has no explicit
+// cover image. This keeps cards meaningful without loading every media row.
+const NEWS_SELECT = `SELECT n.*,
+    (SELECT m.url FROM news_media m
+      WHERE m.news_id = n.id AND m.type = 'image'
+      ORDER BY m.sort_order ASC, m.id ASC
+      LIMIT 1) AS cover_url
+  FROM news n`;
+
+function mapMedia(row) {
+  const video = row.type === 'video' ? mediaLib.parseVideo(row.url) : null;
+  return {
+    id: row.id,
+    type: row.type,
+    url: row.url,
+    caption: row.caption,
+    sort_order: row.sort_order,
+    provider: video ? video.provider : null,
+    embed_url: video ? video.embed_url : null,
+  };
+}
 
 function mapNews(row) {
   if (!row) return null;
@@ -15,7 +38,7 @@ function mapNews(row) {
     summary: row.summary,
     body: row.body,
     category: row.category,
-    image_url: row.image_url,
+    image_url: row.image_url || row.cover_url || '',
     is_published: Boolean(row.is_published),
     is_featured: Boolean(row.is_featured),
     is_demo: Boolean(row.is_demo),
@@ -24,6 +47,55 @@ function mapNews(row) {
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
+}
+
+function getMedia(newsId) {
+  return db
+    .all(
+      'SELECT * FROM news_media WHERE news_id = ? ORDER BY sort_order ASC, id ASC',
+      [newsId]
+    )
+    .map(mapMedia);
+}
+
+function withMedia(news) {
+  if (!news) return null;
+  return { ...news, media: getMedia(news.id) };
+}
+
+function replaceMedia(newsId, items = []) {
+  db.run('DELETE FROM news_media WHERE news_id = ?', [newsId]);
+  const insert = db.run.bind(db);
+  items.forEach((item, index) => {
+    insert(
+      `INSERT INTO news_media (news_id, type, url, caption, sort_order)
+       VALUES (?, ?, ?, ?, ?)`,
+      [
+        newsId,
+        item.type,
+        item.url,
+        item.caption || '',
+        Number.isInteger(item.sort_order) ? item.sort_order : index,
+      ]
+    );
+  });
+}
+
+/**
+ * Deletes uploaded image files that are no longer referenced by any news item.
+ * External URLs are ignored. Never throws: a leftover file must not break a
+ * successful database write.
+ */
+function cleanupUploadedFiles(candidates) {
+  const checked = new Set();
+  for (const url of candidates) {
+    if (!url || checked.has(url) || !mediaLib.isUploadedNewsUrl(url)) continue;
+    checked.add(url);
+    const stillUsed =
+      db.get('SELECT 1 AS found FROM news WHERE image_url = ? LIMIT 1', [url]) ||
+      db.get('SELECT 1 AS found FROM news_media WHERE url = ? LIMIT 1', [url]);
+    if (!stillUsed) mediaLib.removeUploadedFile(url);
+  }
 }
 
 function escapeLike(value) {
@@ -55,7 +127,7 @@ function listPublic({ q = '', category = '', featured = null, page = 1, limit = 
 
   const totalRow = db.get(`SELECT COUNT(*) AS count FROM news n ${whereSql}`, params);
   const rows = db.all(
-    `SELECT n.* FROM news n
+    `${NEWS_SELECT}
        ${whereSql}
       ORDER BY n.is_featured DESC, n.published_at DESC, n.id DESC
       LIMIT ? OFFSET ?`,
@@ -78,14 +150,14 @@ function listCategories() {
 }
 
 function getPublicBySlug(slug) {
-  const row = db.get(`SELECT n.* FROM news n WHERE n.slug = ? AND ${PUBLIC_FILTER}`, [slug]);
-  return mapNews(row);
+  const row = db.get(`${NEWS_SELECT} WHERE n.slug = ? AND ${PUBLIC_FILTER}`, [slug]);
+  return withMedia(mapNews(row));
 }
 
 function relatedPublic(news, limit = 3) {
   if (!news) return [];
   const rows = db.all(
-    `SELECT n.* FROM news n
+    `${NEWS_SELECT}
       WHERE ${PUBLIC_FILTER}
         AND n.id <> ?
         AND (n.category = ? OR ? = '')
@@ -123,7 +195,7 @@ function listAdmin({ q = '', state = 'all', isDemo = null, page = 1, limit = 20 
 
   const totalRow = db.get(`SELECT COUNT(*) AS count FROM news n ${whereSql}`, params);
   const rows = db.all(
-    `SELECT n.* FROM news n
+    `${NEWS_SELECT}
        ${whereSql}
       ORDER BY n.is_published ASC, n.published_at DESC, n.id DESC
       LIMIT ? OFFSET ?`,
@@ -134,7 +206,8 @@ function listAdmin({ q = '', state = 'all', isDemo = null, page = 1, limit = 20 
 }
 
 function getById(id) {
-  return mapNews(db.get('SELECT * FROM news WHERE id = ?', [id]));
+  const row = db.get(`${NEWS_SELECT} WHERE n.id = ?`, [id]);
+  return withMedia(mapNews(row));
 }
 
 function assertSlugAvailable(slug, excludeId = null) {
@@ -155,26 +228,31 @@ function create(payload) {
   }
   assertSlugAvailable(slug);
 
-  const result = db.run(
-    `INSERT INTO news
-       (title, slug, summary, body, category, image_url,
-        is_published, is_featured, is_demo, published_at, sort_order)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, COALESCE(?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now')), ?)`,
-    [
-      payload.title,
-      slug,
-      payload.summary || '',
-      payload.body || '',
-      payload.category || '',
-      payload.image_url || '',
-      payload.is_published ? 1 : 0,
-      payload.is_featured ? 1 : 0,
-      payload.published_at || null,
-      payload.sort_order || 0,
-    ]
-  );
+  const id = db.transaction(() => {
+    const result = db.run(
+      `INSERT INTO news
+         (title, slug, summary, body, category, image_url,
+          is_published, is_featured, is_demo, published_at, sort_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, COALESCE(?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now')), ?)`,
+      [
+        payload.title,
+        slug,
+        payload.summary || '',
+        payload.body || '',
+        payload.category || '',
+        payload.image_url || '',
+        payload.is_published ? 1 : 0,
+        payload.is_featured ? 1 : 0,
+        payload.published_at || null,
+        payload.sort_order || 0,
+      ]
+    );
+    const newsId = Number(result.lastInsertRowid);
+    replaceMedia(newsId, payload.media || []);
+    return newsId;
+  });
 
-  return getById(Number(result.lastInsertRowid));
+  return getById(id);
 }
 
 function update(id, payload) {
@@ -202,20 +280,43 @@ function update(id, payload) {
   if (payload.published_at !== undefined) assign('published_at', payload.published_at);
   if (payload.sort_order !== undefined) assign('sort_order', payload.sort_order);
 
-  if (!fields.length) return current;
+  const mediaChanged = payload.media !== undefined;
+  if (!fields.length && !mediaChanged) return current;
 
-  fields.push("updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')");
-  params.push(id);
+  const oldUrls = [
+    current.image_url,
+    ...(Array.isArray(current.media) ? current.media.map((item) => item.url) : []),
+  ];
 
-  db.run(`UPDATE news SET ${fields.join(', ')} WHERE id = ?`, params);
-  return getById(id);
+  db.transaction(() => {
+    if (fields.length) {
+      fields.push("updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')");
+      params.push(id);
+      db.run(`UPDATE news SET ${fields.join(', ')} WHERE id = ?`, params);
+    }
+    if (mediaChanged) replaceMedia(id, payload.media);
+  });
+
+  const updated = getById(id);
+  const retainedUrls = [
+    updated.image_url,
+    ...(Array.isArray(updated.media) ? updated.media.map((item) => item.url) : []),
+  ];
+  const retained = new Set(retainedUrls.filter(Boolean));
+  cleanupUploadedFiles(oldUrls.filter((url) => !retained.has(url)));
+
+  return updated;
 }
 
 /** Full administrative control: any news item (demo or real) can be deleted. */
 function remove(id) {
-  const news = db.get('SELECT id, title, slug FROM news WHERE id = ?', [id]);
+  const news = db.get('SELECT id, title, slug, image_url FROM news WHERE id = ?', [id]);
   if (!news) throw HttpError.notFound('الخبر غير موجود.');
+
+  const urls = [news.image_url, ...getMedia(news.id).map((item) => item.url)];
   db.run('DELETE FROM news WHERE id = ?', [id]);
+  cleanupUploadedFiles(urls);
+
   return { id: news.id, title: news.title, slug: news.slug };
 }
 
@@ -225,12 +326,14 @@ function countPublished() {
 
 module.exports = {
   mapNews,
+  mapMedia,
   listPublic,
   listCategories,
   getPublicBySlug,
   relatedPublic,
   listAdmin,
   getById,
+  getMedia,
   create,
   update,
   remove,

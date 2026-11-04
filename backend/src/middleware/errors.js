@@ -1,6 +1,7 @@
 'use strict';
 
 const { ZodError } = require('zod');
+const multer = require('multer');
 const HttpError = require('../lib/http-error');
 const { formatZodError } = require('../validators/schemas');
 const config = require('../config');
@@ -32,6 +33,30 @@ function errorHandler(error, req, res, next) {
         message: error.message,
         ...(error.fields ? { fields: error.fields } : {}),
       },
+    });
+  }
+
+  // multer (news image uploads)
+  if (error instanceof multer.MulterError) {
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(413).json({
+        error: {
+          code: 'FILE_TOO_LARGE',
+          message: 'حجم الصورة أكبر من الحد المسموح (5 ميجابايت).',
+          fields: { image: 'حجم الصورة كبير جدًا.' },
+        },
+      });
+    }
+    if (error.code === 'LIMIT_FILE_COUNT' || error.code === 'LIMIT_UNEXPECTED_FILE') {
+      return res.status(400).json({
+        error: {
+          code: 'TOO_MANY_FILES',
+          message: 'عدد الصور في الطلب أكبر من الحد المسموح.',
+        },
+      });
+    }
+    return res.status(400).json({
+      error: { code: 'UPLOAD_ERROR', message: 'تعذّر رفع الصورة. تحقق من الملف ثم حاول مرة أخرى.' },
     });
   }
 
