@@ -3,6 +3,7 @@
  * Loads published departments from the API, renders cards and filters them
  * locally by name, short description or skill (Arabic-aware matching).
  */
+import './common.js';
 import { api } from './api.js';
 import { qs, el, departmentCard, skeletonGrid, stateBox, revealNow } from './ui.js';
 

@@ -5,6 +5,7 @@
  *   the source of truth (field errors are rendered from API responses).
  * - Success shows the unique reference number; it never claims acceptance.
  */
+import './common.js';
 import { api, ApiError } from './api.js';
 import { qs, el, setAlert } from './ui.js';
 

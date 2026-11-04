@@ -4,6 +4,7 @@
  * published department and renders it. Unknown/unpublished slugs show a
  * friendly not-found state instead of an empty page.
  */
+import './common.js';
 import { api, ApiError } from './api.js';
 import { qs, el, icon, stateBox, formatDate } from './ui.js';
 
