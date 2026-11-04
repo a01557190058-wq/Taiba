@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-label="رسم توضيحي لقسم التحكم الصناعي">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0B3C6B" />
-      <stop offset="1" stop-color="#E63946" />
+      <stop offset="0" stop-color="#0A3B66" />
+      <stop offset="1" stop-color="#D62839" />
     </linearGradient>
     <pattern id="dots" width="30" height="30" patternUnits="userSpaceOnUse">
       <circle cx="2" cy="2" r="1.7" fill="#FFFFFF" opacity="0.13" />
@@ -17,7 +17,7 @@
   <circle cx="470" cy="90" r="170" fill="#FFFFFF" opacity="0.05" />
   <circle cx="110" cy="380" r="140" fill="#FFC928" opacity="0.12" />
   <circle cx="320" cy="212" r="168" fill="url(#glow)" />
-  <g transform="translate(320 212)" fill="none" stroke="#F4F7FA" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+  <g transform="translate(320 212)" fill="none" stroke="#F5F8FC" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
     
       <path d="M-84 34 A84 84 0 0 1 84 34" />
       <path d="M-56 12 L-44 22 M-24 -24 L-14 -8 M24 -24 L14 -8 M56 12 L44 22" opacity="0.75" />
