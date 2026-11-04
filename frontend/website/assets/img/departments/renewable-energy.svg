@@ -1,21 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-label="رسم توضيحي لقسم الطاقة المتجددة">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#1E7A4C" />
-      <stop offset="1" stop-color="#1E7A4C" />
+      <stop offset="0" stop-color="#1769AA" />
+      <stop offset="1" stop-color="#0E4C7A" />
     </linearGradient>
     <pattern id="dots" width="30" height="30" patternUnits="userSpaceOnUse">
       <circle cx="2" cy="2" r="1.7" fill="#FFFFFF" opacity="0.13" />
     </pattern>
     <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#B7E3C9" stop-opacity="0.35" />
-      <stop offset="1" stop-color="#B7E3C9" stop-opacity="0" />
+      <stop offset="0" stop-color="#FFC928" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#FFC928" stop-opacity="0" />
     </radialGradient>
   </defs>
   <rect width="640" height="420" fill="url(#bg)" />
   <rect width="640" height="420" fill="url(#dots)" />
   <circle cx="470" cy="90" r="170" fill="#FFFFFF" opacity="0.05" />
-  <circle cx="110" cy="380" r="140" fill="#B7E3C9" opacity="0.12" />
+  <circle cx="110" cy="380" r="140" fill="#FFC928" opacity="0.12" />
   <circle cx="320" cy="212" r="168" fill="url(#glow)" />
   <g transform="translate(320 212)" fill="none" stroke="#F4F7FA" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
     
@@ -24,10 +24,10 @@
       <path d="M-84 44 H56 L34 92 H-62 Z" />
       <path d="M-64 62 H38 M-52 78 H26" opacity="0.65" />
   </g>
-  <g fill="none" stroke="#B7E3C9" stroke-width="4" opacity="0.55">
+  <g fill="none" stroke="#FFC928" stroke-width="4" opacity="0.55">
     <path d="M56 330 H126 M56 330 V262" />
     <path d="M584 90 H520 M584 90 V150" />
   </g>
-  <circle cx="56" cy="330" r="7" fill="#B7E3C9" opacity="0.85" />
-  <circle cx="584" cy="90" r="7" fill="#B7E3C9" opacity="0.85" />
+  <circle cx="56" cy="330" r="7" fill="#FFC928" opacity="0.85" />
+  <circle cx="584" cy="90" r="7" fill="#FFC928" opacity="0.85" />
 </svg>

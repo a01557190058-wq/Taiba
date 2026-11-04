@@ -37,9 +37,9 @@
 }
 
 :root {
-  --ink-900: #102a43;
-  --ink-800: #17395a;
-  --ink-700: #21507a;
+  --ink-900: #0B3C6B;
+  --ink-800: #0F4C82;
+  --ink-700: #1B5C93;
   --ink-600: #3c6488;
   --ink-500: #56728c;
   --ink-400: #6e879c;
@@ -52,9 +52,9 @@
   --teal-100: #dcebf7;
   --teal-50: #eef6fc;
 
-  --navy-950: #0b1f33;
-  --navy-900: #102a43;
-  --navy-800: #163a5c;
+  --navy-950: #07284A;
+  --navy-900: #0B3C6B;
+  --navy-800: #0F4C82;
 
   --gold-600: #c79a00;
   --gold-500: #ffc928;
@@ -68,10 +68,6 @@
   --red-600: #e63946;
   --red-100: #fbdde0;
   --red-50: #fdf1f2;
-
-  --green-700: #1e7a4c;
-  --green-100: #d7f0e1;
-  --green-50: #effaf4;
 
   --bg: #f4f7fa;
   --bg-soft: #edf2f7;
@@ -92,10 +88,10 @@
   --radius-xl: 38px;
   --radius-pill: 999px;
 
-  --shadow-xs: 0 1px 2px rgba(16, 42, 67, 0.06);
-  --shadow-sm: 0 6px 18px rgba(16, 42, 67, 0.08);
-  --shadow-md: 0 20px 44px rgba(16, 42, 67, 0.12);
-  --shadow-lg: 0 36px 80px rgba(16, 42, 67, 0.18);
+  --shadow-xs: 0 1px 2px rgba(11, 60, 107, 0.06);
+  --shadow-sm: 0 6px 18px rgba(11, 60, 107, 0.08);
+  --shadow-md: 0 20px 44px rgba(11, 60, 107, 0.12);
+  --shadow-lg: 0 36px 80px rgba(11, 60, 107, 0.18);
 
   --container: 1200px;
   --font: 'Cairo', 'Segoe UI', 'Tahoma', 'Noto Kufi Arabic', sans-serif;
@@ -1411,9 +1407,9 @@ button {
 }
 
 .alert--success {
-  background: var(--green-50);
-  border-color: #bfe3cf;
-  color: var(--green-700);
+  background: var(--teal-50);
+  border-color: var(--teal-200);
+  color: var(--teal-800);
 }
 
 .alert--info {
@@ -1662,8 +1658,8 @@ button {
   width: 74px;
   height: 74px;
   border-radius: 50%;
-  background: var(--green-100);
-  color: var(--green-700);
+  background: var(--teal-100);
+  color: var(--teal-800);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2353,7 +2349,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 45%, rgba(11, 31, 51, 0.55));
+  background: linear-gradient(180deg, transparent 45%, rgba(7, 40, 74, 0.55));
   opacity: 0;
   transition: opacity 0.3s var(--ease);
 }
@@ -2436,7 +2432,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   inset-inline-start: 0;
   margin: 0;
   background: linear-gradient(140deg, var(--navy-900), var(--teal-800));
-  box-shadow: 0 8px 18px rgba(16, 42, 67, 0.18);
+  box-shadow: 0 8px 18px rgba(11, 60, 107, 0.18);
 }
 
 .step::after {
@@ -2623,7 +2619,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   border-radius: var(--radius-xl);
   background:
     radial-gradient(520px 220px at 88% 20%, rgba(255, 201, 40, 0.3), transparent 65%),
-    linear-gradient(135deg, var(--navy-950), #163a5c 62%, var(--teal-800));
+    linear-gradient(135deg, var(--navy-950), #0F4C82 62%, var(--teal-800));
   color: var(--ivory);
   box-shadow: var(--shadow-lg);
 }
@@ -2663,7 +2659,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 
 .cta-band .btn-primary {
   --btn-bg: var(--gold-500);
-  --btn-color: #102a43;
+  --btn-color: #0B3C6B;
   box-shadow: 0 12px 28px rgba(255, 201, 40, 0.35);
 }
 
@@ -2686,7 +2682,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
    Header states & back-to-top
    -------------------------------------------------------------------------- */
 .site-header.is-scrolled {
-  box-shadow: 0 10px 30px rgba(16, 42, 67, 0.1);
+  box-shadow: 0 10px 30px rgba(11, 60, 107, 0.1);
   border-bottom-color: transparent;
 }
 
@@ -3108,12 +3104,12 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
   inset-block-start: 0.85rem;
   inset-inline-start: 0.85rem;
   background: linear-gradient(135deg, var(--gold-500), #ffd75e);
-  color: #102a43;
+  color: #0B3C6B;
   font-size: 0.72rem;
   font-weight: 800;
   padding: 0.3rem 0.7rem;
   border-radius: var(--radius-pill);
-  box-shadow: 0 10px 20px -12px rgba(16, 42, 67, 0.35);
+  box-shadow: 0 10px 20px -12px rgba(11, 60, 107, 0.35);
 }
 
 .news-card__body {
@@ -3316,7 +3312,7 @@ html.js .project-grid > .reveal:nth-child(3n + 3) {
 .article-meta__pill--gold {
   background: var(--gold-100);
   border-color: #ffe9a8;
-  color: #102a43;
+  color: #0B3C6B;
 }
 
 .article-meta__item {
