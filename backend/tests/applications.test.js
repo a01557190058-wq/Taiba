@@ -134,7 +134,9 @@ test('obvious duplicate submissions are rejected', async () => {
   const second = await submitApplication(agent, token, payload);
   assert.equal(second.status, 409);
   assert.equal(second.body.error.code, 'DUPLICATE_APPLICATION');
-  assert.ok(second.body.error.message.includes(first.body.data.reference_number));
+  // The public error must not confirm or leak the previous application's
+  // reference number to whoever knows the phone number.
+  assert.ok(!second.body.error.message.includes(first.body.data.reference_number));
 });
 
 test('the same phone can apply to a different department', async () => {
@@ -302,6 +304,21 @@ test('CSV export is protected and contains the application', async () => {
   const { agent: anonymous } = await anonymousAgent();
   const denied = await anonymous.get('/api/admin/applications/export.csv');
   assert.equal(denied.status, 401);
+});
+
+test('CSV export neutralises spreadsheet formula injection', async () => {
+  const { agent, token } = await anonymousAgent();
+  const created = await submitApplication(agent, token, {
+    phone: '01666666666',
+    additional_notes: '=HYPERLINK("http://evil.example","click")',
+  });
+  assert.equal(created.status, 201);
+
+  const { agent: admin } = await adminAgent();
+  const res = await admin.get('/api/admin/applications/export.csv');
+  assert.equal(res.status, 200);
+  assert.ok(res.text.includes("'=HYPERLINK("), 'formula must be prefixed with an apostrophe');
+  assert.ok(!res.text.includes('"=HYPERLINK('), 'formula must never start a CSV cell unescaped');
 });
 
 after(() => db.closeDatabase());

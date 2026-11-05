@@ -18,7 +18,10 @@ const arabic = {
 
 const text = (label, { min = 0, max = 2000 } = {}) =>
   z
-    .string({ required_error: arabic.required(label), invalid_type_error: arabic.string(label) })
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? arabic.required(label) : arabic.string(label),
+    })
     .transform((value) => cleanText(value))
     .refine((value) => (min === 0 ? true : value.length >= min), {
       message: arabic.tooShort(label, min),
@@ -27,12 +30,13 @@ const text = (label, { min = 0, max = 2000 } = {}) =>
 
 const optionalText = (label, max) =>
   z
-    .union([z.string(), z.null(), z.undefined()])
+    .string()
+    .nullish()
     .transform((value) => cleanText(value ?? ''))
     .refine((value) => value.length <= max, { message: arabic.tooLong(label, max) });
 
 const slugField = z
-  .string({ required_error: 'المعرّف (slug) مطلوب.' })
+  .string({ error: 'المعرّف (slug) مطلوب.' })
   .transform((value) => slugify(value))
   .refine((value) => value.length >= 2, { message: 'المعرّف قصير جدًا.' })
   .refine((value) => value.length <= 140, { message: 'المعرّف طويل جدًا.' })
@@ -41,11 +45,20 @@ const slugField = z
   });
 
 const imageUrlField = z
-  .union([z.string(), z.null(), z.undefined()])
+  .string()
+  .nullish()
   .transform((value) => cleanText(value ?? ''))
-  .refine((value) => value === '' || value.startsWith('/') || /^https?:\/\/[^\s]+$/i.test(value), {
-    message: 'رابط الصورة يجب أن يبدأ بـ / أو http(s)://',
-  })
+  .refine(
+    (value) => {
+      if (value === '') return true;
+      // Reject protocol-relative URLs (//evil.example), backslashes and any
+      // whitespace: only same-origin absolute paths or real http(s) URLs are
+      // accepted for image sources.
+      if (value.startsWith('//') || value.includes('\\') || /\s/.test(value)) return false;
+      return value.startsWith('/') || /^https?:\/\/[^\s]+$/i.test(value);
+    },
+    { message: 'رابط الصورة يجب أن يبدأ بـ / أو http(s)://' }
+  )
   .refine((value) => value.length <= 500, { message: 'رابط الصورة طويل جدًا.' });
 
 const booleanField = z.union([z.boolean(), z.literal(0), z.literal(1), z.enum(['true', 'false'])]).transform((value) => {
@@ -55,7 +68,7 @@ const booleanField = z.union([z.boolean(), z.literal(0), z.literal(1), z.enum(['
 });
 
 const sortOrderField = z.coerce
-  .number({ invalid_type_error: 'ترتيب العرض يجب أن يكون رقمًا.' })
+  .number({ error: 'ترتيب العرض يجب أن يكون رقمًا.' })
   .int({ message: 'ترتيب العرض يجب أن يكون عددًا صحيحًا.' })
   .min(0, { message: 'ترتيب العرض لا يمكن أن يكون سالبًا.' })
   .max(9999, { message: 'ترتيب العرض كبير جدًا.' });
@@ -97,7 +110,7 @@ const departmentUpdateSchema = z
 // Public application form
 // ---------------------------------------------------------------------------
 const phoneSchema = z
-  .string({ required_error: 'رقم الهاتف مطلوب.' })
+  .string({ error: 'رقم الهاتف مطلوب.' })
   .transform((value) => normalizePhone(value))
   .refine((value) => /^\+?\d{7,15}$/.test(value), {
     message: 'رقم الهاتف يجب أن يحتوي على 7 إلى 15 رقمًا.',
@@ -110,19 +123,22 @@ const applicationCreateSchema = z.object({
   ),
   phone: phoneSchema,
   email: z
-    .union([z.string(), z.null(), z.undefined()])
+    .string()
+    .nullish()
     .transform((value) => cleanText(value ?? '').toLowerCase())
     .refine((value) => value === '' || (value.length <= 120 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)), {
       message: 'البريد الإلكتروني غير صالح.',
     }),
   department_id: z.coerce
-    .number({ required_error: 'يجب اختيار القسم.', invalid_type_error: 'القسم غير صالح.' })
+    .number({
+      error: (issue) => (issue.input === undefined ? 'يجب اختيار القسم.' : 'القسم غير صالح.'),
+    })
     .int({ message: 'القسم غير صالح.' })
     .positive({ message: 'يجب اختيار القسم.' }),
   previous_education: optionalText('المؤهل أو المرحلة السابقة', 150),
   additional_notes: optionalText('ملاحظات إضافية', 1000),
   consent: z.literal(true, {
-    errorMap: () => ({ message: 'يجب الموافقة على معالجة البيانات قبل الإرسال.' }),
+    error: 'يجب الموافقة على معالجة البيانات قبل الإرسال.',
   }),
 });
 
@@ -133,7 +149,7 @@ const APPLICATION_STATUSES = ['NEW', 'UNDER_REVIEW', 'ACCEPTED', 'REJECTED'];
 
 const applicationStatusSchema = z.object({
   status: z.enum(APPLICATION_STATUSES, {
-    errorMap: () => ({ message: 'حالة الطلب غير صالحة.' }),
+    error: 'حالة الطلب غير صالحة.',
   }),
 });
 
@@ -145,7 +161,7 @@ const applicationNotesSchema = z.object({
 // Admin: school content & FAQ
 // ---------------------------------------------------------------------------
 const schoolContentSchema = z
-  .record(z.string(), z.string({ invalid_type_error: 'قيمة المحتوى يجب أن تكون نصًا.' }))
+  .record(z.string(), z.string({ error: 'قيمة المحتوى يجب أن تكون نصًا.' }))
   .transform((record) => {
     const cleaned = {};
     for (const [key, value] of Object.entries(record)) cleaned[key] = cleanText(value);
@@ -172,7 +188,8 @@ const faqUpdateSchema = z
 // Admin: news
 // ---------------------------------------------------------------------------
 const publishedAtField = z
-  .union([z.string(), z.null(), z.undefined()])
+  .string()
+  .nullish()
   .transform((value) => cleanText(value ?? ''))
   .refine((value) => value === '' || !Number.isNaN(Date.parse(value)), {
     message: 'تاريخ النشر غير صالح.',
@@ -182,10 +199,10 @@ const publishedAtField = z
 const newsMediaItemSchema = z
   .object({
     type: z.enum(['image', 'video'], {
-      errorMap: () => ({ message: 'نوع الوسيط يجب أن يكون صورة أو فيديو.' }),
+      error: 'نوع الوسيط يجب أن يكون صورة أو فيديو.',
     }),
     url: z
-      .string({ required_error: 'رابط الوسيط مطلوب.' })
+      .string({ error: 'رابط الوسيط مطلوب.' })
       .transform((value) => cleanText(value))
       .refine((value) => value.length > 0, { message: 'رابط الوسيط مطلوب.' })
       .refine((value) => value.length <= 500, { message: 'رابط الوسيط طويل جدًا.' }),
@@ -259,20 +276,20 @@ const newsUpdateSchema = z
 const loginSchema = z.object({
   identifier: text('البريد الإلكتروني أو اسم المستخدم', { min: 3, max: 160 }),
   password: z
-    .string({ required_error: 'كلمة المرور مطلوبة.' })
+    .string({ error: 'كلمة المرور مطلوبة.' })
     .min(1, { message: 'كلمة المرور مطلوبة.' })
     .max(200, { message: 'كلمة المرور طويلة جدًا.' }),
 });
 
 const demoResetSchema = z.object({
   confirm: z.literal('RESET_DEMO_DATA', {
-    errorMap: () => ({ message: 'تأكيد غير صالح لعملية إعادة التهيئة.' }),
+    error: 'تأكيد غير صالح لعملية إعادة التهيئة.',
   }),
 });
 
 const demoCleanupSchema = z.object({
   confirm: z.literal('DELETE_DEMO_DATA', {
-    errorMap: () => ({ message: 'تأكيد غير صالح لعملية حذف البيانات التجريبية.' }),
+    error: 'تأكيد غير صالح لعملية حذف البيانات التجريبية.',
   }),
 });
 

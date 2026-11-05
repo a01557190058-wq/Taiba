@@ -397,6 +397,22 @@ test('image upload accepts raster formats and rejects SVG', async () => {
   assert.equal(svg.body.error.code, 'VALIDATION_ERROR');
 });
 
+test('image upload rejects files whose bytes are not a real image', async () => {
+  const { agent, token } = await adminAgent();
+
+  const res = await uploadImages(agent, token, [
+    {
+      buffer: Buffer.from('<html><script>alert(1)</script></html>'),
+      filename: 'fake.png',
+      contentType: 'image/png',
+    },
+  ]);
+
+  assert.equal(res.status, 400);
+  assert.equal(res.body.error.code, 'VALIDATION_ERROR');
+  assert.equal(fs.readdirSync(UPLOADS_DIR).length, 0, 'invalid upload must be removed');
+});
+
 test('image upload enforces the per-file size limit', async () => {
   const { agent, token } = await adminAgent();
   const tooLarge = Buffer.alloc(5 * 1024 * 1024 + 64, 1);

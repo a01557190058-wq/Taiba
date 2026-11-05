@@ -9,8 +9,10 @@ const sharedOptions = {
   windowMs,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
-  // Do not count successful login / application submissions twice.
-  skipSuccessfulRequests: true,
+  // Every attempt counts, including successful ones. Otherwise a spammer
+  // could submit an unlimited number of *valid* applications without ever
+  // hitting the limit.
+  skipSuccessfulRequests: false,
   handler: (req, res) => {
     res.status(429).json({
       error: {

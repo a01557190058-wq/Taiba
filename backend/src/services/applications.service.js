@@ -73,9 +73,12 @@ function create(payload) {
   );
 
   if (duplicate) {
+    // Do not echo the previous reference number: it would let anyone who
+    // knows a phone number confirm the existence of someone else's
+    // application and learn its identifier.
     throw HttpError.conflict(
       'DUPLICATE_APPLICATION',
-      `يوجد طلب مسجل بنفس رقم الهاتف لهذا القسم خلال آخر ${DUPLICATE_WINDOW_HOURS} ساعة. رقم الطلب السابق: ${duplicate.reference_number}`
+      `يوجد طلب مسجل بنفس رقم الهاتف لهذا القسم خلال آخر ${DUPLICATE_WINDOW_HOURS} ساعة.`
     );
   }
 
@@ -216,9 +219,16 @@ function remove(id) {
   };
 }
 
-/** Escape a value for CSV (Excel-friendly, quotes doubled). */
+/**
+ * Escape a value for CSV (Excel-friendly, quotes doubled).
+ *
+ * Quoting alone does not stop spreadsheet formula injection: Excel/Sheets
+ * still evaluate a cell whose text begins with =, +, -, @, tab or CR. Such
+ * values are prefixed with an apostrophe so they are treated as literal text.
+ */
 function csvCell(value) {
-  const text = value === null || value === undefined ? '' : String(value);
+  let text = value === null || value === undefined ? '' : String(value);
+  if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
   return `"${text.replace(/"/g, '""')}"`;
 }
 

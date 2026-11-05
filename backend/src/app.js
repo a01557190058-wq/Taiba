@@ -23,6 +23,9 @@ function createApp() {
 
   app.disable('x-powered-by');
   app.set('trust proxy', config.trustProxy ? 1 : false);
+  // The "simple" parser keeps `req.query` flat and avoids the qs nesting/
+  // prototype-pollution surface of the default extended parser.
+  app.set('query parser', 'simple');
 
   // --- Security headers ----------------------------------------------------
   app.use(
@@ -57,11 +60,28 @@ function createApp() {
     })
   );
 
+  // Helmet 8 no longer ships a Permissions-Policy helper, so set it directly.
+  // Only sensitive capabilities are disabled; fullscreen stays available for
+  // the embedded video players.
+  app.use((req, res, next) => {
+    res.setHeader(
+      'Permissions-Policy',
+      'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), interest-cohort=()'
+    );
+    next();
+  });
+
   // --- Parsing / transport -------------------------------------------------
   app.use(compression());
   app.use(cors);
   app.use(express.json({ limit: config.limits.jsonBody }));
-  app.use(express.urlencoded({ extended: false, limit: config.limits.urlEncodedBody }));
+  app.use(
+    express.urlencoded({
+      extended: false,
+      limit: config.limits.urlEncodedBody,
+      parameterLimit: config.limits.formFields,
+    })
+  );
   app.use(cookieParser());
 
   // --- Sessions (server-side, persisted in SQLite) -------------------------
@@ -108,6 +128,13 @@ function createApp() {
   app.use(issueCsrfToken);
 
   // --- API -----------------------------------------------------------------
+  // API responses may contain personal data or session state: never let a
+  // browser, proxy or shared cache store them.
+  app.use('/api', (req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store');
+    next();
+  });
+
   app.use('/api/auth', authRoutes);
   app.use('/api/admin', adminRoutes);
   app.use('/api', publicRoutes);

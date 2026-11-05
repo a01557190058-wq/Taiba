@@ -15,6 +15,12 @@ const UPLOAD_URL_PREFIX = '/assets/uploads/news/';
 const IMAGE_EXTENSION = /\.(jpe?g|png|webp|gif|avif)(?:[?#].*)?$/i;
 const VIDEO_EXTENSION = /\.(mp4|webm|ogg|ogv|mov|m4v)(?:[?#].*)?$/i;
 
+// Magic-byte signatures for the raster formats the upload endpoint accepts.
+// The browser-supplied MIME type can lie, so the actual file content is
+// checked before the upload is accepted.
+const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+const JPEG_SIGNATURE = Buffer.from([0xff, 0xd8, 0xff]);
+
 function isHttpUrl(value) {
   if (typeof value !== 'string' || !value) return false;
   try {
@@ -126,6 +132,62 @@ function ensureUploadsDir() {
   return uploadsDir();
 }
 
+/**
+ * Detects the real image type from the first bytes of a buffer.
+ * Returns an allowed MIME type or null when the content is not a raster image.
+ */
+function sniffImageType(buffer) {
+  if (!Buffer.isBuffer(buffer) || buffer.length < 3) return null;
+
+  if (buffer.length >= JPEG_SIGNATURE.length && buffer.subarray(0, 3).equals(JPEG_SIGNATURE)) {
+    return 'image/jpeg';
+  }
+  if (buffer.length >= PNG_SIGNATURE.length && buffer.subarray(0, 8).equals(PNG_SIGNATURE)) {
+    return 'image/png';
+  }
+  const header = buffer.subarray(0, 6).toString('latin1');
+  if (header === 'GIF87a' || header === 'GIF89a') return 'image/gif';
+  if (
+    buffer.length >= 12 &&
+    buffer.subarray(0, 4).toString('latin1') === 'RIFF' &&
+    buffer.subarray(8, 12).toString('latin1') === 'WEBP'
+  ) {
+    return 'image/webp';
+  }
+  return null;
+}
+
+/** Reads the first bytes of a file and returns its real image MIME type (or null). */
+function sniffImageFile(filePath) {
+  let fd;
+  try {
+    fd = fs.openSync(filePath, 'r');
+    const buffer = Buffer.alloc(16);
+    const bytes = fs.readSync(fd, buffer, 0, buffer.length, 0);
+    return sniffImageType(buffer.subarray(0, bytes));
+  } catch {
+    return null;
+  } finally {
+    if (fd !== undefined) {
+      try {
+        fs.closeSync(fd);
+      } catch {
+        /* ignore close errors */
+      }
+    }
+  }
+}
+
+/** Removes a temporary upload without ever throwing. */
+function removeFileQuietly(filePath) {
+  if (!filePath) return;
+  try {
+    fs.unlinkSync(filePath);
+  } catch {
+    /* ignore missing/permission errors */
+  }
+}
+
 function isUploadedNewsUrl(value) {
   return typeof value === 'string' && value.startsWith(UPLOAD_URL_PREFIX);
 }
@@ -172,6 +234,9 @@ module.exports = {
   parseVideo,
   uploadsDir,
   ensureUploadsDir,
+  sniffImageType,
+  sniffImageFile,
+  removeFileQuietly,
   isUploadedNewsUrl,
   uploadedFilePath,
   removeUploadedFile,

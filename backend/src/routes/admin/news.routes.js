@@ -61,9 +61,27 @@ const upload = multer({
 
 router.post('/uploads', (req, res, next) => {
   upload.array('images', config.limits.uploadFilesPerRequest)(req, res, (error) => {
-    if (error) return next(error);
+    const uploaded = req.files || [];
 
-    const files = (req.files || []).map((file) => ({
+    if (error) {
+      // Multer may already have written some files before failing.
+      uploaded.forEach((file) => mediaLib.removeFileQuietly(file.path));
+      return next(error);
+    }
+
+    // The declared MIME type is only a hint: verify the actual bytes so a
+    // renamed HTML/script/polyglot file can never land in the public folder.
+    const invalid = uploaded.find((file) => !mediaLib.sniffImageFile(file.path));
+    if (invalid) {
+      uploaded.forEach((file) => mediaLib.removeFileQuietly(file.path));
+      return next(
+        HttpError.badRequest('محتوى الملف ليس صورة صالحة. استخدم JPG أو PNG أو WebP أو GIF.', {
+          image: 'محتوى الملف ليس صورة صالحة.',
+        })
+      );
+    }
+
+    const files = uploaded.map((file) => ({
       url: `${mediaLib.UPLOAD_URL_PREFIX}${file.filename}`,
       name: file.originalname,
       size: file.size,

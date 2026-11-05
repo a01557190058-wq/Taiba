@@ -27,6 +27,7 @@ const CONTENT_DEFINITIONS = [
 ];
 
 const CONTENT_KEYS = CONTENT_DEFINITIONS.map((definition) => definition.key);
+const CONTENT_BY_KEY = new Map(CONTENT_DEFINITIONS.map((definition) => [definition.key, definition]));
 
 const DEFAULT_CONTENT = {
   hero_badge: 'بيانات تجريبية — مدرسة تقنية',
@@ -154,9 +155,16 @@ function updateContent(patch) {
   const entries = Object.entries(patch);
   if (!entries.length) throw HttpError.badRequest('لا توجد بيانات للتحديث.');
 
-  for (const [key] of entries) {
-    if (!CONTENT_KEYS.includes(key)) {
+  for (const [key, value] of entries) {
+    const definition = CONTENT_BY_KEY.get(key);
+    if (!definition) {
       throw HttpError.badRequest(`حقل محتوى غير معروف: ${key}`);
+    }
+    if (value.length > definition.max) {
+      throw HttpError.badRequest(
+        `حقل «${definition.label}» أطول من الحد المسموح (${definition.max} حرفًا).`,
+        { [key]: `الحد الأقصى ${definition.max} حرفًا.` }
+      );
     }
   }
 

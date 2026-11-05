@@ -11,9 +11,12 @@ const submitButton = qs('#login-button');
 function safeNext() {
   const params = new URLSearchParams(window.location.search);
   const next = params.get('next') || '';
-  // Only allow internal admin paths; never redirect off-site.
-  if (next.startsWith('/admin/') && !next.startsWith('/admin/login')) return next;
-  return '/admin/dashboard';
+  // Only allow internal admin paths; never redirect off-site. Backslashes and
+  // control characters are rejected because browsers may normalise them into
+  // a different origin/path.
+  if (!next.startsWith('/admin/') || next.startsWith('/admin/login')) return '/admin/dashboard';
+  if (next.includes('\\') || /[\u0000-\u001f]/.test(next)) return '/admin/dashboard';
+  return next;
 }
 
 function setFieldError(name, message) {
