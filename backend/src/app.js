@@ -12,6 +12,7 @@ const SqliteSessionStore = require('./db/session-store');
 const { attachAdmin } = require('./middleware/auth');
 const { issueCsrfToken, requireCsrf } = require('./middleware/csrf');
 const { cors } = require('./middleware/cors');
+const { forceHttps } = require('./middleware/https');
 const { apiNotFound, errorHandler } = require('./middleware/errors');
 
 const publicRoutes = require('./routes/public.routes');
@@ -26,6 +27,13 @@ function createApp() {
   // The "simple" parser keeps `req.query` flat and avoids the qs nesting/
   // prototype-pollution surface of the default extended parser.
   app.set('query parser', 'simple');
+
+  // Production is always served over HTTPS. Without this, a visitor who opens
+  // the http:// link would never receive the Secure session/CSRF cookies and
+  // could not log in to the admin dashboard.
+  if (config.isProduction) {
+    app.use(forceHttps);
+  }
 
   // --- Security headers ----------------------------------------------------
   app.use(
