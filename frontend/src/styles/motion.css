@@ -1,0 +1,150 @@
+/* --------------------------------------------------------------------------
+   React motion layer
+   --------------------------------------------------------------------------
+   Adds the small amount of animation that is specific to the React app on top
+   of the original stylesheet. Everything here is CSS-only so it works under
+   the strict Content-Security-Policy (no inline styles or scripts).
+   -------------------------------------------------------------------------- */
+
+.route-view {
+  animation: route-fade-in 0.42s var(--motion-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+
+@keyframes route-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Stagger the children of a freshly mounted page without any JS timers. */
+.route-view > .page-hero,
+.route-view > .section {
+  animation: section-rise 0.5s var(--motion-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+
+.route-view > .section:nth-child(2) {
+  animation-delay: 0.04s;
+}
+
+.route-view > .section:nth-child(3) {
+  animation-delay: 0.08s;
+}
+
+.route-view > .section:nth-child(4) {
+  animation-delay: 0.12s;
+}
+
+@keyframes section-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* A soft highlight sweep across cards on hover. */
+.department-card,
+.news-card,
+.feature,
+.project-card,
+.quote-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.department-card::after,
+.news-card::after,
+.feature::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0;
+  background: radial-gradient(
+    420px circle at var(--glow-x, 50%) var(--glow-y, 0%),
+    rgba(255, 201, 40, 0.16),
+    transparent 62%
+  );
+  transition: opacity 0.35s var(--motion-ease, ease);
+  pointer-events: none;
+}
+
+.department-card:hover::after,
+.news-card:hover::after,
+.feature:hover::after {
+  opacity: 1;
+}
+
+/* Animated underline for navigation links. */
+.site-nav__link {
+  position: relative;
+}
+
+.site-nav__link::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0.65rem;
+  bottom: 0.25rem;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.28s var(--motion-ease-out, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.site-nav__link:hover::after,
+.site-nav__link[aria-current='page']::after {
+  transform: scaleX(1);
+}
+
+/* Keep the existing active pill readable while the underline animates. */
+.site-nav__link[aria-current='page']::after {
+  opacity: 0.5;
+}
+
+/* Smooth accordion height for the FAQ list. */
+.faq-item {
+  overflow: hidden;
+}
+
+.faq-item[open] .faq-item__answer {
+  animation: faq-open 0.28s var(--motion-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+
+@keyframes faq-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Respect the visitor's motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  .route-view,
+  .route-view > .page-hero,
+  .route-view > .section,
+  .faq-item[open] .faq-item__answer {
+    animation: none !important;
+  }
+
+  .department-card::after,
+  .news-card::after,
+  .feature::after,
+  .site-nav__link::after {
+    transition: none !important;
+  }
+}

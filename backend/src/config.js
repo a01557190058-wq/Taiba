@@ -61,17 +61,19 @@ const config = {
   paths: {
     backend: BACKEND_ROOT,
     project: PROJECT_ROOT,
-    frontendWebsite: path.join(PROJECT_ROOT, 'frontend', 'website'),
-    frontendAdmin: path.join(PROJECT_ROOT, 'frontend', 'admin'),
+    // The React front-end is built by Vite into `frontend/dist`; Express serves
+    // that folder (public shell + admin shell + hashed assets).
+    frontendDist: path.join(PROJECT_ROOT, 'frontend', 'dist'),
     databaseDir: path.join(PROJECT_ROOT, 'database'),
     schema: path.join(PROJECT_ROOT, 'database', 'schema.sql'),
     db: resolveDbPath(),
-    // Uploaded news images live with the public assets so express.static can
-    // serve them. Override with NEWS_UPLOADS_DIR when the project folder is
-    // read-only (for example on some PaaS deployments).
+    // Uploaded news images are runtime data kept outside the build output so a
+    // fresh `vite build` never deletes them. Override with NEWS_UPLOADS_DIR
+    // when the project folder is read-only (for example on some PaaS hosts).
+    uploads: path.join(PROJECT_ROOT, 'uploads'),
     newsUploads: process.env.NEWS_UPLOADS_DIR
       ? path.resolve(BACKEND_ROOT, process.env.NEWS_UPLOADS_DIR)
-      : path.join(PROJECT_ROOT, 'frontend', 'website', 'assets', 'uploads', 'news'),
+      : path.join(PROJECT_ROOT, 'uploads', 'news'),
   },
   session: {
     name: 'taiba.sid',

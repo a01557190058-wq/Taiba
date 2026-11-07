@@ -15,6 +15,7 @@
     "db:seed": "node scripts/db-seed.js",
     "admin:init": "node scripts/create-admin.js",
     "setup": "node scripts/db-init.js && node scripts/create-admin.js && node scripts/db-seed.js",
+    "pretest": "npm --prefix ../frontend run build",
     "test": "node --test --test-concurrency=1 tests/*.test.js",
     "test:watch": "node --test --watch --test-concurrency=1 tests/*.test.js"
   },

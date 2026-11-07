@@ -3,7 +3,7 @@
 # docs/DEPLOY.md (DB_PATH=/var/data/taiba.sqlite, HOST=0.0.0.0, etc.).
 [build]
 builder = "NIXPACKS"
-buildCommand = "cd backend && npm ci --omit=dev"
+buildCommand = "cd frontend && npm ci && npm run build && cd ../backend && npm ci --omit=dev"
 
 [deploy]
 startCommand = "cd backend && npm run admin:init && npm start"

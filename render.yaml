@@ -12,7 +12,7 @@ services:
     runtime: node
     plan: free
     region: frankfurt
-    buildCommand: cd backend && npm ci --omit=dev
+    buildCommand: cd frontend && npm ci && npm run build && cd ../backend && npm ci --omit=dev
     startCommand: cd backend && npm run admin:init && npm start
     healthCheckPath: /api/health
     autoDeploy: true
@@ -55,4 +55,5 @@ services:
 #      mountPath: /var/data
 #      sizeGB: 1
 #
-# and set DB_PATH=/var/data/taiba.sqlite. Data then survives deploys.
+# and set DB_PATH=/var/data/taiba.sqlite plus
+# NEWS_UPLOADS_DIR=/var/data/uploads/news. Data then survives deploys.

@@ -123,13 +123,16 @@ function createApp() {
     },
     fallthrough: true,
   };
+  // User-uploaded news images are runtime data, mounted before the built
+  // assets so they are served from the persistent `uploads/` folder.
+  app.use(
+    '/assets/uploads/news',
+    express.static(config.paths.newsUploads, staticOptions)
+  );
+  // Hashed Vite output (JS/CSS/fonts/images) shared by both React apps.
   app.use(
     '/assets',
-    express.static(path.join(config.paths.frontendWebsite, 'assets'), staticOptions)
-  );
-  app.use(
-    '/admin/assets',
-    express.static(path.join(config.paths.frontendAdmin, 'assets'), staticOptions)
+    express.static(path.join(config.paths.frontendDist, 'assets'), staticOptions)
   );
 
   // Every HTML/API response can read the CSRF cookie.
@@ -149,37 +152,38 @@ function createApp() {
   app.use('/api', apiNotFound);
 
   // --- Pages ---------------------------------------------------------------
-  const sendPage = (file) => (req, res) => {
+  // Both apps are React single-page applications served from `frontend/dist`.
+  // The server only returns the correct HTML shell; routing and rendering
+  // happen in the browser. HTML is never cached so deploys take effect at once.
+  const sendPublicApp = (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
-    res.sendFile(path.join(config.paths.frontendWebsite, file));
+    res.sendFile(path.join(config.paths.frontendDist, 'index.html'));
   };
-  const sendAdminPage = (file) => (req, res) => {
+  const sendAdminApp = (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
-    res.sendFile(path.join(config.paths.frontendAdmin, file));
+    res.sendFile(path.join(config.paths.frontendDist, 'admin', 'index.html'));
   };
 
-  app.get('/', sendPage('index.html'));
-  app.get('/about', sendPage('about.html'));
-  app.get('/departments', sendPage('departments.html'));
-  app.get('/news', sendPage('news.html'));
-  app.get('/news/:slug', sendPage('news-article.html'));
-  app.get('/departments/:slug', sendPage('department.html'));
-  app.get('/admission', sendPage('admission.html'));
-  app.get('/apply', sendPage('apply.html'));
-  app.get('/contact', sendPage('contact.html'));
+  // Public routes that exist in the client-side router (200). Any other path
+  // still gets the public shell so React can render its "not found" page, but
+  // with a 404 status for crawlers.
+  app.get(
+    [
+      '/',
+      '/about',
+      '/departments',
+      '/departments/:slug',
+      '/news',
+      '/news/:slug',
+      '/admission',
+      '/apply',
+      '/contact',
+    ],
+    sendPublicApp
+  );
 
-  app.get(['/admin', '/admin/', '/admin/login'], sendAdminPage('login.html'));
-  app.get('/admin/dashboard', sendAdminPage('dashboard.html'));
-  app.get('/admin/departments', sendAdminPage('departments.html'));
-  app.get('/admin/departments/new', sendAdminPage('department-form.html'));
-  app.get('/admin/departments/:id/edit', sendAdminPage('department-form.html'));
-  app.get('/admin/applications', sendAdminPage('applications.html'));
-  app.get('/admin/applications/:id', sendAdminPage('application.html'));
-  app.get('/admin/news', sendAdminPage('news.html'));
-  app.get('/admin/news/new', sendAdminPage('news-form.html'));
-  app.get('/admin/news/:id/edit', sendAdminPage('news-form.html'));
-  app.get('/admin/content', sendAdminPage('content.html'));
-  app.get('/admin/demo-data', sendAdminPage('demo-data.html'));
+  // The whole admin dashboard (including /admin/login and deep links).
+  app.get(['/admin', '/admin/*'], sendAdminApp);
 
   app.get('/robots.txt', (req, res) => {
     res.type('text/plain').send('User-agent: *\nDisallow: /admin\nAllow: /\n');
@@ -188,10 +192,8 @@ function createApp() {
   // --- 404 & errors --------------------------------------------------------
   app.use((req, res) => {
     res.status(404);
-    if (req.path.startsWith('/admin')) {
-      return res.sendFile(path.join(config.paths.frontendAdmin, '404.html'));
-    }
-    return res.sendFile(path.join(config.paths.frontendWebsite, '404.html'));
+    res.setHeader('Cache-Control', 'no-store');
+    return res.sendFile(path.join(config.paths.frontendDist, 'index.html'));
   });
 
   app.use(errorHandler);

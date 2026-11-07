@@ -19,6 +19,8 @@
 - `railway.toml` — أوامر البناء والتشغيل على Railway.
 - `.node-version` — يثبّت Node.js 24.
 - `backend/package-lock.json` — يستخدمه `npm ci` لبناء قابل للتكرار.
+- `frontend/package-lock.json` — يثبّت اعتماديات React/Vite لبناء الواجهة.
+- `frontend/vite.config.js` — يبني الموقع العام ولوحة التحكم إلى `frontend/dist`، وهو ما يقدّمه Express.
 
 ---
 
@@ -38,6 +40,7 @@
 | `ADMIN_PASSWORD` | كلمة مرور قوية | 10 أحرف على الأقل |
 | `APP_ORIGIN` | `https://your-domain` | نفس رابط الموقع بعد النشر |
 | `ALLOWED_ORIGINS` | فارغ عادةً | أصول إضافية فقط عند الحاجة |
+| `NEWS_UPLOADS_DIR` | `/var/data/uploads/news` | احفظ صور الأخبار على القرص الدائم؛ الافتراضي `uploads/news` داخل المشروع |
 
 توليد سر جلسة:
 
@@ -73,7 +76,7 @@ node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 2. الإعدادات:
    ```text
    Runtime:        Node
-   Build Command:  cd backend && npm ci --omit=dev
+   Build Command:  cd frontend && npm ci && npm run build && cd ../backend && npm ci --omit=dev
    Start Command:  cd backend && npm run admin:init && npm start
    Health Check:   /api/health
    ```
