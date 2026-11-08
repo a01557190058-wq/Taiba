@@ -265,7 +265,7 @@ export default function DepartmentsPage() {
               id="filter-q"
               type="search"
               value={search}
-              placeholder="ابحث بالاسم أو المعرّف…"
+              placeholder="ابحث باسم القسم…"
               autoComplete="off"
               onChange={(event) => setSearch(event.target.value)}
             />

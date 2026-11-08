@@ -14,9 +14,7 @@ import {
 
 function matches(department, query) {
   if (!query) return true;
-  const haystack = normalizeArabic(
-    [department.name, department.short_description, ...(department.skills || [])].join(' ')
-  );
+  const haystack = normalizeArabic(department.name || '');
   return query.split(' ').every((word) => haystack.includes(word));
 }
 
@@ -63,7 +61,7 @@ export default function DepartmentsPage() {
                 className="input"
                 id="department-search"
                 type="search"
-                placeholder="ابحث بالاسم أو المهارة…"
+                placeholder="ابحث باسم القسم…"
                 autoComplete="off"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
@@ -104,7 +102,7 @@ export default function DepartmentsPage() {
             {!loading && !error && departments.length && !visible.length ? (
               <StateBox
                 title="لا توجد نتائج مطابقة"
-                message="جرّب كلمة بحث أخرى، أو امسح البحث لعرض جميع الأقسام."
+                message="جرّب كتابة اسم قسم آخر، أو امسح البحث لعرض جميع الأقسام."
                 actionLabel="مسح البحث"
                 onAction={() => setSearch('')}
                 iconName="search"

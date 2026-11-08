@@ -183,6 +183,11 @@ test('administrators can search and filter departments', async () => {
   assert.equal(search.body.data[0].slug, 'programming');
   assert.ok(search.body.data[0].applications_count >= 1, 'application count is exposed to admins');
 
+  const searchBySlug = await agent.get(
+    '/api/admin/departments?q=' + encodeURIComponent('programming')
+  );
+  assert.equal(searchBySlug.body.meta.total, 0, 'search matches the department name only');
+
   const published = await agent.get('/api/admin/departments?state=published');
   assert.equal(published.body.meta.total, 10);
 

@@ -59,9 +59,9 @@ function listAdmin({ q = '', state = 'all', isDemo = null, page = 1, limit = 20 
   const params = [];
 
   if (q) {
-    where.push('(d.name LIKE ? ESCAPE \'\\\' OR d.slug LIKE ? ESCAPE \'\\\')');
+    where.push('d.name LIKE ? ESCAPE \'\\\'');
     const like = `%${q.replace(/[\\%_]/g, (match) => `\\${match}`)}%`;
-    params.push(like, like);
+    params.push(like);
   }
 
   if (state === 'published') where.push('d.is_published = 1 AND d.is_active = 1');
