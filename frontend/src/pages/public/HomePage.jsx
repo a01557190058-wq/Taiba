@@ -194,10 +194,10 @@ export default function HomePage() {
           <div className="hero__media">
             <div className="hero__media-frame">
               <img
-                src="/assets/img/hero.svg"
-                alt="رسم توضيحي يمثل بيئة تعلم برمجية وتقنية"
-                width="640"
-                height="560"
+                src="/assets/img/logo.jpg"
+                alt="شعار مدرسة طيبة تكنولوجي"
+                width="413"
+                height="409"
               />
             </div>
             <div className="hero__float hero__float--1">

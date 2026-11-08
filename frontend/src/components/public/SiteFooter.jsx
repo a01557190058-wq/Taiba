@@ -17,7 +17,7 @@ export default function SiteFooter({ note }) {
         <div className="footer-grid">
           <div>
             <Link className="footer-brand" to="/">
-              <img src="/assets/img/logo.svg" alt="" width="44" height="44" />
+              <img src="/assets/img/logo.jpg" alt="" width="44" height="44" />
               <span>
                 <strong>مدرسة طيبة تكنولوجي</strong>
                 <span>Taiba Technology School</span>

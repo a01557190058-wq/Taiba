@@ -84,7 +84,7 @@ export default function AdminLayout() {
         aria-label="قائمة لوحة التحكم"
       >
         <Link className="admin-brand" to="/dashboard">
-          <img src="/assets/img/logo.svg" alt="" width="42" height="42" />
+          <img src="/assets/img/logo.jpg" alt="" width="42" height="42" />
           <span>
             <strong>مدرسة طيبة تكنولوجي</strong>
             <span>لوحة التحكم</span>

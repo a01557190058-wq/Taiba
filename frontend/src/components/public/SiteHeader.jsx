@@ -32,7 +32,7 @@ export default function SiteHeader() {
     <header className={`site-header${scrolled ? ' is-scrolled' : ''}`}>
       <div className="container site-header__inner">
         <Link className="brand" to="/" aria-label="مدرسة طيبة تكنولوجي — الصفحة الرئيسية">
-          <img className="brand__logo" src="/assets/img/logo.svg" alt="" width="46" height="46" />
+          <img className="brand__logo" src="/assets/img/logo.jpg" alt="" width="46" height="46" />
           <span className="brand__text">
             <span className="brand__name">مدرسة طيبة تكنولوجي</span>
             <span className="brand__tag">Taiba Technology School</span>

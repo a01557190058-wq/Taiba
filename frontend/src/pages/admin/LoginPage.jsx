@@ -77,7 +77,7 @@ export default function LoginPage() {
     <div className="login-page">
       <aside className="login-aside">
         <div className="login-aside__brand">
-          <img src="/assets/img/logo.svg" alt="" width="52" height="52" />
+          <img src="/assets/img/logo.jpg" alt="" width="52" height="52" />
           <div>
             <strong>مدرسة طيبة تكنولوجي</strong>
             <span>Taiba Technology School</span>

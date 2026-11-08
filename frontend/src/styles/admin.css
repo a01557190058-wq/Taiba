@@ -300,8 +300,7 @@ img, svg {
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  padding: 3px;
+  box-shadow: var(--shadow-xs);
 }
 
 .admin-brand strong {
@@ -1631,8 +1630,7 @@ img, svg {
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
-  padding: 4px;
+  box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.7);
 }
 
 .login-aside__brand strong {
@@ -2204,7 +2202,6 @@ body {
 }
 
 .admin-brand img {
-  background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.7);
 }
 
