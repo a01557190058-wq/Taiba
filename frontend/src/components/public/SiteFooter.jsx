@@ -25,7 +25,7 @@ export default function SiteFooter({ note }) {
             </Link>
             <p>
               مدرسة تقنية تجريبية تقدم تعليمًا تطبيقيًا في مجالات التقنية والهندسة. جميع البيانات
-              والأقسام والمواعيد المعروضة هنا لأغراض العرض فقط.
+              والتخصصات والمواعيد المعروضة هنا لأغراض العرض فقط.
             </p>
           </div>
 
@@ -36,10 +36,13 @@ export default function SiteFooter({ note }) {
                 <Link to="/about">عن المدرسة</Link>
               </li>
               <li>
-                <Link to="/departments">الأقسام</Link>
+                <Link to="/departments">التخصصات</Link>
               </li>
               <li>
                 <Link to="/news">الأخبار</Link>
+              </li>
+              <li>
+                <Link to="/gallery">معرض الصور</Link>
               </li>
               <li>
                 <Link to="/admission">القبول والتقديم</Link>

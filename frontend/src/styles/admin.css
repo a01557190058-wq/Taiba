@@ -1513,6 +1513,67 @@ img, svg {
 }
 
 /* --------------------------------------------------------------------------
+   Private application documents
+   -------------------------------------------------------------------------- */
+.doc-admin-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.doc-admin-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius-sm);
+  background: #ffffff;
+}
+
+.doc-admin-item__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--a-radius-sm);
+  background: var(--a-teal-50);
+  color: var(--a-teal-700);
+}
+
+.doc-admin-item__meta {
+  display: grid;
+  gap: 0.12rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.doc-admin-item__meta strong {
+  font-size: 0.85rem;
+  color: var(--a-ink-900);
+}
+
+.doc-admin-item__meta .hint {
+  overflow-wrap: anywhere;
+}
+
+.doc-admin-item .btn {
+  flex: none;
+}
+
+@media (max-width: 560px) {
+  .doc-admin-item {
+    flex-wrap: wrap;
+  }
+
+  .doc-admin-item .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
    Modal
    -------------------------------------------------------------------------- */
 .modal {
@@ -2699,4 +2760,36 @@ body {
   .stat-card:hover {
     transform: none;
   }
+}
+
+/* --------------------------------------------------------------------------
+   Study subjects
+   -------------------------------------------------------------------------- */
+.badge--theoretical {
+  background: rgba(23, 105, 170, 0.1);
+  color: var(--a-teal-800);
+  border-color: rgba(23, 105, 170, 0.22);
+}
+
+.badge--practical {
+  background: rgba(214, 40, 57, 0.1);
+  color: var(--a-red-700);
+  border-color: rgba(214, 40, 57, 0.28);
+}
+
+.subject-icon-preview {
+  display: inline-grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  margin-inline-end: 0.35rem;
+  vertical-align: middle;
+  border-radius: 0.55rem;
+  background: rgba(23, 105, 170, 0.1);
+  color: var(--a-teal-800);
+}
+
+.subject-icon-preview svg {
+  width: 1rem;
+  height: 1rem;
 }

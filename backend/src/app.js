@@ -45,7 +45,7 @@ function createApp() {
           baseUri: ["'self'"],
           scriptSrc: ["'self'"],
           styleSrc: ["'self'"],
-          imgSrc: ["'self'", 'data:', 'https:'],
+          imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
           mediaSrc: ["'self'", 'https:'],
           fontSrc: ["'self'"],
           connectSrc: ["'self'"],
@@ -129,6 +129,16 @@ function createApp() {
     '/assets/uploads/news',
     express.static(config.paths.newsUploads, staticOptions)
   );
+  // Photos uploaded from the gallery dashboard.
+  app.use(
+    '/assets/uploads/gallery',
+    express.static(config.paths.galleryUploads, staticOptions)
+  );
+  // Department covers and photos uploaded from the dashboard.
+  app.use(
+    '/assets/uploads/departments',
+    express.static(config.paths.departmentUploads, staticOptions)
+  );
   // Hashed Vite output (JS/CSS/fonts/images) shared by both React apps.
   app.use(
     '/assets',
@@ -173,8 +183,10 @@ function createApp() {
       '/about',
       '/departments',
       '/departments/:slug',
+      '/subjects',
       '/news',
       '/news/:slug',
+      '/gallery',
       '/admission',
       '/apply',
       '/contact',

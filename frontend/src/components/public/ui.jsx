@@ -27,36 +27,38 @@ export function DepartmentCard({ department, index = 0 }) {
 
   return (
     <article className="department-card reveal" data-delay={String(index % 3)}>
-      <div className="department-card__media">
-        <SmartImage
-          src={department.image_url}
-          alt={`رسم توضيحي لقسم ${department.name}`}
-          width="640"
-          height="420"
-        />
-        <span className="department-card__badge">مسار تقني</span>
-      </div>
-      <div className="department-card__body">
-        <h3 className="department-card__title">{department.name}</h3>
-        <p className="department-card__desc">{department.short_description}</p>
-        {skills.length ? (
-          <div className="chips">
-            {skills.map((skill) => (
-              <span className="chip" key={skill}>
-                {skill}
-              </span>
-            ))}
-          </div>
-        ) : null}
-        <div className="department-card__footer">
-          <Link className="card-link" to={href}>
-            تفاصيل القسم
-          </Link>
-          <span className="department-card__arrow" aria-hidden="true">
-            <Icon name="arrowLeft" size={16} />
-          </span>
+      {/* The whole card is one link: clicking anywhere opens the department. */}
+      <Link className="department-card__link" to={href} aria-label={`فتح صفحة ${department.name}`}>
+        <div className="department-card__media">
+          <SmartImage
+            src={department.image_url}
+            alt={`رسم توضيحي لتخصص ${department.name}`}
+            width="640"
+            height="420"
+          />
+          <span className="department-card__badge">مسار تقني</span>
         </div>
-      </div>
+        <div className="department-card__body">
+          <span className="department-card__eyebrow">المهنة/التخصص</span>
+          <h3 className="department-card__title">{department.name}</h3>
+          <p className="department-card__desc">{department.short_description}</p>
+          {skills.length ? (
+            <div className="chips">
+              {skills.map((skill) => (
+                <span className="chip" key={skill}>
+                  {skill}
+                </span>
+              ))}
+            </div>
+          ) : null}
+          <div className="department-card__footer">
+            <span className="card-link">عرض التفاصيل</span>
+            <span className="department-card__arrow" aria-hidden="true">
+              <Icon name="arrowLeft" size={16} />
+            </span>
+          </div>
+        </div>
+      </Link>
     </article>
   );
 }

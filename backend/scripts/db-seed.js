@@ -19,6 +19,9 @@ console.log(`  - departments:  ${summary.departments_inserted}`);
 console.log(`  - applications: ${summary.applications_inserted}`);
 console.log(`  - faqs:         ${summary.faqs_inserted}`);
 console.log(`  - content keys: ${summary.content_inserted}`);
+console.log(`  - news:         ${summary.news_inserted}`);
+console.log(`  - gallery sections: ${summary.gallery_sections_inserted}`);
+console.log(`  - gallery images:   ${summary.gallery_images_inserted}`);
 
 const counts = db.get(
   `SELECT

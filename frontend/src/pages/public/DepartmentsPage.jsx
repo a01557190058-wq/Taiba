@@ -20,8 +20,8 @@ function matches(department, query) {
 
 export default function DepartmentsPage() {
   usePageMeta(
-    'الأقسام التقنية | مدرسة طيبة تكنولوجي',
-    'استكشف الأقسام التقنية في مدرسة طيبة تكنولوجي: البرمجة، الذكاء الاصطناعي، الأجهزة الطبية، الكهرباء، الميكانيكا، الطاقة المتجددة وغيرها.'
+    'التخصصات التقنية | مدرسة طيبة تكنولوجي',
+    'استكشف التخصصات التقنية في مدرسة طيبة تكنولوجي: البرمجة، الذكاء الاصطناعي، الأجهزة الطبية، الكهرباء، الميكانيكا، الطاقة المتجددة وغيرها.'
   );
 
   const { data, loading, error, reload } = useAsync(() => api('/api/departments'), []);
@@ -34,19 +34,19 @@ export default function DepartmentsPage() {
   }, [departments, search]);
 
   const countLabel = loading
-    ? 'جارٍ تحميل الأقسام…'
+    ? 'جارٍ تحميل التخصصات…'
     : error
-      ? 'تعذّر تحميل الأقسام'
+      ? 'تعذّر تحميل التخصصات'
       : !departments.length
-        ? 'لا توجد أقسام منشورة'
+        ? 'لا توجد تخصصات منشورة'
         : null;
 
   return (
     <>
       <PageHero
-        title="الأقسام التقنية"
-        lead="عشرة مسارات تعليمية تغطي البرمجة والذكاء الاصطناعي والهندسة والتقنيات الصناعية والطاقة. كل قسم يعرض وصفه ومهاراته ومعلومات التقديم الخاصة به."
-        breadcrumb={[{ label: 'الرئيسية', href: '/' }, { label: 'الأقسام' }]}
+        title="التخصصات التقنية"
+        lead="عشرة مسارات تعليمية تغطي البرمجة والذكاء الاصطناعي والهندسة والتقنيات الصناعية والطاقة. كل تخصص يعرض وصفه ومهاراته ومعلومات التقديم الخاصة به."
+        breadcrumb={[{ label: 'الرئيسية', href: '/' }, { label: 'التخصصات' }]}
       />
 
       <section className="section">
@@ -55,13 +55,13 @@ export default function DepartmentsPage() {
             <div className="search-field">
               <Icon name="search" size={18} />
               <label className="visually-hidden" htmlFor="department-search">
-                ابحث في الأقسام
+                ابحث في التخصصات
               </label>
               <input
                 className="input"
                 id="department-search"
                 type="search"
-                placeholder="ابحث باسم القسم…"
+                placeholder="ابحث باسم التخصص…"
                 autoComplete="off"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
@@ -71,7 +71,7 @@ export default function DepartmentsPage() {
               {countLabel || (
                 <>
                   <strong>{new Intl.NumberFormat('ar-EG').format(visible.length)}</strong>
-                  {` من ${new Intl.NumberFormat('ar-EG').format(departments.length)} قسم`}
+                  {` من ${new Intl.NumberFormat('ar-EG').format(departments.length)} تخصص`}
                 </>
               )}
             </p>
@@ -81,7 +81,7 @@ export default function DepartmentsPage() {
             {loading ? <SkeletonGrid count={6} /> : null}
             {!loading && error ? (
               <StateBox
-                title="تعذّر تحميل الأقسام"
+                title="تعذّر تحميل التخصصات"
                 message={
                   error.message || 'حدث خطأ أثناء الاتصال بالخادم. تحقق من اتصالك ثم حاول مرة أخرى.'
                 }
@@ -92,8 +92,8 @@ export default function DepartmentsPage() {
             ) : null}
             {!loading && !error && !departments.length ? (
               <StateBox
-                title="لا توجد أقسام منشورة حاليًا"
-                message="تقوم إدارة المدرسة بتحديث الأقسام. يمكنك العودة لاحقًا أو التواصل معنا للاستفسار."
+                title="لا توجد تخصصات منشورة حاليًا"
+                message="تقوم إدارة المدرسة بتحديث التخصصات. يمكنك العودة لاحقًا أو التواصل معنا للاستفسار."
                 actionLabel="إعادة المحاولة"
                 onAction={reload}
                 iconName="book"
@@ -102,7 +102,7 @@ export default function DepartmentsPage() {
             {!loading && !error && departments.length && !visible.length ? (
               <StateBox
                 title="لا توجد نتائج مطابقة"
-                message="جرّب كتابة اسم قسم آخر، أو امسح البحث لعرض جميع الأقسام."
+                message="جرّب كتابة اسم تخصص آخر، أو امسح البحث لعرض جميع التخصصات."
                 actionLabel="مسح البحث"
                 onAction={() => setSearch('')}
                 iconName="search"
@@ -122,10 +122,10 @@ export default function DepartmentsPage() {
           <div className="contact-card reveal">
             <div className="contact-card__main">
               <span className="eyebrow">لم تجد ما تبحث عنه؟</span>
-              <h2 className="section-title mt-1 mb-2">اطّلع على معلومات القبول قبل اختيار القسم</h2>
+              <h2 className="section-title mt-1 mb-2">اطّلع على معلومات القبول قبل اختيار التخصص</h2>
               <p className="text-muted">
                 تحتوي صفحة القبول على خطوات التقديم والمواعيد التجريبية والأسئلة الشائعة. يمكنك
-                أيضًا التواصل مع إدارة المدرسة للاستفسار عن أي قسم.
+                أيضًا التواصل مع إدارة المدرسة للاستفسار عن أي تخصص.
               </p>
               <div className="hero__actions">
                 <Link className="btn btn-primary" to="/apply">
@@ -140,7 +140,7 @@ export default function DepartmentsPage() {
               <div>
                 <h3>ملاحظة</h3>
                 <p>
-                  الأقسام المعروضة هنا منشورة من لوحة التحكم، وأي قسم غير منشور لا يظهر للزوار ولا
+                  التخصصات المعروضة هنا منشورة من لوحة التحكم، وأي تخصص غير منشور لا يظهر للزوار ولا
                   يقبل طلبات جديدة.
                 </p>
               </div>

@@ -86,14 +86,14 @@ export default function DepartmentsPage() {
       toast(successMessage);
       reload();
     } catch (patchError) {
-      toast(patchError.message || 'تعذّر تحديث القسم.', 'error');
+      toast(patchError.message || 'تعذّر تحديث التخصص.', 'error');
     }
   };
 
   const deleteDepartment = async (department) => {
     const hasApplications = (department.applications_count || 0) > 0;
     const confirmed = await confirm({
-      title: 'حذف القسم نهائيًا',
+      title: 'حذف التخصص نهائيًا',
       message: hasApplications
         ? `سيتم حذف «${department.name}» و${formatNumber(
             department.applications_count
@@ -108,12 +108,12 @@ export default function DepartmentsPage() {
     try {
       const suffix = hasApplications ? '?force=true' : '';
       await api(`/api/admin/departments/${department.id}${suffix}`, { method: 'DELETE' });
-      toast(hasApplications ? 'تم حذف القسم والطلبات المرتبطة به.' : 'تم حذف القسم.');
+      toast(hasApplications ? 'تم حذف التخصص والطلبات المرتبطة به.' : 'تم حذف التخصص.');
       if (filters.page > 1) updateParams({ page: filters.page - 1 });
       else reload();
     } catch (deleteError) {
       if (deleteError.status === 409) toast(deleteError.message, 'warning');
-      else toast(deleteError.message || 'تعذّر حذف القسم.', 'error');
+      else toast(deleteError.message || 'تعذّر حذف التخصص.', 'error');
     }
   };
 
@@ -148,7 +148,7 @@ export default function DepartmentsPage() {
           className="btn btn-outline btn-sm"
           type="button"
           key="restore"
-          onClick={() => patchDepartment(department, { is_active: true }, 'تمت استعادة القسم كمسودة.')}
+          onClick={() => patchDepartment(department, { is_active: true }, 'تمت استعادة التخصص كمسودة.')}
         >
           <Icon name="refresh" size={15} />
           <span>استعادة</span>
@@ -164,7 +164,7 @@ export default function DepartmentsPage() {
             patchDepartment(
               department,
               { is_published: !department.is_published },
-              department.is_published ? 'تم إلغاء نشر القسم.' : 'تم نشر القسم.'
+              department.is_published ? 'تم إلغاء نشر التخصص.' : 'تم نشر التخصص.'
             )
           }
         >
@@ -180,7 +180,7 @@ export default function DepartmentsPage() {
           key="archive"
           onClick={async () => {
             const confirmed = await confirm({
-              title: 'أرشفة القسم',
+              title: 'أرشفة التخصص',
               message: `سيتم إخفاء «${department.name}» من الموقع مع الحفاظ على جميع الطلبات المرتبطة به. يمكنك استعادته لاحقًا.`,
               confirmLabel: 'أرشفة',
             });
@@ -188,7 +188,7 @@ export default function DepartmentsPage() {
               patchDepartment(
                 department,
                 { is_active: false, is_published: false },
-                'تمت أرشفة القسم.'
+                'تمت أرشفة التخصص.'
               );
             }
           }}
@@ -220,10 +220,10 @@ export default function DepartmentsPage() {
   if (error) {
     return (
       <>
-        <PageHead title="إدارة الأقسام" />
+        <PageHead title="إدارة التخصصات" />
         <div className="panel">
           <div className="panel__body">
-            <Alert type="error" message={error.message || 'تعذّر تحميل الأقسام.'} />
+            <Alert type="error" message={error.message || 'تعذّر تحميل التخصصات.'} />
             <button className="btn btn-primary mt-2" type="button" onClick={reload}>
               إعادة المحاولة
             </button>
@@ -236,8 +236,8 @@ export default function DepartmentsPage() {
   return (
     <>
       <PageHead
-        title="إدارة الأقسام"
-        description="أنشئ الأقسام وحرّر محتواها، وتحكم في نشرها وأرشفتها. الأقسام المؤرشفة لا تظهر للزوار."
+        title="إدارة التخصصات"
+        description="أنشئ التخصصات وحرّر محتواها، وتحكم في نشرها وأرشفتها. التخصصات المؤرشفة لا تظهر للزوار."
         actions={[
           <a
             className="btn btn-outline"
@@ -251,7 +251,7 @@ export default function DepartmentsPage() {
           </a>,
           <Link className="btn btn-primary" to="/departments/new" key="new">
             <Icon name="plus" size={16} />
-            <span>قسم جديد</span>
+            <span>تخصص جديد</span>
           </Link>,
         ]}
       />
@@ -265,7 +265,7 @@ export default function DepartmentsPage() {
               id="filter-q"
               type="search"
               value={search}
-              placeholder="ابحث باسم القسم…"
+              placeholder="ابحث باسم التخصص…"
               autoComplete="off"
               onChange={(event) => setSearch(event.target.value)}
             />
@@ -313,7 +313,7 @@ export default function DepartmentsPage() {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>القسم</th>
+                  <th>المهنة/التخصص</th>
                   <th>النشر</th>
                   <th>البيانات</th>
                   <th>الطلبات</th>
@@ -355,13 +355,13 @@ export default function DepartmentsPage() {
           </div>
         ) : (
           <EmptyState
-            title={hasFilters ? 'لا توجد أقسام مطابقة' : 'لا توجد أقسام بعد'}
+            title={hasFilters ? 'لا توجد تخصصات مطابقة' : 'لا توجد تخصصات بعد'}
             message={
               hasFilters
                 ? 'جرّب تعديل كلمات البحث أو الفلاتر لعرض نتائج أخرى.'
-                : 'ابدأ بإنشاء أول قسم تعليمي ليظهر في الموقع.'
+                : 'ابدأ بإنشاء أول تخصص تعليمي ليظهر في الموقع.'
             }
-            actionLabel="إضافة قسم"
+            actionLabel="إضافة تخصص"
             onAction={() => navigate('/departments/new')}
             iconName="layers"
           />

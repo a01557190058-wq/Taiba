@@ -11,7 +11,7 @@ export default function NotFoundPage() {
           <p className="eyebrow">خطأ 404</p>
           <h1 className="section-title mt-2">لم نعثر على هذه الصفحة</h1>
           <p className="text-muted mt-2">
-            قد يكون الرابط قديمًا أو تم تغييره. يمكنك العودة إلى الصفحة الرئيسية أو تصفح الأقسام
+            قد يكون الرابط قديمًا أو تم تغييره. يمكنك العودة إلى الصفحة الرئيسية أو تصفح التخصصات
             المتاحة للتقديم.
           </p>
           <div className="inline-actions mt-3">
@@ -19,7 +19,7 @@ export default function NotFoundPage() {
               العودة إلى الرئيسية
             </Link>
             <Link className="btn btn-outline" to="/departments">
-              تصفح الأقسام
+              تصفح التخصصات
             </Link>
             <Link className="btn btn-ghost" to="/apply">
               قدّم الآن

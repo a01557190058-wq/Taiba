@@ -18,10 +18,12 @@ const PUBLIC_PAGES = [
   '/about',
   '/departments',
   '/departments/programming',
+  '/subjects',
   '/admission',
   '/apply',
   '/news',
   '/news/some-article',
+  '/gallery',
   '/contact',
 ];
 
@@ -33,6 +35,9 @@ const ADMIN_PAGES = [
   '/admin/departments',
   '/admin/departments/new',
   '/admin/departments/1/edit',
+  '/admin/subjects',
+  '/admin/subjects/new',
+  '/admin/subjects/1/edit',
   '/admin/applications',
   '/admin/applications/1',
   '/admin/news',

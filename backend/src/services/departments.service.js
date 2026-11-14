@@ -2,7 +2,8 @@
 
 const db = require('../db');
 const HttpError = require('../lib/http-error');
-const { slugify } = require('../lib/text');
+const departmentMedia = require('../lib/department-media');
+const { cleanText, slugify } = require('../lib/text');
 
 const PUBLIC_FILTER = 'd.is_published = 1 AND d.is_active = 1';
 
@@ -18,6 +19,7 @@ function mapDepartment(row) {
     skills: row.skills ? row.skills.split('\n').filter(Boolean) : [],
     admission_info: row.admission_info,
     image_url: row.image_url,
+    images: [],
     is_published: Boolean(row.is_published),
     is_active: Boolean(row.is_active),
     is_demo: Boolean(row.is_demo),
@@ -28,6 +30,53 @@ function mapDepartment(row) {
       ? { applications_count: Number(row.applications_count) }
       : {}),
   };
+}
+
+function getImages(departmentId) {
+  return db
+    .all(
+      `SELECT id, url, alt, sort_order FROM department_images
+        WHERE department_id = ?
+        ORDER BY sort_order ASC, id ASC`,
+      [departmentId]
+    )
+    .map((row) => ({ id: row.id, url: row.url, alt: row.alt }));
+}
+
+/** Attaches the ordered photo list to a single department row. */
+function withImages(row) {
+  const department = mapDepartment(row);
+  if (department) department.images = getImages(department.id);
+  return department;
+}
+
+/** Replaces a department's photos, keeping the order of the given array. */
+function replaceImages(departmentId, images) {
+  db.run('DELETE FROM department_images WHERE department_id = ?', [departmentId]);
+  (Array.isArray(images) ? images : []).forEach((image, index) => {
+    db.run(
+      `INSERT INTO department_images (department_id, url, alt, sort_order)
+       VALUES (?, ?, ?, ?)`,
+      [departmentId, cleanText(image.url), cleanText(image.alt || ''), index]
+    );
+  });
+}
+
+/**
+ * Deletes uploaded department files that are no longer referenced by any
+ * department. External URLs are ignored. Never throws: a leftover file must
+ * not break a successful database write.
+ */
+function cleanupUploadedFiles(candidates) {
+  const checked = new Set();
+  for (const url of candidates) {
+    if (!url || checked.has(url) || !departmentMedia.isDepartmentUploadUrl(url)) continue;
+    checked.add(url);
+    const stillUsed =
+      db.get('SELECT 1 AS found FROM departments WHERE image_url = ? LIMIT 1', [url]) ||
+      db.get('SELECT 1 AS found FROM department_images WHERE url = ? LIMIT 1', [url]);
+    if (!stillUsed) departmentMedia.removeUploadedFile(url);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -48,7 +97,7 @@ function getPublicBySlug(slug) {
     [slug]
   );
   if (!row) return null;
-  return mapDepartment(row);
+  return withImages(row);
 }
 
 // ---------------------------------------------------------------------------
@@ -95,14 +144,14 @@ function getById(id) {
        FROM departments d WHERE d.id = ?`,
     [id]
   );
-  return mapDepartment(row);
+  return withImages(row);
 }
 
 function assertSlugAvailable(slug, excludeId = null) {
   const existing = db.get('SELECT id FROM departments WHERE slug = ?', [slug]);
   if (existing && existing.id !== excludeId) {
     throw HttpError.conflict('SLUG_TAKEN', 'المعرّف (slug) مستخدم بالفعل. اختر معرّفًا آخر.', {
-      slug: 'هذا المعرّف مستخدم لقسم آخر.',
+      slug: 'هذا المعرّف مستخدم لتخصص آخر.',
     });
   }
 }
@@ -110,38 +159,43 @@ function assertSlugAvailable(slug, excludeId = null) {
 function create(payload) {
   const slug = payload.slug || slugify(payload.name);
   if (!slug) {
-    throw HttpError.badRequest('تعذّر توليد معرّف للقسم. أدخل المعرّف يدويًا.', {
+    throw HttpError.badRequest('تعذّر توليد معرّف للتخصص. أدخل المعرّف يدويًا.', {
       slug: 'المعرّف مطلوب.',
     });
   }
   assertSlugAvailable(slug);
 
-  const result = db.run(
-    `INSERT INTO departments
-       (name, slug, short_description, description, educational_focus, skills,
-        admission_info, image_url, is_published, is_active, is_demo, sort_order)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)`,
-    [
-      payload.name,
-      slug,
-      payload.short_description,
-      payload.description,
-      payload.educational_focus || '',
-      payload.skills || '',
-      payload.admission_info || '',
-      payload.image_url || '',
-      payload.is_published ? 1 : 0,
-      payload.is_active === false ? 0 : 1,
-      payload.sort_order || 0,
-    ]
-  );
+  const id = db.transaction(() => {
+    const result = db.run(
+      `INSERT INTO departments
+         (name, slug, short_description, description, educational_focus, skills,
+          admission_info, image_url, is_published, is_active, is_demo, sort_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)`,
+      [
+        payload.name,
+        slug,
+        payload.short_description,
+        payload.description,
+        payload.educational_focus || '',
+        payload.skills || '',
+        payload.admission_info || '',
+        payload.image_url || '',
+        payload.is_published ? 1 : 0,
+        payload.is_active === false ? 0 : 1,
+        payload.sort_order || 0,
+      ]
+    );
+    const newId = Number(result.lastInsertRowid);
+    if (payload.images !== undefined) replaceImages(newId, payload.images);
+    return newId;
+  });
 
-  return getById(Number(result.lastInsertRowid));
+  return getById(id);
 }
 
 function update(id, payload) {
   const current = getById(id);
-  if (!current) throw HttpError.notFound('القسم غير موجود.');
+  if (!current) throw HttpError.notFound('التخصص غير موجود.');
 
   const fields = [];
   const params = [];
@@ -165,13 +219,31 @@ function update(id, payload) {
   if (payload.is_active !== undefined) assign('is_active', payload.is_active ? 1 : 0);
   if (payload.sort_order !== undefined) assign('sort_order', payload.sort_order);
 
-  if (!fields.length) return current;
+  const imagesChanged = payload.images !== undefined;
+  if (!fields.length && !imagesChanged) return current;
 
-  fields.push("updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')");
-  params.push(id);
+  const previousUploads = [
+    current.image_url,
+    ...current.images.map((image) => image.url),
+  ];
 
-  db.run(`UPDATE departments SET ${fields.join(', ')} WHERE id = ?`, params);
-  return getById(id);
+  db.transaction(() => {
+    if (fields.length) {
+      fields.push("updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')");
+      params.push(id);
+      db.run(`UPDATE departments SET ${fields.join(', ')} WHERE id = ?`, params);
+    }
+    if (imagesChanged) replaceImages(id, payload.images);
+  });
+
+  const updated = getById(id);
+  const retainedUploads = new Set([
+    updated.image_url,
+    ...updated.images.map((image) => image.url),
+  ]);
+  cleanupUploadedFiles(previousUploads.filter((url) => !retainedUploads.has(url)));
+
+  return updated;
 }
 
 /**
@@ -183,16 +255,21 @@ function update(id, payload) {
  */
 function remove(id, { force = false } = {}) {
   const department = getById(id);
-  if (!department) throw HttpError.notFound('القسم غير موجود.');
+  if (!department) throw HttpError.notFound('التخصص غير موجود.');
 
   if (department.applications_count > 0 && !force) {
     throw HttpError.conflict(
       'DEPARTMENT_HAS_APPLICATIONS',
-      `يحتوي «${department.name}» على ${department.applications_count} طلب/طلبات مرتبطة به. يمكنك أرشفته، أو تأكيد الحذف الكامل لحذف القسم وطلباته معًا.`
+      `يحتوي «${department.name}» على ${department.applications_count} طلب/طلبات مرتبطة به. يمكنك أرشفته، أو تأكيد الحذف الكامل لحذف التخصص وطلباته معًا.`
     );
   }
 
-  return db.transaction(() => {
+  const uploads = [
+    department.image_url,
+    ...department.images.map((image) => image.url),
+  ];
+
+  const result = db.transaction(() => {
     const deletedApplications = db.run('DELETE FROM applications WHERE department_id = ?', [id]);
     db.run('DELETE FROM departments WHERE id = ?', [id]);
     return {
@@ -200,6 +277,9 @@ function remove(id, { force = false } = {}) {
       deleted_applications: Number(deletedApplications.changes),
     };
   });
+
+  cleanupUploadedFiles(uploads);
+  return result;
 }
 
 function countPublished() {

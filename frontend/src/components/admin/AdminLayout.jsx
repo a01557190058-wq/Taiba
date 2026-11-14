@@ -5,9 +5,11 @@ import { useAdminAuth } from '../../lib/admin-auth.jsx';
 
 const NAV_ITEMS = [
   { key: 'dashboard', to: '/dashboard', label: 'نظرة عامة', icon: 'dashboard' },
-  { key: 'departments', to: '/departments', label: 'الأقسام', icon: 'layers' },
+  { key: 'departments', to: '/departments', label: 'التخصصات', icon: 'layers' },
+  { key: 'subjects', to: '/subjects', label: 'المواد الدراسية', icon: 'book' },
   { key: 'applications', to: '/applications', label: 'طلبات التقديم', icon: 'inbox' },
   { key: 'news', to: '/news', label: 'الأخبار', icon: 'news' },
+  { key: 'gallery', to: '/gallery', label: 'معرض الصور', icon: 'image' },
   { key: 'content', to: '/content', label: 'المحتوى والأسئلة', icon: 'file' },
   { key: 'demo', to: '/demo-data', label: 'البيانات التجريبية', icon: 'database' },
 ];
@@ -15,13 +17,25 @@ const NAV_ITEMS = [
 /** Topbar copy for each dashboard route (the list pages share a title). */
 function chromeFor(pathname) {
   if (pathname.startsWith('/departments/new')) {
-    return { title: 'قسم جديد', subtitle: 'إضافة قسم تعليمي جديد إلى الموقع' };
+    return { title: 'تخصص جديد', subtitle: 'إضافة تخصص تعليمي جديد إلى الموقع' };
   }
   if (/^\/departments\/\d+\/edit/.test(pathname)) {
-    return { title: 'تحرير قسم', subtitle: 'تحديث بيانات القسم وحالة نشره' };
+    return { title: 'تحرير تخصص', subtitle: 'تحديث بيانات التخصص وحالة نشره' };
   }
   if (pathname.startsWith('/departments')) {
-    return { title: 'الأقسام', subtitle: 'إنشاء وتحرير ونشر الأقسام التعليمية' };
+    return { title: 'التخصصات', subtitle: 'إنشاء وتحرير ونشر التخصصات التعليمية' };
+  }
+  if (pathname.startsWith('/subjects/new')) {
+    return { title: 'مادة دراسية جديدة', subtitle: 'إضافة مادة نظرية أو عملية إلى صفحة المواد' };
+  }
+  if (/^\/subjects\/\d+\/edit/.test(pathname)) {
+    return { title: 'تحرير مادة دراسية', subtitle: 'تحديث بيانات المادة ونوعها وحالة نشرها' };
+  }
+  if (pathname.startsWith('/subjects')) {
+    return {
+      title: 'المواد الدراسية',
+      subtitle: 'إدارة المواد النظرية والعملية التي تظهر في صفحة المواد',
+    };
   }
   if (/^\/applications\/\d+/.test(pathname)) {
     return { title: 'تفاصيل الطلب', subtitle: 'مراجعة بيانات المتقدم وتحديث حالة الطلب' };
@@ -37,6 +51,12 @@ function chromeFor(pathname) {
   }
   if (pathname.startsWith('/news')) {
     return { title: 'الأخبار', subtitle: 'إنشاء الأخبار وتحريرها ونشرها على الموقع' };
+  }
+  if (pathname.startsWith('/gallery')) {
+    return {
+      title: 'معرض الصور',
+      subtitle: 'تحرير نصوص الصفحة وأقسامها وصورها وحقوقها',
+    };
   }
   if (pathname.startsWith('/content')) {
     return { title: 'المحتوى والأسئلة', subtitle: 'تحرير نصوص الموقع والأسئلة الشائعة' };

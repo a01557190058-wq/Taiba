@@ -20,14 +20,18 @@ test('demo records are explicitly identifiable', async () => {
   assert.equal(res.body.data.counts.demo_departments, 10);
   assert.equal(res.body.data.counts.demo_applications, 8);
   assert.equal(res.body.data.counts.demo_news, 6);
+  assert.equal(res.body.data.counts.demo_subjects, 8);
   assert.equal(res.body.data.counts.real_departments, 0);
   assert.equal(res.body.data.counts.real_applications, 0);
   assert.equal(res.body.data.counts.real_news, 0);
+  assert.equal(res.body.data.counts.real_subjects, 0);
   assert.equal(res.body.data.departments.length, 10);
   assert.equal(res.body.data.applications.length, 8);
   assert.equal(res.body.data.news.length, 6);
+  assert.equal(res.body.data.subjects.length, 8);
   assert.ok(res.body.data.applications.every((row) => row.reference_number.startsWith('DEMO-')));
   assert.ok(res.body.data.news.every((row) => row.slug.startsWith('demo-')));
+  assert.ok(res.body.data.subjects.every((row) => ['theoretical', 'practical'].includes(row.type)));
 });
 
 test('seeding is idempotent and never duplicates demo records', async () => {
@@ -85,6 +89,7 @@ test('demo cleanup removes only demo records and preserves real records', async 
   assert.equal(res.status, 200);
   assert.equal(res.body.data.deleted_applications, 8);
   assert.equal(res.body.data.deleted_news, 6);
+  assert.equal(res.body.data.deleted_subjects, 8);
   assert.equal(res.body.data.deleted_departments, 9, 'departments without real applications are deleted');
   assert.equal(res.body.data.archived_departments, 1, 'demo department with a real application is archived');
 
@@ -143,14 +148,17 @@ test('demo reset deletes demo records then restores the dataset', async () => {
   assert.equal(reset.body.data.seed.departments_inserted, 10);
   assert.equal(reset.body.data.seed.applications_inserted, 8);
   assert.equal(reset.body.data.seed.news_inserted, 6);
+  assert.equal(reset.body.data.seed.subjects_inserted, 8);
   assert.equal(reset.body.data.seed.faqs_inserted, 0, 'content is not duplicated on reset');
   assert.equal(reset.body.data.seed.content_inserted, 0);
   assert.equal(reset.body.data.overview.counts.demo_departments, 10);
   assert.equal(reset.body.data.overview.counts.demo_news, 6);
+  assert.equal(reset.body.data.overview.counts.demo_subjects, 8);
 
   assert.equal(db.get('SELECT COUNT(*) AS count FROM departments').count, 10);
   assert.equal(db.get('SELECT COUNT(*) AS count FROM applications').count, 8);
   assert.equal(db.get('SELECT COUNT(*) AS count FROM news').count, 6);
+  assert.equal(db.get('SELECT COUNT(*) AS count FROM subjects').count, 8);
 
   // A second reset is still idempotent.
   const again = await agent

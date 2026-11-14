@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api, ApiError } from '../../lib/api.js';
 import { useAsync } from '../../lib/hooks.js';
-import { formatDateTime } from '../../lib/format.js';
+import { formatDate, formatDateTime } from '../../lib/format.js';
 import { Icon } from '../../lib/icons.jsx';
 import { useFeedback } from '../../components/admin/feedback.jsx';
 import {
@@ -22,6 +22,13 @@ function DetailRow({ label, children }) {
       <dd>{empty ? '—' : children}</dd>
     </div>
   );
+}
+
+function formatFileSize(bytes) {
+  const size = Number(bytes) || 0;
+  if (size < 1024) return `${size} بايت`;
+  if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} كيلوبايت`;
+  return `${(size / (1024 * 1024)).toFixed(1)} ميجابايت`;
 }
 
 export default function ApplicationDetailPage() {
@@ -176,19 +183,16 @@ export default function ApplicationDetailPage() {
                 <span className="cell-ref">{application.reference_number}</span>
               </DetailRow>
               <DetailRow label="الاسم الكامل">{application.full_name}</DetailRow>
-              <DetailRow label="رقم الهاتف">
-                <a href={`tel:${application.phone}`} dir="ltr">
-                  {application.phone}
-                </a>
+              <DetailRow label="تاريخ الميلاد">
+                {application.date_of_birth ? formatDate(application.date_of_birth) : ''}
               </DetailRow>
-              <DetailRow label="البريد الإلكتروني">
-                {application.email ? (
-                  <a href={`mailto:${application.email}`} dir="ltr">
-                    {application.email}
-                  </a>
-                ) : null}
+              <DetailRow label="النوع">{application.gender_label}</DetailRow>
+              <DetailRow label="الرقم القومي / الهوية">
+                {application.national_id ? <span dir="ltr">{application.national_id}</span> : null}
               </DetailRow>
-              <DetailRow label="القسم">
+              <DetailRow label="المحافظة">{application.governorate}</DetailRow>
+              <DetailRow label="الإدارة التعليمية">{application.educational_administration}</DetailRow>
+              <DetailRow label="المهنة/التخصص">
                 {application.department_id ? (
                   <Link to={`/departments/${application.department_id}/edit`}>
                     {application.department_name || '—'}
@@ -197,7 +201,10 @@ export default function ApplicationDetailPage() {
                   application.department_name || '—'
                 )}
               </DetailRow>
-              <DetailRow label="المؤهل / المرحلة السابقة">
+              <DetailRow label="المجموع / النسبة في الشهادة الإعدادية">
+                {application.preparatory_score}
+              </DetailRow>
+              <DetailRow label="المدرسة الإعدادية السابقة">
                 {application.previous_education}
               </DetailRow>
               <DetailRow label="ملاحظات المتقدم">
@@ -208,6 +215,84 @@ export default function ApplicationDetailPage() {
               </DetailRow>
               <DetailRow label="آخر تحديث">{formatDateTime(application.updated_at)}</DetailRow>
             </dl>
+          </div>
+        </section>
+
+        <section className="panel mt-2">
+          <div className="panel__head">
+            <div>
+              <h3>بيانات ولي الأمر والتواصل</h3>
+              <p>رقم ولي الأمر هو وسيلة التواصل الأساسية وإرسال الإشعارات.</p>
+            </div>
+          </div>
+          <div className="panel__body">
+            <dl className="detail-list">
+              <DetailRow label="اسم ولي الأمر">{application.guardian_name}</DetailRow>
+              <DetailRow label="صلة القرابة">{application.guardian_relation_label}</DetailRow>
+              <DetailRow label="هاتف ولي الأمر">
+                {application.guardian_phone ? (
+                  <a href={`tel:${application.guardian_phone}`} dir="ltr">
+                    {application.guardian_phone}
+                  </a>
+                ) : null}
+              </DetailRow>
+              <DetailRow label="هاتف إضافي للطالب">
+                {application.phone ? (
+                  <a href={`tel:${application.phone}`} dir="ltr">
+                    {application.phone}
+                  </a>
+                ) : null}
+              </DetailRow>
+              <DetailRow label="البريد الإلكتروني">
+                {application.email ? (
+                  <a href={`mailto:${application.email}`} dir="ltr">
+                    {application.email}
+                  </a>
+                ) : null}
+              </DetailRow>
+              <DetailRow label="العنوان بالتفصيل">{application.address_full}</DetailRow>
+              <DetailRow label="محافظة العنوان">{application.address_governorate}</DetailRow>
+              <DetailRow label="المركز">{application.address_center}</DetailRow>
+              <DetailRow label="المدينة / القرية">{application.address_city}</DetailRow>
+            </dl>
+          </div>
+        </section>
+
+        <section className="panel mt-2">
+          <div className="panel__head">
+            <div>
+              <h3>المستندات المرفقة</h3>
+              <p>ملفات خاصة لا تظهر في الموقع العام، والتحميل متاح للإدارة فقط.</p>
+            </div>
+          </div>
+          <div className="panel__body">
+            {application.documents && application.documents.length ? (
+              <ul className="doc-admin-list">
+                {application.documents.map((document) => (
+                  <li className="doc-admin-item" key={document.id}>
+                    <span className="doc-admin-item__icon" aria-hidden="true">
+                      <Icon name="file" size={20} />
+                    </span>
+                    <div className="doc-admin-item__meta">
+                      <strong>{document.kind_label}</strong>
+                      <span className="hint" dir="auto">
+                        {document.original_name}
+                      </span>
+                      <span className="hint">{formatFileSize(document.size_bytes)}</span>
+                    </div>
+                    <a className="btn btn-outline btn-sm" href={document.download_url}>
+                      <Icon name="download" size={15} />
+                      <span>تحميل</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="notice">
+                <Icon name="info" size={18} />
+                <span>لا توجد مستندات مرفقة بهذا الطلب (قد يكون طلبًا تجريبيًا أو قديمًا).</span>
+              </div>
+            )}
           </div>
         </section>
 

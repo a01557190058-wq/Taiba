@@ -164,6 +164,9 @@ function ConfirmDialog({ options, onResolve }) {
                   if (event.key === 'Enter' && !disabled) onResolve(true);
                 }}
               />
+              <p className="hint">
+                يبقى زر التأكيد معطّلًا حتى تكتب النص أعلاه بالضبط.
+              </p>
             </div>
           ) : null}
         </div>

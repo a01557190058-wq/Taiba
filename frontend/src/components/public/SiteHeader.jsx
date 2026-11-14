@@ -5,8 +5,10 @@ import { useScrolledHeader } from '../../lib/motion.jsx';
 const NAV_ITEMS = [
   { to: '/', label: 'الرئيسية', end: true },
   { to: '/about', label: 'عن المدرسة' },
-  { to: '/departments', label: 'الأقسام' },
+  { to: '/departments', label: 'التخصصات' },
+  { to: '/subjects', label: 'المواد الدراسية' },
   { to: '/news', label: 'الأخبار' },
+  { to: '/gallery', label: 'معرض الصور' },
   { to: '/admission', label: 'القبول' },
   { to: '/contact', label: 'تواصل معنا' },
 ];

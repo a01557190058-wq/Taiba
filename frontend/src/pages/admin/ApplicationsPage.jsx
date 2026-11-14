@@ -225,14 +225,14 @@ export default function ApplicationsPage() {
             </select>
           </div>
           <div className="filter">
-            <label htmlFor="filter-department">القسم</label>
+            <label htmlFor="filter-department">المهنة/التخصص</label>
             <select
               className="select"
               id="filter-department"
               value={filters.departmentId}
               onChange={(event) => updateParams({ department_id: event.target.value, page: 1 })}
             >
-              <option value="">كل الأقسام</option>
+              <option value="">كل التخصصات</option>
               {(departments || []).map((department) => (
                 <option key={department.id} value={String(department.id)}>
                   {department.name}
@@ -283,7 +283,7 @@ export default function ApplicationsPage() {
                 <tr>
                   <th>رقم الطلب</th>
                   <th>المتقدم</th>
-                  <th>القسم</th>
+                  <th>المهنة/التخصص</th>
                   <th>الحالة</th>
                   <th>البيانات</th>
                   <th>تاريخ التقديم</th>
@@ -296,8 +296,11 @@ export default function ApplicationsPage() {
                     <td className="cell-ref">{application.reference_number}</td>
                     <td>
                       <div className="cell-strong">{application.full_name}</div>
+                      {application.guardian_name ? (
+                        <div className="cell-muted">ولي الأمر: {application.guardian_name}</div>
+                      ) : null}
                       <div className="cell-muted" dir="ltr">
-                        {application.phone}
+                        {application.guardian_phone || application.phone}
                       </div>
                     </td>
                     <td>{application.department_name || '—'}</td>

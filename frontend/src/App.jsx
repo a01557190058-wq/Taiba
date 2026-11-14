@@ -4,8 +4,10 @@ import HomePage from './pages/public/HomePage.jsx';
 import AboutPage from './pages/public/AboutPage.jsx';
 import DepartmentsPage from './pages/public/DepartmentsPage.jsx';
 import DepartmentPage from './pages/public/DepartmentPage.jsx';
+import SubjectsPage from './pages/public/SubjectsPage.jsx';
 import NewsPage from './pages/public/NewsPage.jsx';
 import NewsArticlePage from './pages/public/NewsArticlePage.jsx';
+import GalleryPage from './pages/public/GalleryPage.jsx';
 import AdmissionPage from './pages/public/AdmissionPage.jsx';
 import ApplyPage from './pages/public/ApplyPage.jsx';
 import ContactPage from './pages/public/ContactPage.jsx';
@@ -19,8 +21,10 @@ export default function App() {
         <Route path="about" element={<AboutPage />} />
         <Route path="departments" element={<DepartmentsPage />} />
         <Route path="departments/:slug" element={<DepartmentPage />} />
+        <Route path="subjects" element={<SubjectsPage />} />
         <Route path="news" element={<NewsPage />} />
         <Route path="news/:slug" element={<NewsArticlePage />} />
+        <Route path="gallery" element={<GalleryPage />} />
         <Route path="admission" element={<AdmissionPage />} />
         <Route path="apply" element={<ApplyPage />} />
         <Route path="contact" element={<ContactPage />} />

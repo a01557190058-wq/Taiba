@@ -64,3 +64,235 @@
     animation: none;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Gallery manager
+   -------------------------------------------------------------------------- */
+.gallery-admin__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.15rem;
+  margin-bottom: 1rem;
+  padding: 0.8rem 1.05rem;
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius-sm);
+  background: #ffffff;
+  box-shadow: var(--a-shadow-sm);
+  color: var(--a-ink-500);
+  font-size: 0.79rem;
+}
+
+.gallery-admin__summary > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.gallery-admin__summary svg {
+  color: var(--a-teal-700);
+}
+
+.gallery-admin__dirty {
+  color: #a16207;
+  font-weight: 700;
+}
+
+.gallery-admin__dirty svg {
+  color: #d97706;
+}
+
+.gallery-admin__saved {
+  color: var(--a-teal-800);
+  font-weight: 700;
+}
+
+.gallery-admin-sections {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.gallery-admin-section {
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius-sm);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.gallery-admin-section__head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  background: var(--a-bg);
+}
+
+.gallery-admin-section.is-open .gallery-admin-section__head {
+  border-bottom: 1px solid var(--a-line);
+}
+
+.gallery-admin-section__toggle {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  padding: 0.25rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.gallery-admin-section__toggle:focus-visible {
+  outline: 2px solid var(--a-teal-700);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.gallery-admin-section__title {
+  overflow: hidden;
+  color: var(--a-ink-900);
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gallery-admin-section__count {
+  color: var(--a-ink-500);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.gallery-admin-section__chevron {
+  margin-inline-start: auto;
+  color: var(--a-ink-400);
+  transition: transform 0.2s ease;
+}
+
+.gallery-admin-section__chevron.is-collapsed {
+  transform: rotate(180deg);
+}
+
+.gallery-admin-section__tools {
+  display: flex;
+  flex: none;
+  gap: 0.3rem;
+}
+
+.gallery-admin-section__body {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem 0.85rem;
+}
+
+.gallery-admin-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.8rem;
+}
+
+.department-cover-preview {
+  max-width: 340px;
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius-sm);
+  background: var(--a-line);
+  overflow: hidden;
+}
+
+.department-cover-preview img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.gallery-admin-photo {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius-sm);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.gallery-admin-photo.is-hidden {
+  opacity: 0.68;
+}
+
+.gallery-admin-photo__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--a-line);
+}
+
+.gallery-admin-photo__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-admin-photo__media .badge {
+  position: absolute;
+  inset-block-start: 0.45rem;
+  inset-inline-start: 0.45rem;
+}
+
+.gallery-admin-photo__body {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.6rem;
+}
+
+.gallery-admin-photo__body .input {
+  padding: 0.42rem 0.55rem;
+  font-size: 0.78rem;
+}
+
+.gallery-admin-photo__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.15rem;
+}
+
+.icon-flip {
+  transform: rotate(180deg);
+}
+
+.gallery-admin__savebar {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 5;
+  margin-top: 1.4rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius-sm);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 -6px 18px rgba(15, 38, 63, 0.06);
+  backdrop-filter: blur(6px);
+}
+
+@media (max-width: 720px) {
+  .gallery-admin-section__head {
+    flex-wrap: wrap;
+  }
+
+  .gallery-admin-section__toggle {
+    flex-basis: 100%;
+  }
+
+  .gallery-admin-section__tools {
+    margin-inline-start: auto;
+  }
+
+  .gallery-admin-photos {
+    grid-template-columns: 1fr;
+  }
+}
+

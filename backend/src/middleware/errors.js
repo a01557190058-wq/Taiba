@@ -36,14 +36,14 @@ function errorHandler(error, req, res, next) {
     });
   }
 
-  // multer (news image uploads)
+  // multer (news/gallery/department images and admission documents)
   if (error instanceof multer.MulterError) {
     if (error.code === 'LIMIT_FILE_SIZE') {
       return res.status(413).json({
         error: {
           code: 'FILE_TOO_LARGE',
-          message: 'حجم الصورة أكبر من الحد المسموح (5 ميجابايت).',
-          fields: { image: 'حجم الصورة كبير جدًا.' },
+          message: 'حجم الملف أكبر من الحد المسموح. اختر ملفًا أصغر ثم حاول مرة أخرى.',
+          fields: { _form: 'حجم الملف كبير جدًا.' },
         },
       });
     }
@@ -51,12 +51,12 @@ function errorHandler(error, req, res, next) {
       return res.status(400).json({
         error: {
           code: 'TOO_MANY_FILES',
-          message: 'عدد الصور في الطلب أكبر من الحد المسموح.',
+          message: 'عدد الملفات في الطلب أكبر من الحد المسموح.',
         },
       });
     }
     return res.status(400).json({
-      error: { code: 'UPLOAD_ERROR', message: 'تعذّر رفع الصورة. تحقق من الملف ثم حاول مرة أخرى.' },
+      error: { code: 'UPLOAD_ERROR', message: 'تعذّر رفع الملف. تحقق من الملف ثم حاول مرة أخرى.' },
     });
   }
 

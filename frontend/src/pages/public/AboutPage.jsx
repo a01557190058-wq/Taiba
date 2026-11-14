@@ -18,7 +18,7 @@ const JOURNEY = [
   },
   {
     title: 'التخصص',
-    text: 'اختيار القسم ودراسة مواده الأساسية داخل الفصل والمختبر.',
+    text: 'اختيار التخصص ودراسة مواده الأساسية داخل الفصل والمختبر.',
   },
   {
     title: 'التطبيق',
@@ -204,14 +204,14 @@ export default function AboutPage() {
           <div className="contact-card reveal">
             <div className="contact-card__main">
               <span className="eyebrow">خطوتك التالية</span>
-              <h2 className="section-title mt-1 mb-2">اطّلع على الأقسام واختر مسارك</h2>
+              <h2 className="section-title mt-1 mb-2">اطّلع على التخصصات واختر مسارك</h2>
               <p className="text-muted">
-                كل قسم يعرض وصفه ومهاراته ومعلومات القبول الخاصة به. يمكنك التقديم مباشرة بعد
-                اختيار القسم.
+                كل تخصص يعرض وصفه ومهاراته ومعلومات القبول الخاصة به. يمكنك التقديم مباشرة بعد
+                اختيار التخصص.
               </p>
               <div className="hero__actions">
                 <Link className="btn btn-primary" to="/departments">
-                  استكشف الأقسام
+                  استكشف التخصصات
                 </Link>
                 <Link className="btn btn-outline" to="/admission">
                   معلومات القبول

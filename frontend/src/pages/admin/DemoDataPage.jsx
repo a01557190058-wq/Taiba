@@ -65,8 +65,8 @@ function SummaryTables({ data }) {
       <section className="panel">
         <div className="panel__head">
           <div>
-            <h3>الأقسام التجريبية</h3>
-            <p>{`${formatNumber(departments.length)} قسمًا موسومًا كبيانات تجريبية.`}</p>
+            <h3>التخصصات التجريبية</h3>
+            <p>{`${formatNumber(departments.length)} تخصصًا موسومًا كبيانات تجريبية.`}</p>
           </div>
         </div>
         {departments.length ? (
@@ -74,7 +74,7 @@ function SummaryTables({ data }) {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>القسم</th>
+                  <th>المهنة/التخصص</th>
                   <th>الحالة</th>
                   <th>آخر تحديث</th>
                   <th />
@@ -109,7 +109,7 @@ function SummaryTables({ data }) {
           </div>
         ) : (
           <EmptyState
-            title="لا توجد أقسام تجريبية"
+            title="لا توجد تخصصات تجريبية"
             message="استخدم زر إضافة البيانات التجريبية لإنشاء مجموعة العرض."
             iconName="layers"
           />
@@ -130,7 +130,7 @@ function SummaryTables({ data }) {
                 <tr>
                   <th>الطلب</th>
                   <th>المتقدم</th>
-                  <th>القسم</th>
+                  <th>المهنة/التخصص</th>
                   <th>الحالة</th>
                   <th>التقديم</th>
                   <th />
@@ -204,7 +204,7 @@ export default function DemoDataPage() {
     const confirmed = await confirm({
       title: 'إعادة تهيئة البيانات التجريبية',
       message:
-        'سيتم حذف جميع الطلبات والأقسام الموسومة كبيانات تجريبية، ثم إعادة إنشاء مجموعة العرض من جديد. لن تُحذف أو تُعدّل أي بيانات حقيقية. اكتب RESET_DEMO_DATA للتأكيد.',
+        'سيتم حذف جميع الطلبات والتخصصات الموسومة كبيانات تجريبية، ثم إعادة إنشاء مجموعة العرض من جديد. لن تُحذف أو تُعدّل أي بيانات حقيقية. اكتب RESET_DEMO_DATA للتأكيد.',
       confirmLabel: 'إعادة التهيئة',
       danger: true,
       requireText: 'RESET_DEMO_DATA',
@@ -222,9 +222,9 @@ export default function DemoDataPage() {
       toast(
         `تمت إعادة التهيئة: حُذف ${formatNumber(
           cleanup.deleted_applications || 0
-        )} طلبًا و${formatNumber(cleanup.deleted_departments || 0)} قسمًا، وأُضيف ${formatNumber(
+        )} طلبًا و${formatNumber(cleanup.deleted_departments || 0)} تخصصًا، وأُضيف ${formatNumber(
           seed.applications_inserted || 0
-        )} طلبًا و${formatNumber(seed.departments_inserted || 0)} قسمًا.`
+        )} طلبًا و${formatNumber(seed.departments_inserted || 0)} تخصصًا.`
       );
       reload();
     } catch (resetError) {
@@ -238,7 +238,7 @@ export default function DemoDataPage() {
     const confirmed = await confirm({
       title: 'حذف البيانات التجريبية فقط',
       message:
-        'سيتم حذف جميع الطلبات والأقسام التجريبية دون إعادة إنشائها. تُحفظ البيانات الحقيقية بالكامل، وأي قسم تجريبي مرتبط بطلب حقيقي سيُؤرشف بدلًا من حذفه. اكتب DELETE_DEMO_DATA للتأكيد.',
+        'سيتم حذف جميع الطلبات والتخصصات التجريبية دون إعادة إنشائها. تُحفظ البيانات الحقيقية بالكامل، وأي تخصص تجريبي مرتبط بطلب حقيقي سيُؤرشف بدلًا من حذفه. اكتب DELETE_DEMO_DATA للتأكيد.',
       confirmLabel: 'حذف البيانات التجريبية',
       danger: true,
       requireText: 'DELETE_DEMO_DATA',
@@ -254,9 +254,9 @@ export default function DemoDataPage() {
       toast(
         `تم حذف ${formatNumber(result.deleted_applications || 0)} طلبًا و${formatNumber(
           result.deleted_departments || 0
-        )} قسمًا تجريبيًا${
+        )} تخصصًا تجريبيًا${
           result.archived_departments
-            ? `، وأُرشف ${formatNumber(result.archived_departments)} قسمًا مرتبطًا ببيانات حقيقية`
+            ? `، وأُرشف ${formatNumber(result.archived_departments)} تخصصًا مرتبطًا ببيانات حقيقية`
             : ''
         }.`
       );
@@ -306,20 +306,26 @@ export default function DemoDataPage() {
 
       <div className="stat-grid mt-2">
         <StatCard
-          label="أقسام تجريبية"
+          label="تخصصات تجريبية"
           value={counts.demo_departments}
           meta="is_demo = 1"
           accent
         />
         <StatCard label="طلبات تجريبية" value={counts.demo_applications} meta="is_demo = 1" />
+        <StatCard label="مواد دراسية تجريبية" value={counts.demo_subjects} meta="is_demo = 1" />
         <StatCard
-          label="أقسام حقيقية"
+          label="تخصصات حقيقية"
           value={counts.real_departments}
           meta="is_demo = 0 — محمية"
         />
         <StatCard
           label="طلبات حقيقية"
           value={counts.real_applications}
+          meta="is_demo = 0 — محمية"
+        />
+        <StatCard
+          label="مواد دراسية حقيقية"
+          value={counts.real_subjects}
           meta="is_demo = 0 — محمية"
         />
       </div>
@@ -337,7 +343,7 @@ export default function DemoDataPage() {
             <Icon name="check" size={18} />
             <span>
               عمليات الحذف وإعادة التهيئة تستهدف السجلات الموسومة is_demo=1 فقط. لا يمكن حذف طلب
-              حقيقي أو قسم مرتبط بطلبات حقيقية من هذه الصفحة.
+              حقيقي أو تخصص مرتبط بطلبات حقيقية من هذه الصفحة.
             </span>
           </div>
         </div>
@@ -365,7 +371,7 @@ export default function DemoDataPage() {
         <ActionPanel
           title="حذف البيانات التجريبية"
           description="إزالة كل سجلات العرض دون إعادة إنشائها، مع الحفاظ على البيانات الحقيقية."
-          notice="تتطلب كتابة DELETE_DEMO_DATA. الأقسام التجريبية المرتبطة بطلبات حقيقية تُؤرشف."
+          notice="تتطلب كتابة DELETE_DEMO_DATA. التخصصات التجريبية المرتبطة بطلبات حقيقية تُؤرشف."
           noticeType="danger"
           buttonLabel="حذف البيانات التجريبية"
           danger

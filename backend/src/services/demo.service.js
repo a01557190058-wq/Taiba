@@ -2,7 +2,9 @@
 
 const db = require('../db');
 const content = require('./content.service');
-const { DEMO_DEPARTMENTS, DEMO_APPLICATIONS, DEMO_NEWS } = require('../db/demo-data');
+const gallery = require('./gallery.service');
+const applicationDocuments = require('../lib/application-documents');
+const { DEMO_DEPARTMENTS, DEMO_APPLICATIONS, DEMO_NEWS, DEMO_SUBJECTS } = require('../db/demo-data');
 
 /**
  * Idempotent demo seeding. Records are matched by their natural keys
@@ -17,6 +19,9 @@ function seedDemoData() {
     faqs_inserted: 0,
     content_inserted: 0,
     news_inserted: 0,
+    subjects_inserted: 0,
+    gallery_sections_inserted: 0,
+    gallery_images_inserted: 0,
   };
 
   db.transaction(() => {
@@ -87,8 +92,11 @@ function seedDemoData() {
         `INSERT INTO applications
            (reference_number, full_name, phone, email, department_id,
             department_name_snapshot, previous_education, additional_notes,
-            status, admin_notes, is_demo, submitted_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
+            date_of_birth, gender, national_id, governorate,
+            educational_administration, guardian_name, guardian_relation,
+            guardian_phone, address_governorate, address_center, address_city,
+            preparatory_score, status, admin_notes, is_demo, submitted_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
         [
           application.reference_number,
           application.full_name,
@@ -98,6 +106,18 @@ function seedDemoData() {
           department.name,
           application.previous_education,
           application.additional_notes,
+          application.date_of_birth || '',
+          application.gender || '',
+          application.national_id || '',
+          application.governorate || '',
+          application.educational_administration || '',
+          application.guardian_name || '',
+          application.guardian_relation || '',
+          application.guardian_phone || application.phone || '',
+          application.address_governorate || '',
+          application.address_center || '',
+          application.address_city || '',
+          application.preparatory_score || '',
           application.status,
           application.admin_notes,
           application.submitted_at,
@@ -130,6 +150,44 @@ function seedDemoData() {
       );
       summary.news_inserted += 1;
     }
+
+    // --- Demo subjects -----------------------------------------------------
+    for (const subject of DEMO_SUBJECTS) {
+      const exists = db.get('SELECT id FROM subjects WHERE name = ? AND type = ?', [
+        subject.name,
+        subject.type,
+      ]);
+      if (exists) continue;
+
+      let departmentId = null;
+      if (subject.department_slug) {
+        const department = db.get('SELECT id FROM departments WHERE slug = ?', [
+          subject.department_slug,
+        ]);
+        departmentId = department ? department.id : null;
+      }
+
+      db.run(
+        `INSERT INTO subjects
+           (name, description, type, grade, department_id, icon, is_published, is_demo, sort_order)
+         VALUES (?, ?, ?, ?, ?, ?, 1, 1, ?)`,
+        [
+          subject.name,
+          subject.description,
+          subject.type,
+          subject.grade || 'first',
+          departmentId,
+          subject.icon,
+          subject.sort_order,
+        ]
+      );
+      summary.subjects_inserted += 1;
+    }
+
+    // --- Photo gallery (default sections/photos, never overwrites) ---------
+    const gallerySeed = gallery.seedGallery();
+    summary.gallery_sections_inserted = gallerySeed.sections;
+    summary.gallery_images_inserted = gallerySeed.images;
   });
 
   return summary;
@@ -148,14 +206,20 @@ function getDemoSummary() {
     `SELECT id, title, slug, category, is_published, published_at
        FROM news WHERE is_demo = 1 ORDER BY published_at DESC, id DESC`
   );
+  const subjects = db.all(
+    `SELECT id, name, type, grade, department_id, is_published, sort_order
+       FROM subjects WHERE is_demo = 1 ORDER BY grade ASC, type ASC, sort_order ASC, id ASC`
+  );
   const counts = db.get(
     `SELECT
        (SELECT COUNT(*) FROM departments WHERE is_demo = 1) AS demo_departments,
        (SELECT COUNT(*) FROM applications WHERE is_demo = 1) AS demo_applications,
        (SELECT COUNT(*) FROM news WHERE is_demo = 1) AS demo_news,
+       (SELECT COUNT(*) FROM subjects WHERE is_demo = 1) AS demo_subjects,
        (SELECT COUNT(*) FROM departments WHERE is_demo = 0) AS real_departments,
        (SELECT COUNT(*) FROM applications WHERE is_demo = 0) AS real_applications,
-       (SELECT COUNT(*) FROM news WHERE is_demo = 0) AS real_news`
+       (SELECT COUNT(*) FROM news WHERE is_demo = 0) AS real_news,
+       (SELECT COUNT(*) FROM subjects WHERE is_demo = 0) AS real_subjects`
   );
 
   return {
@@ -163,9 +227,11 @@ function getDemoSummary() {
       demo_departments: counts.demo_departments,
       demo_applications: counts.demo_applications,
       demo_news: counts.demo_news,
+      demo_subjects: counts.demo_subjects,
       real_departments: counts.real_departments,
       real_applications: counts.real_applications,
       real_news: counts.real_news,
+      real_subjects: counts.real_subjects,
     },
     departments: departments.map((row) => ({
       ...row,
@@ -174,6 +240,7 @@ function getDemoSummary() {
     })),
     applications,
     news: news.map((row) => ({ ...row, is_published: Boolean(row.is_published) })),
+    subjects: subjects.map((row) => ({ ...row, is_published: Boolean(row.is_published) })),
   };
 }
 
@@ -190,14 +257,29 @@ function cleanupDemoData() {
     deleted_departments: 0,
     archived_departments: 0,
     deleted_news: 0,
+    deleted_subjects: 0,
   };
 
+  let removedDocumentFiles = [];
+
   db.transaction(() => {
+    removedDocumentFiles = db
+      .all(
+        `SELECT d.stored_name
+           FROM application_documents d
+           JOIN applications a ON a.id = d.application_id
+          WHERE a.is_demo = 1`
+      )
+      .map((row) => row.stored_name);
+
     const deletedApps = db.run('DELETE FROM applications WHERE is_demo = 1');
     result.deleted_applications = Number(deletedApps.changes);
 
     const deletedNews = db.run('DELETE FROM news WHERE is_demo = 1');
     result.deleted_news = Number(deletedNews.changes);
+
+    const deletedSubjects = db.run('DELETE FROM subjects WHERE is_demo = 1');
+    result.deleted_subjects = Number(deletedSubjects.changes);
 
     const demoDepartments = db.all('SELECT id, name FROM departments WHERE is_demo = 1');
     for (const department of demoDepartments) {
@@ -220,6 +302,8 @@ function cleanupDemoData() {
       }
     }
   });
+
+  removedDocumentFiles.forEach((storedName) => applicationDocuments.removeStoredFile(storedName));
 
   return result;
 }

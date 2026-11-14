@@ -74,6 +74,21 @@ const config = {
     newsUploads: process.env.NEWS_UPLOADS_DIR
       ? path.resolve(BACKEND_ROOT, process.env.NEWS_UPLOADS_DIR)
       : path.join(PROJECT_ROOT, 'uploads', 'news'),
+    // Photos uploaded from the gallery dashboard. Same rules as news uploads:
+    // runtime data outside the build output, overridable on read-only hosts.
+    galleryUploads: process.env.GALLERY_UPLOADS_DIR
+      ? path.resolve(BACKEND_ROOT, process.env.GALLERY_UPLOADS_DIR)
+      : path.join(PROJECT_ROOT, 'uploads', 'gallery'),
+    // Covers and photos uploaded from the department editor.
+    departmentUploads: process.env.DEPARTMENT_UPLOADS_DIR
+      ? path.resolve(BACKEND_ROOT, process.env.DEPARTMENT_UPLOADS_DIR)
+      : path.join(PROJECT_ROOT, 'uploads', 'departments'),
+    // Admission documents (birth certificates, school certificates, personal
+    // photos). These are sensitive and are deliberately NOT served as static
+    // files: only an authenticated administrator can download them.
+    applicationUploads: process.env.APPLICATION_UPLOADS_DIR
+      ? path.resolve(BACKEND_ROOT, process.env.APPLICATION_UPLOADS_DIR)
+      : path.join(PROJECT_ROOT, 'uploads', 'applications'),
   },
   session: {
     name: 'taiba.sid',
@@ -107,6 +122,9 @@ const config = {
     // News image uploads (per file / per request).
     uploadFileBytes: int(process.env.NEWS_UPLOAD_MAX_BYTES, 5 * 1024 * 1024),
     uploadFilesPerRequest: 6,
+    // Admission documents: PDF/JPG/PNG, up to three per application.
+    applicationFileBytes: int(process.env.APPLICATION_UPLOAD_MAX_BYTES, 8 * 1024 * 1024),
+    applicationFilesPerRequest: 3,
   },
 };
 

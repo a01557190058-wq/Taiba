@@ -30,7 +30,7 @@ function seedIfDatabaseIsEmpty() {
   /* eslint-disable no-console */
   console.log(
     `[seed] قاعدة بيانات فارغة - تمت إضافة البيانات التجريبية ` +
-      `(${summary.departments_inserted} قسم، ${summary.applications_inserted} طلب).`
+      `(${summary.departments_inserted} تخصص، ${summary.applications_inserted} طلب).`
   );
   /* eslint-enable no-console */
 }

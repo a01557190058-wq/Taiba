@@ -44,7 +44,7 @@ const FEATURES = [
   {
     icon: 'grid',
     title: 'مسارات تقنية متنوعة',
-    text: 'أقسام تغطي البرمجة والذكاء الاصطناعي والهندسة والتقنيات الصناعية والطاقة.',
+    text: 'تخصصات تغطي البرمجة والذكاء الاصطناعي والهندسة والتقنيات الصناعية والطاقة.',
   },
 ];
 
@@ -73,17 +73,17 @@ const QUOTES = [
   {
     avatar: 'أ',
     text: 'بدأت بدون أي خلفية برمجية، ومع المشروعات الأسبوعية صرت قادرًا على بناء تطبيق كامل وعرضه على زملائي بثقة.',
-    name: 'طالب — قسم البرمجة',
+    name: 'طالب — تخصص البرمجة',
   },
   {
     avatar: 'س',
     text: 'أكثر ما أفادني هو التدريب العملي في المختبر. نفهم الفكرة على السبورة، ثم نطبقها مباشرة على أجهزة حقيقية في نفس الأسبوع.',
-    name: 'طالبة — قسم الإلكترونيات',
+    name: 'طالبة — تخصص الإلكترونيات',
   },
   {
     avatar: 'م',
     text: 'المتابعة الفردية ساعدتني على تنظيم وقتي بين الدراسة والمشروع. الملاحظات على كل تسليم كانت واضحة وقابلة للتطبيق.',
-    name: 'طالب — قسم الطاقة المتجددة',
+    name: 'طالب — تخصص الطاقة المتجددة',
   },
 ];
 
@@ -95,7 +95,7 @@ const FALLBACK_OBJECTIVES = [
 ];
 
 const FALLBACK_STEPS = [
-  'اختيار القسم: اطّلع على وصف الأقسام ومهاراتها واختر المسار الأنسب.',
+  'اختيار التخصص: اطّلع على وصف التخصصات ومهاراتها واختر المسار الأنسب.',
   'تعبئة النموذج: أدخل الاسم ورقم الهاتف وبيانات التواصل الأساسية.',
   'إرسال الطلب: راجع البيانات ووافق على معالجة المعلومات ثم أرسل.',
   'متابعة الحالة: احتفظ برقم الطلب لمتابعة المراجعة مع إدارة المدرسة.',
@@ -167,7 +167,7 @@ export default function HomePage() {
                 <Icon name="arrowLeft" size={18} />
               </Link>
               <Link className="btn btn-outline btn-lg" to="/departments">
-                استكشف الأقسام
+                استكشف التخصصات
               </Link>
             </div>
 
@@ -186,7 +186,7 @@ export default function HomePage() {
             <p className="hero__note">
               <Icon name="alert" size={18} />
               <span>
-                هذا موقع تجريبي لأغراض العرض. الأقسام والمواعيد وبيانات التواصل المعروضة غير رسمية.
+                هذا موقع تجريبي لأغراض العرض. التخصصات والمواعيد وبيانات التواصل المعروضة غير رسمية.
               </span>
             </p>
           </div>
@@ -223,7 +223,7 @@ export default function HomePage() {
         <div className="stats-band reveal">
           <div className="stats-band__item">
             <Counter className="stats-band__value" value={departmentList.length} />
-            <span className="stats-band__label">قسمًا تقنيًا منشورًا</span>
+            <span className="stats-band__label">تخصصًا تقنيًا منشورًا</span>
           </div>
           <div className="stats-band__item">
             <Counter className="stats-band__value" value={stepList.length || 5} />
@@ -280,11 +280,11 @@ export default function HomePage() {
             <SectionHead
               flush
               eyebrow="المسارات التعليمية"
-              title="أقسام تقنية تُبنى حول المهارة والتطبيق"
-              lead="تعرض هذه القائمة الأقسام المنشورة والمتاحة للتقديم حاليًا من قاعدة بيانات المدرسة."
+              title="تخصصات تقنية تُبنى حول المهارة والتطبيق"
+              lead="تعرض هذه القائمة التخصصات المنشورة والمتاحة للتقديم حاليًا من قاعدة بيانات المدرسة."
             />
             <Link className="btn btn-outline" to="/departments">
-              عرض جميع الأقسام
+              عرض جميع التخصصات
             </Link>
           </div>
 
@@ -292,7 +292,7 @@ export default function HomePage() {
             {departments.loading ? <SkeletonGrid count={3} /> : null}
             {!departments.loading && departments.error ? (
               <StateBox
-                title="تعذّر تحميل الأقسام"
+                title="تعذّر تحميل التخصصات"
                 message={
                   departments.error.message ||
                   'حدث خطأ أثناء الاتصال بالخادم. تحقق من اتصالك ثم حاول مرة أخرى.'
@@ -304,8 +304,8 @@ export default function HomePage() {
             ) : null}
             {!departments.loading && !departments.error && !departmentList.length ? (
               <StateBox
-                title="لا توجد أقسام منشورة حاليًا"
-                message="تقوم إدارة المدرسة بتحديث الأقسام. يمكنك العودة لاحقًا أو التواصل معنا للاستفسار."
+                title="لا توجد تخصصات منشورة حاليًا"
+                message="تقوم إدارة المدرسة بتحديث التخصصات. يمكنك العودة لاحقًا أو التواصل معنا للاستفسار."
                 actionLabel="تحديث"
                 onAction={departments.reload}
                 iconName="book"
@@ -328,7 +328,7 @@ export default function HomePage() {
               flush
               eyebrow="آخر المستجدات"
               title="أخبار وأنشطة من داخل المدرسة"
-              lead="أحدث الأخبار المنشورة من لوحة التحكم: أنشطة الأقسام، الورش العملية، والمشروعات الطلابية."
+              lead="أحدث الأخبار المنشورة من لوحة التحكم: أنشطة التخصصات، الورش العملية، والمشروعات الطلابية."
             />
             <Link className="btn btn-outline" to="/news">
               كل الأخبار
@@ -438,7 +438,7 @@ export default function HomePage() {
           <SectionHead
             center
             eyebrow="خطوات التقديم"
-            title="من اختيار القسم إلى تسجيل الطلب"
+            title="من اختيار التخصص إلى تسجيل الطلب"
             lead="عملية تقديم مبسطة، ويمكنك متابعة حالة الطلب برقم الطلب الذي يظهر بعد الإرسال."
           />
           <ol className="steps reveal" aria-live="polite">
@@ -526,7 +526,7 @@ export default function HomePage() {
             <div>
               <h2>جاهز تبدأ رحلتك التقنية معنا؟</h2>
               <p>
-                اختر القسم المناسب، أرسل طلبك في دقائق، واحتفظ برقم الطلب لمتابعة حالة المراجعة مع
+                اختر التخصص المناسب، أرسل طلبك في دقائق، واحتفظ برقم الطلب لمتابعة حالة المراجعة مع
                 إدارة المدرسة.
               </p>
             </div>
@@ -535,7 +535,7 @@ export default function HomePage() {
                 قدّم الآن
               </Link>
               <Link className="btn btn-outline btn-lg" to="/departments">
-                تصفّح الأقسام
+                تصفّح التخصصات
               </Link>
             </div>
           </div>
@@ -605,7 +605,7 @@ export default function HomePage() {
               <div>
                 <h3>جاهز لبدء رحلتك التقنية؟</h3>
                 <p>
-                  اختر القسم المناسب وأرسل طلبك خلال دقائق. إرسال الطلب لا يعني القبول النهائي، بل
+                  اختر التخصص المناسب وأرسل طلبك خلال دقائق. إرسال الطلب لا يعني القبول النهائي، بل
                   يبدأ مراجعة إدارة المدرسة لبياناتك.
                 </p>
               </div>

@@ -9,6 +9,8 @@ const departmentRoutes = require('./departments.routes');
 const applicationRoutes = require('./applications.routes');
 const contentRoutes = require('./content.routes');
 const newsRoutes = require('./news.routes');
+const galleryRoutes = require('./gallery.routes');
+const subjectRoutes = require('./subjects.routes');
 const demoRoutes = require('./demo.routes');
 
 const router = express.Router();
@@ -23,6 +25,8 @@ router.use('/departments', departmentRoutes);
 router.use('/applications', applicationRoutes);
 router.use('/school-content', contentRoutes);
 router.use('/news', newsRoutes);
+router.use('/gallery', galleryRoutes);
+router.use('/subjects', subjectRoutes);
 router.use('/demo-data', demoRoutes);
 
 module.exports = router;

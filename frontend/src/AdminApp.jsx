@@ -6,10 +6,13 @@ import LoginPage from './pages/admin/LoginPage.jsx';
 import DashboardPage from './pages/admin/DashboardPage.jsx';
 import DepartmentsPage from './pages/admin/DepartmentsPage.jsx';
 import DepartmentFormPage from './pages/admin/DepartmentFormPage.jsx';
+import SubjectsPage from './pages/admin/SubjectsPage.jsx';
+import SubjectFormPage from './pages/admin/SubjectFormPage.jsx';
 import ApplicationsPage from './pages/admin/ApplicationsPage.jsx';
 import ApplicationDetailPage from './pages/admin/ApplicationDetailPage.jsx';
 import NewsPage from './pages/admin/NewsPage.jsx';
 import NewsFormPage from './pages/admin/NewsFormPage.jsx';
+import GalleryPage from './pages/admin/GalleryPage.jsx';
 import ContentPage from './pages/admin/ContentPage.jsx';
 import DemoDataPage from './pages/admin/DemoDataPage.jsx';
 import AdminNotFoundPage from './pages/admin/AdminNotFoundPage.jsx';
@@ -74,11 +77,15 @@ export default function AdminApp() {
           <Route path="departments" element={<DepartmentsPage />} />
           <Route path="departments/new" element={<DepartmentFormPage />} />
           <Route path="departments/:id/edit" element={<DepartmentFormPage />} />
+          <Route path="subjects" element={<SubjectsPage />} />
+          <Route path="subjects/new" element={<SubjectFormPage />} />
+          <Route path="subjects/:id/edit" element={<SubjectFormPage />} />
           <Route path="applications" element={<ApplicationsPage />} />
           <Route path="applications/:id" element={<ApplicationDetailPage />} />
           <Route path="news" element={<NewsPage />} />
           <Route path="news/new" element={<NewsFormPage />} />
           <Route path="news/:id/edit" element={<NewsFormPage />} />
+          <Route path="gallery" element={<GalleryPage />} />
           <Route path="content" element={<ContentPage />} />
           <Route path="demo-data" element={<DemoDataPage />} />
           <Route path="*" element={<AdminNotFoundPage />} />

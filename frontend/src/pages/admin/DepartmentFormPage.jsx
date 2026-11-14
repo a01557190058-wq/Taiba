@@ -1,9 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api, ApiError } from '../../lib/api.js';
 import { useAsync } from '../../lib/hooks.js';
 import { formatNumber } from '../../lib/format.js';
 import { Icon } from '../../lib/icons.jsx';
+import {
+  ACCEPTED_IMAGE_TYPES,
+  MAX_SOURCE_BYTES,
+  uploadImage,
+} from '../../lib/image-upload.js';
 import { useFeedback } from '../../components/admin/feedback.jsx';
 import {
   Alert,
@@ -29,18 +34,37 @@ const EMPTY = {
   skills: '',
   admission_info: '',
   image_url: '',
+  images: [],
   sort_order: '0',
-  is_published: false,
+  is_published: true,
   is_active: true,
 };
+
+const MAX_PHOTOS = 12;
+const UPLOAD_MAX_SIZE = 1600;
+
+let uidCounter = 0;
+function uid() {
+  uidCounter += 1;
+  return `photo-${Date.now().toString(36)}-${uidCounter}`;
+}
+
+function moveItem(list, index, delta) {
+  const target = index + delta;
+  if (target < 0 || target >= list.length) return list;
+  const next = list.slice();
+  const [item] = next.splice(index, 1);
+  next.splice(target, 0, item);
+  return next;
+}
 
 /** Client-side mirror of the API rules — the server validates again. */
 function validate(values) {
   const errors = {};
 
   const name = values.name.trim();
-  if (name.length < 2) errors.name = 'اسم القسم مطلوب (حرفان على الأقل).';
-  else if (name.length > 120) errors.name = 'اسم القسم طويل جدًا (120 حرفًا كحد أقصى).';
+  if (name.length < 2) errors.name = 'اسم التخصص مطلوب (حرفان على الأقل).';
+  else if (name.length > 120) errors.name = 'اسم التخصص طويل جدًا (120 حرفًا كحد أقصى).';
 
   const short = values.short_description.trim();
   if (short.length < 10) errors.short_description = 'الوصف المختصر مطلوب (10 أحرف على الأقل).';
@@ -63,6 +87,22 @@ function validate(values) {
   if (image.length > 500) errors.image_url = 'رابط الصورة طويل جدًا.';
   else if (image && !(image.startsWith('/') || /^https?:\/\/[^\s]+$/i.test(image))) {
     errors.image_url = 'رابط الصورة يجب أن يبدأ بـ / أو http(s)://';
+  }
+
+  if (values.images.length > MAX_PHOTOS) {
+    errors.images = `يمكن إضافة ${MAX_PHOTOS} صورة كحد أقصى.`;
+  } else {
+    values.images.forEach((photo, index) => {
+      const url = photo.url.trim();
+      if (!url) errors[`images.${index}.url`] = 'رابط الصورة مطلوب.';
+      else if (url.length > 500) errors[`images.${index}.url`] = 'رابط الصورة طويل جدًا.';
+      else if (!(url.startsWith('/') || /^https?:\/\/[^\s]+$/i.test(url))) {
+        errors[`images.${index}.url`] = 'رابط الصورة يجب أن يبدأ بـ / أو http(s)://';
+      }
+      if (photo.alt.trim().length > 200) {
+        errors[`images.${index}.alt`] = 'النص البديل طويل جدًا.';
+      }
+    });
   }
 
   const sort = Number(values.sort_order);
@@ -88,6 +128,13 @@ function toFormState(department) {
       : department.skills || '',
     admission_info: department.admission_info || '',
     image_url: department.image_url || '',
+    images: (Array.isArray(department.images) ? department.images : []).map(
+      (image, index) => ({
+        key: `saved-${image.id ?? index}`,
+        url: image.url || '',
+        alt: image.alt || '',
+      })
+    ),
     sort_order: String(department.sort_order ?? 0),
     is_published: Boolean(department.is_published),
     is_active: Boolean(department.is_active),
@@ -109,8 +156,12 @@ export default function DepartmentFormPage() {
   const [errors, setErrors] = useState({});
   const [alert, setAlert] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingPhotos, setUploadingPhotos] = useState(false);
   const [slugTouched, setSlugTouched] = useState(isEdit);
   const [initialised, setInitialised] = useState(false);
+  const coverInputRef = useRef(null);
+  const photosInputRef = useRef(null);
 
   useEffect(() => {
     if (isEdit && department) {
@@ -137,6 +188,126 @@ export default function DepartmentFormPage() {
     setField('slug')(event);
   };
 
+  const clearFieldError = (key) => {
+    setErrors((current) => {
+      if (!current[key]) return current;
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+  };
+
+  const onUploadCover = async (event) => {
+    const file = event.target.files && event.target.files[0];
+    event.target.value = '';
+    if (!file) return;
+
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      toast('صيغة الصورة غير مدعومة. استخدم JPG أو PNG أو WebP أو GIF.', 'error');
+      return;
+    }
+    if (file.size > MAX_SOURCE_BYTES) {
+      toast('حجم الصورة كبير جدًا (20 ميجابايت كحد أقصى).', 'error');
+      return;
+    }
+
+    setUploadingCover(true);
+    try {
+      const url = await uploadImage(
+        '/api/admin/departments/uploads',
+        file,
+        UPLOAD_MAX_SIZE
+      );
+      setValues((current) => ({ ...current, image_url: url }));
+      clearFieldError('image_url');
+      toast('تم رفع صورة الغلاف. لا تنس حفظ التغييرات.');
+    } catch (error) {
+      toast(error.message || 'تعذّر رفع صورة الغلاف. حاول مرة أخرى.', 'error');
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
+  const onUploadPhotos = async (event) => {
+    const files = Array.from(event.target.files || []);
+    event.target.value = '';
+    if (!files.length) return;
+
+    const remaining = MAX_PHOTOS - values.images.length;
+    if (remaining <= 0) {
+      toast(`وصلت إلى الحد الأقصى (${MAX_PHOTOS} صورة للتخصص).`, 'error');
+      return;
+    }
+
+    let accepted = files;
+    if (files.length > remaining) {
+      accepted = files.slice(0, remaining);
+      toast(`تم اختيار أول ${remaining} صور فقط بسبب الحد الأقصى.`, 'warning');
+    }
+
+    for (const file of accepted) {
+      if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+        toast('صيغة الصورة غير مدعومة. استخدم JPG أو PNG أو WebP أو GIF.', 'error');
+        return;
+      }
+      if (file.size > MAX_SOURCE_BYTES) {
+        toast('حجم الصورة كبير جدًا (20 ميجابايت كحد أقصى).', 'error');
+        return;
+      }
+    }
+
+    setUploadingPhotos(true);
+    try {
+      let added = 0;
+      for (const file of accepted) {
+        const url = await uploadImage(
+          '/api/admin/departments/uploads',
+          file,
+          UPLOAD_MAX_SIZE
+        );
+        setValues((current) => {
+          if (current.images.length >= MAX_PHOTOS) return current;
+          return {
+            ...current,
+            images: [...current.images, { key: uid(), url, alt: '' }],
+          };
+        });
+        added += 1;
+      }
+      if (added) {
+        clearFieldError('images');
+        toast(`تم رفع ${added} صورة. لا تنس حفظ التغييرات.`);
+      }
+    } catch (error) {
+      toast(error.message || 'تعذّر رفع الصور. حاول مرة أخرى.', 'error');
+    } finally {
+      setUploadingPhotos(false);
+    }
+  };
+
+  const updatePhoto = (key, patch) => {
+    setValues((current) => ({
+      ...current,
+      images: current.images.map((photo) =>
+        photo.key === key ? { ...photo, ...patch } : photo
+      ),
+    }));
+  };
+
+  const movePhoto = (index, delta) => {
+    setValues((current) => ({
+      ...current,
+      images: moveItem(current.images, index, delta),
+    }));
+  };
+
+  const removePhoto = (key) => {
+    setValues((current) => ({
+      ...current,
+      images: current.images.filter((photo) => photo.key !== key),
+    }));
+  };
+
   const onSubmit = async (event) => {
     event.preventDefault();
     setAlert(null);
@@ -156,6 +327,10 @@ export default function DepartmentFormPage() {
       skills: values.skills.trim(),
       admission_info: values.admission_info.trim(),
       image_url: values.image_url.trim(),
+      images: values.images.map((photo) => ({
+        url: photo.url.trim(),
+        alt: photo.alt.trim(),
+      })),
       sort_order: Number(values.sort_order),
       is_published: values.is_published,
       is_active: values.is_active,
@@ -167,10 +342,18 @@ export default function DepartmentFormPage() {
     try {
       if (isEdit) {
         await api(`/api/admin/departments/${id}`, { method: 'PATCH', body: payload });
-        toast('تم حفظ تعديلات القسم.');
+        toast(
+          values.is_published
+            ? 'تم حفظ تعديلات التخصص.'
+            : 'تم حفظ تعديلات التخصص كمسودة — لن يظهر في الموقع حتى تنشره.'
+        );
       } else {
         await api('/api/admin/departments', { method: 'POST', body: payload });
-        toast('تم إنشاء القسم بنجاح.');
+        toast(
+          values.is_published
+            ? 'تم إنشاء التخصص ونشره في الموقع.'
+            : 'تم حفظ التخصص كمسودة — لن يظهر في الموقع حتى تنشره.'
+        );
       }
       window.setTimeout(() => navigate('/departments'), 500);
     } catch (saveError) {
@@ -179,7 +362,7 @@ export default function DepartmentFormPage() {
       }
       setAlert({
         type: 'error',
-        message: saveError.message || 'تعذّر حفظ القسم. تحقق من البيانات ثم حاول مرة أخرى.',
+        message: saveError.message || 'تعذّر حفظ التخصص. تحقق من البيانات ثم حاول مرة أخرى.',
       });
     } finally {
       setBusy(false);
@@ -190,7 +373,7 @@ export default function DepartmentFormPage() {
     if (!department) return;
     const hasApplications = (department.applications_count || 0) > 0;
     const confirmed = await confirm({
-      title: 'حذف القسم نهائيًا',
+      title: 'حذف التخصص نهائيًا',
       message: hasApplications
         ? `سيتم حذف «${department.name}» و${formatNumber(
             department.applications_count
@@ -205,11 +388,11 @@ export default function DepartmentFormPage() {
     try {
       const suffix = hasApplications ? '?force=true' : '';
       await api(`/api/admin/departments/${id}${suffix}`, { method: 'DELETE' });
-      toast(hasApplications ? 'تم حذف القسم والطلبات المرتبطة به.' : 'تم حذف القسم.');
+      toast(hasApplications ? 'تم حذف التخصص والطلبات المرتبطة به.' : 'تم حذف التخصص.');
       window.setTimeout(() => navigate('/departments'), 500);
     } catch (deleteError) {
       toast(
-        deleteError.message || 'تعذّر حذف القسم.',
+        deleteError.message || 'تعذّر حذف التخصص.',
         deleteError instanceof ApiError && deleteError.status === 409 ? 'warning' : 'error'
       );
     }
@@ -218,7 +401,7 @@ export default function DepartmentFormPage() {
   const backAction = (
     <Link className="btn btn-outline" to="/departments" key="back">
       <Icon name="arrowLeft" size={16} />
-      <span>رجوع للأقسام</span>
+      <span>رجوع للتخصصات</span>
     </Link>
   );
 
@@ -227,15 +410,15 @@ export default function DepartmentFormPage() {
   if (isEdit && error) {
     return (
       <>
-        <PageHead title="تعذّر تحميل القسم" actions={[backAction]} />
+        <PageHead title="تعذّر تحميل التخصص" actions={[backAction]} />
         <div className="panel mt-2">
           <div className="panel__body">
             <Alert
               type="error"
               message={
                 error instanceof ApiError && error.status === 404
-                  ? 'القسم المطلوب غير موجود. ربما تم حذفه.'
-                  : error.message || 'تعذّر تحميل بيانات القسم.'
+                  ? 'التخصص المطلوب غير موجود. ربما تم حذفه.'
+                  : error.message || 'تعذّر تحميل بيانات التخصص.'
               }
             />
           </div>
@@ -251,11 +434,11 @@ export default function DepartmentFormPage() {
   return (
     <>
       <PageHead
-        title={isEdit ? department.name : 'إضافة قسم جديد'}
+        title={isEdit ? department.name : 'إضافة تخصص جديد'}
         description={
           isEdit
-            ? 'عدّل بيانات القسم ثم احفظ التغييرات. تُطبَّق التعديلات على الموقع مباشرة.'
-            : 'أدخل بيانات القسم التعليمي. يمكنك حفظه كمسودة ونشره لاحقًا.'
+            ? 'عدّل بيانات التخصص ثم احفظ التغييرات. تُطبَّق التعديلات على الموقع مباشرة.'
+            : 'أدخل بيانات التخصص التعليمي. يُنشر التخصص مباشرة في الموقع، ويمكنك حفظه كمسودة بإزالة علامة النشر.'
         }
         actions={[backAction]}
       />
@@ -280,12 +463,12 @@ export default function DepartmentFormPage() {
         <div className="mt-2">
           <FormSection
             title="المعلومات الأساسية"
-            description="البيانات التي تظهر في بطاقة القسم وصفحة التفاصيل."
+            description="البيانات التي تظهر في بطاقة التخصص وصفحة التفاصيل."
           >
             <div className="form-grid">
               <TextField
                 id="name"
-                label="اسم القسم"
+                label="اسم المهنة/التخصص"
                 value={values.name}
                 onChange={setField('name')}
                 required
@@ -300,7 +483,7 @@ export default function DepartmentFormPage() {
                 onChange={onSlugChange}
                 dir="ltr"
                 maxLength={140}
-                hint="يُستخدم في رابط صفحة القسم، مثل /departments/programming. اتركه فارغًا ليُولَّد تلقائيًا من الاسم."
+                hint="يُستخدم في رابط صفحة التخصص، مثل /departments/programming. اتركه فارغًا ليُولَّد تلقائيًا من الاسم."
                 error={errors.slug}
               />
               <TextareaField
@@ -311,7 +494,7 @@ export default function DepartmentFormPage() {
                 required
                 rows={3}
                 maxLength={300}
-                hint="يظهر في بطاقة القسم بصفحة الأقسام (10–300 حرف)."
+                hint="يظهر في بطاقة التخصص بصفحة التخصصات (10–300 حرف)."
                 error={errors.short_description}
                 full
               />
@@ -323,7 +506,7 @@ export default function DepartmentFormPage() {
                 required
                 rows={7}
                 maxLength={6000}
-                hint="يظهر في صفحة تفاصيل القسم (30 حرفًا على الأقل)."
+                hint="يظهر في صفحة تفاصيل التخصص (30 حرفًا على الأقل)."
                 error={errors.description}
                 full
               />
@@ -334,7 +517,7 @@ export default function DepartmentFormPage() {
         <div className="mt-2">
           <FormSection
             title="المحتوى التعليمي"
-            description="تفاصيل إضافية تساعد الطالب على فهم طبيعة القسم."
+            description="تفاصيل إضافية تساعد الطالب على فهم طبيعة التخصص."
           >
             <div className="form-grid">
               <TextareaField
@@ -344,7 +527,7 @@ export default function DepartmentFormPage() {
                 onChange={setField('educational_focus')}
                 rows={4}
                 maxLength={2000}
-                hint="وصف مختصر لما يركز عليه القسم في التدريس والتدريب."
+                hint="وصف مختصر لما يركز عليه التخصص في التدريس والتدريب."
                 error={errors.educational_focus}
                 full
               />
@@ -355,18 +538,18 @@ export default function DepartmentFormPage() {
                 onChange={setField('skills')}
                 rows={5}
                 maxLength={2000}
-                hint="اكتب كل مهارة في سطر منفصل. تظهر كقائمة في صفحة القسم."
+                hint="اكتب كل مهارة في سطر منفصل. تظهر كقائمة في صفحة التخصص."
                 error={errors.skills}
                 full
               />
               <TextareaField
                 id="admission_info"
-                label="معلومات القبول الخاصة بالقسم"
+                label="معلومات القبول الخاصة بالتخصص"
                 value={values.admission_info}
                 onChange={setField('admission_info')}
                 rows={3}
                 maxLength={1000}
-                hint="اختياري — ملاحظات إضافية تظهر في صفحة القسم."
+                hint="اختياري — ملاحظات إضافية تظهر في صفحة التخصص."
                 error={errors.admission_info}
                 full
               />
@@ -376,13 +559,63 @@ export default function DepartmentFormPage() {
 
         <div className="mt-2">
           <FormSection
-            title="العرض والنشر"
-            description="تحكم في ظهور القسم وترتيبه بين الأقسام الأخرى."
+            title="صور التخصص"
+            description="أضف صورة الغلاف والصور الإضافية التي تظهر في صفحة التخصص."
           >
-            <div className="form-grid">
+            <div className="media-block">
+              <div className="media-block__head">
+                <h4>صورة الغلاف</h4>
+                <span className="media-counter">
+                  {values.image_url ? 'مضافة' : 'بدون صورة'}
+                </span>
+              </div>
+              <p className="hint">
+                ارفع صورة غلاف من جهازك، أو ألصق رابطًا خارجيًا في الحقل أدناه. تُصغَّر
+                الصور تلقائيًا قبل الرفع.
+              </p>
+
+              {values.image_url ? (
+                <div className="department-cover-preview">
+                  <img src={values.image_url} alt="معاينة صورة غلاف التخصص" />
+                </div>
+              ) : null}
+
+              <div className="media-block__actions">
+                <button
+                  className="btn btn-outline btn-sm"
+                  type="button"
+                  disabled={uploadingCover}
+                  onClick={() => coverInputRef.current && coverInputRef.current.click()}
+                >
+                  <Icon name="plus" size={16} />
+                  <span>{uploadingCover ? 'جارٍ رفع الصورة…' : 'إضافة صورة من الجهاز'}</span>
+                </button>
+                {values.image_url ? (
+                  <button
+                    className="btn btn-danger-outline btn-sm"
+                    type="button"
+                    onClick={() => {
+                      setValues((current) => ({ ...current, image_url: '' }));
+                      clearFieldError('image_url');
+                    }}
+                  >
+                    <Icon name="trash" size={16} />
+                    <span>إزالة الصورة</span>
+                  </button>
+                ) : null}
+                <input
+                  ref={coverInputRef}
+                  className="visually-hidden"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  tabIndex={-1}
+                  onChange={onUploadCover}
+                />
+              </div>
+
               <TextField
                 id="image_url"
-                label="رابط صورة القسم"
+                label="أو رابط صورة الغلاف"
                 value={values.image_url}
                 onChange={setField('image_url')}
                 dir="ltr"
@@ -390,6 +623,117 @@ export default function DepartmentFormPage() {
                 hint="اختياري — يبدأ بـ / أو https://. اتركه فارغًا لاستخدام الرسم الافتراضي."
                 error={errors.image_url}
               />
+            </div>
+
+            <div className="media-block">
+              <div className="media-block__head">
+                <h4>صور إضافية للتخصص</h4>
+                <span className="media-counter">{`${values.images.length} / ${MAX_PHOTOS}`}</span>
+              </div>
+              <p className="hint">
+                ارفع صورًا من جهازك (JPG أو PNG أو WebP أو GIF) لعرضها في معرض صفحة
+                التخصص. يمكنك ترتيب الصور وإضافة نص بديل لكل صورة.
+              </p>
+
+              <div className="media-block__actions">
+                <button
+                  className="btn btn-outline btn-sm"
+                  type="button"
+                  disabled={uploadingPhotos || values.images.length >= MAX_PHOTOS}
+                  onClick={() => photosInputRef.current && photosInputRef.current.click()}
+                >
+                  <Icon name="plus" size={16} />
+                  <span>
+                    {uploadingPhotos ? 'جارٍ رفع الصور…' : 'إضافة صور من الجهاز'}
+                  </span>
+                </button>
+                <input
+                  ref={photosInputRef}
+                  className="visually-hidden"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  multiple
+                  tabIndex={-1}
+                  onChange={onUploadPhotos}
+                />
+              </div>
+
+              <p className="error-text">{errors.images || ''}</p>
+
+              {values.images.length ? (
+                <div className="gallery-admin-photos">
+                  {values.images.map((photo, index) => (
+                    <div className="gallery-admin-photo" key={photo.key}>
+                      <div className="gallery-admin-photo__media">
+                        <img
+                          src={photo.url}
+                          alt={photo.alt || `صورة ${index + 1} للتخصص`}
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="gallery-admin-photo__body">
+                        <input
+                          className="input"
+                          type="text"
+                          maxLength={200}
+                          placeholder="النص البديل (Alt)"
+                          aria-label="النص البديل للصورة"
+                          value={photo.alt}
+                          onChange={(event) =>
+                            updatePhoto(photo.key, { alt: event.target.value })
+                          }
+                        />
+                        <p className="error-text">{errors[`images.${index}.alt`] || ''}</p>
+                        <p className="error-text">{errors[`images.${index}.url`] || ''}</p>
+
+                        <div className="gallery-admin-photo__actions">
+                          <button
+                            className="btn btn-ghost btn-icon"
+                            type="button"
+                            aria-label="تحريك الصورة لأعلى"
+                            title="تحريك لأعلى"
+                            disabled={index === 0}
+                            onClick={() => movePhoto(index, -1)}
+                          >
+                            <Icon name="arrowUp" size={15} />
+                          </button>
+                          <button
+                            className="btn btn-ghost btn-icon"
+                            type="button"
+                            aria-label="تحريك الصورة لأسفل"
+                            title="تحريك لأسفل"
+                            disabled={index === values.images.length - 1}
+                            onClick={() => movePhoto(index, 1)}
+                          >
+                            <Icon name="arrowUp" size={15} className="icon-flip" />
+                          </button>
+                          <button
+                            className="btn btn-danger-outline btn-icon"
+                            type="button"
+                            aria-label="حذف الصورة"
+                            title="حذف الصورة"
+                            onClick={() => removePhoto(photo.key)}
+                          >
+                            <Icon name="trash" size={15} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="hint">لا توجد صور إضافية لهذا التخصص بعد.</p>
+              )}
+            </div>
+          </FormSection>
+        </div>
+
+        <div className="mt-2">
+          <FormSection
+            title="العرض والنشر"
+            description="تحكم في ظهور التخصص وترتيبه بين التخصصات الأخرى."
+          >
+            <div className="form-grid">
               <TextField
                 id="sort_order"
                 label="ترتيب العرض"
@@ -402,15 +746,15 @@ export default function DepartmentFormPage() {
               />
               <CheckboxField
                 id="is_published"
-                label="نشر القسم في الموقع"
-                hint="القسم المنشور يظهر للزوار في صفحة الأقسام."
+                label="نشر التخصص في الموقع"
+                hint="التخصص الجديد يُنشر افتراضيًا. أزل العلامة لحفظه كمسودة لا تظهر للزوار."
                 checked={values.is_published}
                 onChange={setField('is_published')}
               />
               <CheckboxField
                 id="is_active"
-                label="القسم نشط (غير مؤرشف)"
-                hint="أزل العلامة لأرشفة القسم وإخفائه مع الحفاظ على طلباته."
+                label="التخصص نشط (غير مؤرشف)"
+                hint="أزل العلامة لأرشفة التخصص وإخفائه مع الحفاظ على طلباته."
                 checked={values.is_active}
                 onChange={setField('is_active')}
               />
@@ -421,7 +765,7 @@ export default function DepartmentFormPage() {
         <div className="form-actions">
           <button className="btn btn-primary" type="submit" disabled={busy}>
             <Icon name="save" size={16} />
-            <span>{busy ? 'جارٍ الحفظ…' : isEdit ? 'حفظ التعديلات' : 'إنشاء القسم'}</span>
+            <span>{busy ? 'جارٍ الحفظ…' : isEdit ? 'حفظ التعديلات' : 'إنشاء التخصص'}</span>
           </button>
           <Link className="btn btn-outline" to="/departments">
             إلغاء
@@ -448,7 +792,7 @@ export default function DepartmentFormPage() {
               <h3>منطقة الخطر</h3>
               <p>
                 {hasApplications
-                  ? 'حذف القسم سيحذف طلباته المرتبطة به أيضًا. راجع العدد قبل المتابعة.'
+                  ? 'حذف التخصص سيحذف طلباته المرتبطة به أيضًا. راجع العدد قبل المتابعة.'
                   : 'الحذف نهائي ولا يمكن التراجع عنه.'}
               </p>
             </div>
@@ -458,21 +802,21 @@ export default function DepartmentFormPage() {
               <div className="notice notice--danger">
                 <Icon name="alert" size={18} />
                 <span>
-                  {`هذا القسم مرتبط بـ ${formatNumber(
+                  {`هذا التخصص مرتبط بـ ${formatNumber(
                     department.applications_count
-                  )} طلب/طلبات. الحذف الكامل سيحذف القسم وكل طلباته نهائيًا. إن أردت الاحتفاظ بسجل الطلبات، ألغِ نشره أو أرشِفه بدلًا من ذلك.`}
+                  )} طلب/طلبات. الحذف الكامل سيحذف التخصص وكل طلباته نهائيًا. إن أردت الاحتفاظ بسجل الطلبات، ألغِ نشره أو أرشِفه بدلًا من ذلك.`}
                 </span>
               </div>
             ) : (
               <div className="notice">
                 <Icon name="info" size={18} />
-                <span>لا توجد طلبات مرتبطة بهذا القسم. الحذف نهائي ولا يمكن التراجع عنه.</span>
+                <span>لا توجد طلبات مرتبطة بهذا التخصص. الحذف نهائي ولا يمكن التراجع عنه.</span>
               </div>
             )}
             <div className="form-actions">
               <button className="btn btn-danger-outline" type="button" onClick={onDelete}>
                 <Icon name="trash" size={16} />
-                <span>حذف القسم نهائيًا</span>
+                <span>حذف التخصص نهائيًا</span>
               </button>
             </div>
           </div>

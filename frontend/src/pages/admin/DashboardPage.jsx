@@ -42,7 +42,7 @@ function RecentTable({ applications }) {
           <tr>
             <th>رقم الطلب</th>
             <th>المتقدم</th>
-            <th>القسم</th>
+            <th>المهنة/التخصص</th>
             <th>الحالة</th>
             <th>تاريخ التقديم</th>
             <th />
@@ -157,7 +157,7 @@ export default function DashboardPage() {
         <StatCard label="طلبات جديدة" value={apps.new} meta="بانتظار المراجعة" />
         <StatCard label="طلبات مقبولة" value={apps.accepted} meta="حسب حالة الطلب" />
         <StatCard
-          label="أقسام منشورة"
+          label="تخصصات منشورة"
           value={departments.published}
           meta={`${formatNumber(departments.drafts)} مسودة • ${formatNumber(
             departments.archived
@@ -208,7 +208,7 @@ export default function DashboardPage() {
           <div className="chip-row">
             <Link className="btn btn-outline btn-sm" to="/departments/new">
               <Icon name="plus" size={15} />
-              <span>قسم جديد</span>
+              <span>تخصص جديد</span>
             </Link>
             <Link className="btn btn-outline btn-sm" to="/content">
               <Icon name="file" size={15} />

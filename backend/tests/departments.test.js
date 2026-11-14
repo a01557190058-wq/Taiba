@@ -2,12 +2,15 @@
 
 const { test, beforeEach, after } = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const {
   db,
   resetDatabase,
   anonymousAgent,
   adminAgent,
   submitApplication,
+  DEPARTMENT_UPLOADS_DIR,
 } = require('./helpers');
 
 beforeEach(() => resetDatabase());
@@ -66,6 +69,30 @@ test('created published departments appear on the public website', async () => {
   assert.equal(detail.status, 200);
   assert.equal(detail.body.data.name, 'قسم الشبكات الذكية');
   assert.ok(detail.body.data.description.length > 30);
+});
+
+test('a department created without is_published is published by default', async () => {
+  const { agent, token } = await adminAgent();
+  const { is_published, ...unpublishedField } = validDepartment({
+    name: 'قسم الطاقة الشمسية',
+    slug: 'solar-energy',
+  });
+  assert.equal(is_published, true, 'helper should start from a published payload');
+
+  const created = await agent
+    .post('/api/admin/departments')
+    .set('x-csrf-token', token)
+    .send(unpublishedField);
+  assert.equal(created.status, 201);
+  assert.equal(created.body.data.is_published, true);
+  assert.equal(created.body.data.is_active, true);
+
+  const { agent: visitor } = await anonymousAgent();
+  const list = await visitor.get('/api/departments');
+  assert.ok(list.body.data.some((item) => item.slug === 'solar-energy'));
+
+  const subjects = await visitor.get('/api/subjects?grade=first');
+  assert.ok(subjects.body.data.departments.some((item) => item.slug === 'solar-energy'));
 });
 
 test('drafts and archived departments are hidden from the public API', async () => {
@@ -308,6 +335,146 @@ test('unknown public department slug returns a clean 404', async () => {
   const res = await agent.get('/api/departments/does-not-exist');
   assert.equal(res.status, 404);
   assert.equal(res.body.error.code, 'NOT_FOUND');
+});
+
+// ---------------------------------------------------------------------------
+// Cover and photo uploads
+// ---------------------------------------------------------------------------
+// A 1x1 transparent PNG, enough for the real content sniffing check.
+const PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=',
+  'base64'
+);
+
+function uploadPhotos(agent, token, files = [{}]) {
+  const request = agent.post('/api/admin/departments/uploads').set('x-csrf-token', token);
+  for (const file of files) {
+    request.attach('images', file.buffer || PNG, {
+      filename: file.filename || 'photo.png',
+      contentType: file.contentType || 'image/png',
+    });
+  }
+  return request;
+}
+
+function uploadedPath(url) {
+  return path.join(DEPARTMENT_UPLOADS_DIR, path.basename(url));
+}
+
+test('an administrator can upload department photos and receive public URLs', async () => {
+  const { agent, token } = await adminAgent();
+  const res = await uploadPhotos(agent, token, [{}, { filename: 'two.png' }]);
+
+  assert.equal(res.status, 201);
+  assert.equal(res.body.data.files.length, 2);
+  for (const file of res.body.data.files) {
+    assert.ok(file.url.startsWith('/assets/uploads/departments/'));
+    assert.ok(fs.existsSync(uploadedPath(file.url)));
+  }
+});
+
+test('a file whose bytes are not an image is rejected for departments', async () => {
+  const { agent, token } = await adminAgent();
+  const res = await uploadPhotos(agent, token, [
+    {
+      buffer: Buffer.from('<html><script>alert(1)</script></html>'),
+      filename: 'evil.png',
+      contentType: 'image/png',
+    },
+  ]);
+
+  assert.equal(res.status, 400);
+  assert.ok(res.body.error.fields.image);
+  assert.deepEqual(fs.readdirSync(DEPARTMENT_UPLOADS_DIR), []);
+});
+
+test('a department stores its cover and ordered photos', async () => {
+  const { agent, token } = await adminAgent();
+  const uploaded = await uploadPhotos(agent, token, [
+    {},
+    { filename: 'two.png' },
+    { filename: 'three.png' },
+  ]);
+  const [cover, first, second] = uploaded.body.data.files.map((file) => file.url);
+
+  const created = await agent
+    .post('/api/admin/departments')
+    .set('x-csrf-token', token)
+    .send(
+      validDepartment({
+        name: 'تخصص الوسائط',
+        slug: 'media-test',
+        image_url: cover,
+        images: [
+          { url: first, alt: 'الصورة الأولى' },
+          { url: second, alt: 'الصورة الثانية' },
+        ],
+      })
+    );
+
+  assert.equal(created.status, 201);
+  assert.equal(created.body.data.image_url, cover);
+  assert.deepEqual(
+    created.body.data.images.map((image) => image.url),
+    [first, second]
+  );
+  assert.equal(created.body.data.images[0].alt, 'الصورة الأولى');
+
+  const { agent: visitor } = await anonymousAgent();
+  const publicRes = await visitor.get('/api/departments/media-test');
+  assert.equal(publicRes.status, 200);
+  assert.deepEqual(
+    publicRes.body.data.images.map((image) => image.url),
+    [first, second]
+  );
+});
+
+test('updating a department replaces photos and deletes unreferenced uploads', async () => {
+  const { agent, token } = await adminAgent();
+  const uploaded = await uploadPhotos(agent, token, [{}, { filename: 'two.png' }]);
+  const [first, second] = uploaded.body.data.files.map((file) => file.url);
+
+  const created = await agent
+    .post('/api/admin/departments')
+    .set('x-csrf-token', token)
+    .send(
+      validDepartment({
+        name: 'تخصص الوسائط',
+        slug: 'media-update',
+        images: [{ url: first }, { url: second }],
+      })
+    );
+  const id = created.body.data.id;
+
+  const updated = await agent
+    .patch(`/api/admin/departments/${id}`)
+    .set('x-csrf-token', token)
+    .send({ images: [{ url: second, alt: 'محدثة' }] });
+
+  assert.equal(updated.status, 200);
+  assert.deepEqual(
+    updated.body.data.images.map((image) => image.url),
+    [second]
+  );
+  assert.equal(fs.existsSync(uploadedPath(first)), false);
+  assert.equal(fs.existsSync(uploadedPath(second)), true);
+
+  const deleted = await agent
+    .delete(`/api/admin/departments/${id}`)
+    .set('x-csrf-token', token);
+  assert.equal(deleted.status, 200);
+  assert.equal(fs.existsSync(uploadedPath(second)), false);
+});
+
+test('department image URLs are validated server-side', async () => {
+  const { agent, token } = await adminAgent();
+  const res = await agent
+    .post('/api/admin/departments')
+    .set('x-csrf-token', token)
+    .send(validDepartment({ images: [{ url: 'javascript:alert(1)' }] }));
+
+  assert.equal(res.status, 400);
+  assert.ok(res.body.error.fields['images.0.url']);
 });
 
 after(() => db.closeDatabase());

@@ -1,5 +1,7 @@
 'use strict';
 
+const fs = require('node:fs');
+const path = require('node:path');
 const { test, beforeEach, after } = require('node:test');
 const assert = require('node:assert/strict');
 const {
@@ -8,9 +10,17 @@ const {
   anonymousAgent,
   adminAgent,
   submitApplication,
+  APPLICATION_UPLOADS_DIR,
+  DOCUMENT_FIXTURES,
+  DEFAULT_DOCUMENTS,
 } = require('./helpers');
 
 beforeEach(() => resetDatabase());
+
+function storedDocumentFiles() {
+  if (!fs.existsSync(APPLICATION_UPLOADS_DIR)) return [];
+  return fs.readdirSync(APPLICATION_UPLOADS_DIR);
+}
 
 test('a student can submit an application and receives a reference number', async () => {
   const { agent, token } = await anonymousAgent();
@@ -86,14 +96,19 @@ test('the consent checkbox is mandatory', async () => {
   assert.ok(res.body.error.fields.consent);
 });
 
-test('phone numbers accept Arabic-Indic digits and are normalised', async () => {
+test('guardian and student phone numbers accept Arabic-Indic digits and are normalised', async () => {
   const { agent, token } = await anonymousAgent();
-  const res = await submitApplication(agent, token, { phone: '٠١٠١٢٣٤٥٦٧٨' });
+  const res = await submitApplication(agent, token, {
+    guardian_phone: '٠١٠١٢٣٤٥٦٧٨',
+    phone: '٠١١١٢٢٣٣٤٤',
+  });
   assert.equal(res.status, 201);
-  const row = db.get('SELECT phone FROM applications WHERE reference_number = ?', [
-    res.body.data.reference_number,
-  ]);
-  assert.equal(row.phone, '01012345678');
+  const row = db.get(
+    'SELECT guardian_phone, phone FROM applications WHERE reference_number = ?',
+    [res.body.data.reference_number]
+  );
+  assert.equal(row.guardian_phone, '01012345678');
+  assert.equal(row.phone, '0111223344');
 });
 
 test('an unknown department is rejected', async () => {
@@ -126,7 +141,7 @@ test('an archived department cannot receive applications', async () => {
 test('obvious duplicate submissions are rejected', async () => {
   const department = db.get('SELECT id FROM departments WHERE is_published = 1 LIMIT 1');
   const { agent, token } = await anonymousAgent();
-  const payload = { phone: '01555555555', department_id: department.id };
+  const payload = { guardian_phone: '01555555555', department_id: department.id };
 
   const first = await submitApplication(agent, token, payload);
   assert.equal(first.status, 201);
@@ -139,16 +154,16 @@ test('obvious duplicate submissions are rejected', async () => {
   assert.ok(!second.body.error.message.includes(first.body.data.reference_number));
 });
 
-test('the same phone can apply to a different department', async () => {
+test('the same guardian phone can apply to a different department', async () => {
   const departments = db.all('SELECT id FROM departments WHERE is_published = 1 LIMIT 2');
   const { agent, token } = await anonymousAgent();
 
   const first = await submitApplication(agent, token, {
-    phone: '01555555556',
+    guardian_phone: '01555555556',
     department_id: departments[0].id,
   });
   const second = await submitApplication(agent, token, {
-    phone: '01555555556',
+    guardian_phone: '01555555556',
     department_id: departments[1].id,
   });
   assert.equal(first.status, 201);
@@ -319,6 +334,197 @@ test('CSV export neutralises spreadsheet formula injection', async () => {
   assert.equal(res.status, 200);
   assert.ok(res.text.includes("'=HYPERLINK("), 'formula must be prefixed with an apostrophe');
   assert.ok(!res.text.includes('"=HYPERLINK('), 'formula must never start a CSV cell unescaped');
+});
+
+test('CSV export includes the new admission columns', async () => {
+  const { agent: admin } = await adminAgent();
+  const res = await admin.get('/api/admin/applications/export.csv');
+  assert.equal(res.status, 200);
+  for (const header of [
+    'تاريخ الميلاد',
+    'الرقم القومي / الهوية',
+    'اسم ولي الأمر',
+    'صلة القرابة',
+    'هاتف ولي الأمر',
+    'محافظة العنوان',
+    'المركز',
+    'المدينة / القرية',
+    'المجموع / النسبة',
+  ]) {
+    assert.ok(res.text.includes(header), `expected CSV header: ${header}`);
+  }
+  assert.ok(res.text.includes('DEMO-2026-0001'));
+});
+
+test('the student extra phone is optional', async () => {
+  const { agent, token } = await anonymousAgent();
+  const res = await submitApplication(agent, token, { phone: '' });
+  assert.equal(res.status, 201);
+  const row = db.get('SELECT phone FROM applications WHERE reference_number = ?', [
+    res.body.data.reference_number,
+  ]);
+  assert.equal(row.phone, '');
+});
+
+test('duplicate detection normalises the guardian phone', async () => {
+  const department = db.get('SELECT id FROM departments WHERE is_published = 1 LIMIT 1');
+  const { agent, token } = await anonymousAgent();
+
+  const first = await submitApplication(agent, token, {
+    guardian_phone: '01011112222',
+    department_id: department.id,
+  });
+  assert.equal(first.status, 201);
+
+  const second = await submitApplication(agent, token, {
+    guardian_phone: '٠١٠١١١١٢٢٢٢',
+    department_id: department.id,
+  });
+  assert.equal(second.status, 409);
+  assert.equal(second.body.error.code, 'DUPLICATE_APPLICATION');
+});
+
+test('all three admission documents are required', async () => {
+  const { agent, token } = await anonymousAgent();
+  const res = await submitApplication(agent, token, {
+    documents: {
+      success_form: DOCUMENT_FIXTURES.pdf,
+      birth_certificate: DOCUMENT_FIXTURES.png,
+    },
+  });
+
+  assert.equal(res.status, 400);
+  assert.equal(res.body.error.code, 'VALIDATION_ERROR');
+  assert.ok(res.body.error.fields.personal_photo);
+  assert.equal(
+    db.get('SELECT COUNT(*) AS count FROM applications WHERE is_demo = 0').count,
+    0,
+    'no application may be stored when a required document is missing'
+  );
+  assert.deepEqual(storedDocumentFiles(), [], 'uploaded files must be cleaned up');
+});
+
+test('documents whose real content does not match their type are rejected', async () => {
+  const { agent, token } = await anonymousAgent();
+  const res = await submitApplication(agent, token, {
+    documents: {
+      success_form: {
+        buffer: Buffer.from('this is definitely not a pdf'),
+        filename: 'fake.pdf',
+        contentType: 'application/pdf',
+      },
+      birth_certificate: DOCUMENT_FIXTURES.png,
+      personal_photo: DOCUMENT_FIXTURES.jpeg,
+    },
+  });
+
+  assert.equal(res.status, 400);
+  assert.ok(res.body.error.fields.success_form);
+  assert.equal(db.get('SELECT COUNT(*) AS count FROM applications WHERE is_demo = 0').count, 0);
+  assert.deepEqual(storedDocumentFiles(), []);
+});
+
+test('unsupported document types are rejected before storage', async () => {
+  const { agent, token } = await anonymousAgent();
+  const res = await submitApplication(agent, token, {
+    documents: {
+      ...DEFAULT_DOCUMENTS,
+      success_form: {
+        buffer: Buffer.from('GIF89a', 'latin1'),
+        filename: 'animation.gif',
+        contentType: 'image/gif',
+      },
+    },
+  });
+
+  assert.equal(res.status, 400);
+  assert.ok(res.body.error.fields.success_form);
+  assert.equal(db.get('SELECT COUNT(*) AS count FROM applications WHERE is_demo = 0').count, 0);
+  assert.deepEqual(storedDocumentFiles(), []);
+});
+
+test('invalid form data removes the uploaded files', async () => {
+  const { agent, token } = await anonymousAgent();
+  const res = await submitApplication(agent, token, { full_name: 'ا' });
+  assert.equal(res.status, 400);
+  assert.ok(res.body.error.fields.full_name);
+  assert.deepEqual(storedDocumentFiles(), []);
+});
+
+test('uploaded documents stay private and can only be downloaded by admins', async () => {
+  const { agent, token } = await anonymousAgent();
+  const created = await submitApplication(agent, token, { guardian_phone: '01777777777' });
+  assert.equal(created.status, 201);
+
+  const application = db.get('SELECT id FROM applications WHERE reference_number = ?', [
+    created.body.data.reference_number,
+  ]);
+  const documents = db.all(
+    'SELECT * FROM application_documents WHERE application_id = ? ORDER BY id ASC',
+    [application.id]
+  );
+  assert.equal(documents.length, 3);
+  for (const document of documents) {
+    assert.ok(
+      fs.existsSync(path.join(APPLICATION_UPLOADS_DIR, document.stored_name)),
+      'document bytes must be stored on disk'
+    );
+  }
+
+  const { agent: admin } = await adminAgent();
+  const detail = await admin.get(`/api/admin/applications/${application.id}`);
+  assert.equal(detail.status, 200);
+  assert.equal(detail.body.data.documents.length, 3);
+  assert.equal(detail.body.data.documents[0].kind_label, 'استمارة النجاح / بيان نجاح معتمد');
+
+  const successForm = detail.body.data.documents.find((item) => item.kind === 'success_form');
+  assert.ok(successForm.download_url.includes('/documents/'));
+
+  const downloaded = await admin.get(successForm.download_url);
+  assert.equal(downloaded.status, 200);
+  assert.match(downloaded.headers['content-type'], /application\/pdf/);
+  assert.match(downloaded.headers['content-disposition'], /attachment/);
+
+  const anonymous = await agent.get(successForm.download_url);
+  assert.equal(anonymous.status, 401);
+
+  // The uploads folder must never be served as public static assets.
+  const staticAttempt = await agent.get(`/uploads/applications/${documents[0].stored_name}`);
+  assert.equal(staticAttempt.status, 404);
+});
+
+test('deleting an application removes its stored documents', async () => {
+  const { agent, token } = await anonymousAgent();
+  const created = await submitApplication(agent, token, { guardian_phone: '01888888888' });
+  assert.equal(created.status, 201);
+
+  const application = db.get('SELECT id FROM applications WHERE reference_number = ?', [
+    created.body.data.reference_number,
+  ]);
+  const storedNames = db
+    .all('SELECT stored_name FROM application_documents WHERE application_id = ?', [application.id])
+    .map((row) => row.stored_name);
+  assert.equal(storedNames.length, 3);
+
+  const { agent: admin, token: adminToken } = await adminAgent();
+  const deleted = await admin
+    .delete(`/api/admin/applications/${application.id}`)
+    .set('x-csrf-token', adminToken);
+  assert.equal(deleted.status, 200);
+
+  for (const storedName of storedNames) {
+    assert.equal(
+      fs.existsSync(path.join(APPLICATION_UPLOADS_DIR, storedName)),
+      false,
+      'deleted applications must not leave files behind'
+    );
+  }
+  assert.equal(
+    db.get('SELECT COUNT(*) AS count FROM application_documents WHERE application_id = ?', [
+      application.id,
+    ]).count,
+    0
+  );
 });
 
 after(() => db.closeDatabase());
