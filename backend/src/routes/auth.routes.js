@@ -9,7 +9,7 @@ const { validate } = require('../middleware/validate');
 const { loginSchema, changePasswordSchema } = require('../validators/schemas');
 const { requireCsrf } = require('../middleware/csrf');
 const { requireAdmin } = require('../middleware/auth');
-const { loginLimiter } = require('../middleware/rate-limit');
+const { loginLimiter, passwordLimiter } = require('../middleware/rate-limit');
 
 const router = express.Router();
 
@@ -76,7 +76,7 @@ router.get('/me', (req, res, next) => {
 
 router.patch(
   '/password',
-  loginLimiter,
+  passwordLimiter,
   requireAdmin,
   requireCsrf,
   validate(changePasswordSchema),

@@ -531,6 +531,10 @@ const changePasswordSchema = z
     message: 'تأكيد كلمة المرور غير مطابق.',
     path: ['confirm_password'],
   })
+  .refine((value) => value.new_password === value.new_password.trim(), {
+    message: 'لا تبدأ أو تنتهي كلمة المرور بمسافة فارغة.',
+    path: ['new_password'],
+  })
   .refine((value) => value.new_password !== value.current_password, {
     message: 'كلمة المرور الجديدة يجب أن تختلف عن الحالية.',
     path: ['new_password'],

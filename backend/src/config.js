@@ -103,6 +103,7 @@ const config = {
   rateLimits: {
     windowMinutes: int(process.env.RATE_LIMIT_WINDOW_MINUTES, 15),
     loginMax: int(process.env.LOGIN_RATE_LIMIT_MAX, 10),
+    passwordMax: int(process.env.PASSWORD_RATE_LIMIT_MAX, 20),
     applicationMax: int(process.env.APPLICATION_RATE_LIMIT_MAX, 5),
   },
   trustProxy: bool(process.env.TRUST_PROXY, false),

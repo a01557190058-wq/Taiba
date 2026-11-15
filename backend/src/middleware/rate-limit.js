@@ -30,10 +30,20 @@ const loginLimiter = rateLimit({
   skipSuccessfulRequests: false,
 });
 
+/**
+ * Protects the password-change endpoint. It has its own counter so a few
+ * failed login attempts cannot lock the signed-in administrator out of the
+ * dashboard's password form (and vice versa).
+ */
+const passwordLimiter = rateLimit({
+  ...sharedOptions,
+  limit: config.rateLimits.passwordMax,
+});
+
 /** Protects the public application form from spam submissions. */
 const applicationLimiter = rateLimit({
   ...sharedOptions,
   limit: config.rateLimits.applicationMax,
 });
 
-module.exports = { loginLimiter, applicationLimiter };
+module.exports = { loginLimiter, passwordLimiter, applicationLimiter };

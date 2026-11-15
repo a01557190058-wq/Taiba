@@ -4,7 +4,7 @@ import { Icon } from '../../lib/icons.jsx';
 import { useAdminAuth } from '../../lib/admin-auth.jsx';
 import { useFeedback } from '../../components/admin/feedback.jsx';
 import { Alert, PageHead } from '../../components/admin/ui.jsx';
-import { FormSection, TextField } from '../../components/admin/form.jsx';
+import { CheckboxField, FormSection, TextField } from '../../components/admin/form.jsx';
 
 const EMPTY = {
   current_password: '',
@@ -26,6 +26,8 @@ function validate(values) {
     errors.new_password = 'كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.';
   } else if (values.new_password.length > 200) {
     errors.new_password = 'كلمة المرور الجديدة طويلة جدًا (200 حرف كحد أقصى).';
+  } else if (values.new_password !== values.new_password.trim()) {
+    errors.new_password = 'لا تبدأ أو تنتهي كلمة المرور بمسافة فارغة.';
   } else if (values.new_password === values.current_password) {
     errors.new_password = 'كلمة المرور الجديدة يجب أن تختلف عن الحالية.';
   }
@@ -47,6 +49,9 @@ export default function AccountPage() {
   const [errors, setErrors] = useState({});
   const [alert, setAlert] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [showPasswords, setShowPasswords] = useState(false);
+
+  const passwordType = showPasswords ? 'text' : 'password';
 
   const setField = (key) => (event) => {
     const value = event.target.value;
@@ -79,7 +84,8 @@ export default function AccountPage() {
       setErrors({});
       setAlert({
         type: 'success',
-        message: 'تم تغيير كلمة المرور. استخدم كلمة المرور الجديدة في تسجيل الدخول القادم.',
+        message:
+          'تم تغيير كلمة المرور. استخدم الكلمة الجديدة في تسجيل الدخول القادم. إن أردت التأكد الآن، سجّل الخروج ثم ادخل بالكلمة الجديدة.',
       });
       toast('تم تغيير كلمة المرور بنجاح.');
     } catch (saveError) {
@@ -127,39 +133,49 @@ export default function AccountPage() {
               <TextField
                 id="current_password"
                 label="كلمة المرور الحالية"
-                type="password"
+                type={passwordType}
                 value={values.current_password}
                 onChange={setField('current_password')}
                 required
                 autoComplete="current-password"
                 maxLength={200}
+                dir="ltr"
                 error={errors.current_password}
                 full
               />
               <TextField
                 id="new_password"
                 label="كلمة المرور الجديدة"
-                type="password"
+                type={passwordType}
                 value={values.new_password}
                 onChange={setField('new_password')}
                 required
                 autoComplete="new-password"
                 maxLength={200}
-                hint="8 أحرف على الأقل، ويُفضّل أن تجمع بين حروف وأرقام ورموز."
+                dir="ltr"
+                hint="8 أحرف على الأقل، ويُفضّل أن تجمع بين حروف وأرقام ورموز. تُكتب من اليسار إلى اليمين."
                 error={errors.new_password}
               />
               <TextField
                 id="confirm_password"
                 label="تأكيد كلمة المرور الجديدة"
-                type="password"
+                type={passwordType}
                 value={values.confirm_password}
                 onChange={setField('confirm_password')}
                 required
                 autoComplete="new-password"
                 maxLength={200}
+                dir="ltr"
                 error={errors.confirm_password}
               />
             </div>
+            <CheckboxField
+              id="show_passwords"
+              label="إظهار كلمات المرور"
+              hint="استخدمه للتأكد من كتابة الكلمة بالشكل الصحيح قبل الحفظ."
+              checked={showPasswords}
+              onChange={(event) => setShowPasswords(event.target.checked)}
+            />
           </FormSection>
         </div>
 

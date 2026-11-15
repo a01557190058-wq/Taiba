@@ -223,6 +223,17 @@ test('changing the password validates the new password and confirmation', async 
     });
   assert.equal(same.status, 400);
   assert.ok(same.body.error.fields.new_password);
+
+  const padded = await agent
+    .patch('/api/auth/password')
+    .set('x-csrf-token', token)
+    .send({
+      current_password: ADMIN.password,
+      new_password: 'NewPass!456 ',
+      confirm_password: 'NewPass!456 ',
+    });
+  assert.equal(padded.status, 400);
+  assert.ok(padded.body.error.fields.new_password, 'surrounding spaces must be rejected');
 });
 
 test('changing the password requires an admin session and a CSRF token', async () => {
