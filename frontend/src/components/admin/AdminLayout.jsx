@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { key: 'gallery', to: '/gallery', label: 'معرض الصور', icon: 'image' },
   { key: 'content', to: '/content', label: 'المحتوى والأسئلة', icon: 'file' },
   { key: 'demo', to: '/demo-data', label: 'البيانات التجريبية', icon: 'database' },
+  { key: 'account', to: '/account', label: 'الحساب وكلمة المرور', icon: 'shield' },
 ];
 
 /** Topbar copy for each dashboard route (the list pages share a title). */
@@ -65,6 +66,12 @@ function chromeFor(pathname) {
     return {
       title: 'البيانات التجريبية',
       subtitle: 'إدارة سجلات العرض التجريبية دون المساس بالبيانات الحقيقية',
+    };
+  }
+  if (pathname.startsWith('/account')) {
+    return {
+      title: 'الحساب وكلمة المرور',
+      subtitle: 'بيانات حسابك الإداري وتغيير كلمة المرور في أي وقت',
     };
   }
   return { title: 'نظرة عامة', subtitle: 'ملخص مباشر من قاعدة بيانات المدرسة' };

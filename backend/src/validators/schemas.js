@@ -512,6 +512,30 @@ const loginSchema = z.object({
     .max(200, { message: 'كلمة المرور طويلة جدًا.' }),
 });
 
+const changePasswordSchema = z
+  .object({
+    current_password: z
+      .string({ error: 'كلمة المرور الحالية مطلوبة.' })
+      .min(1, { message: 'كلمة المرور الحالية مطلوبة.' })
+      .max(200, { message: 'كلمة المرور الحالية طويلة جدًا.' }),
+    new_password: z
+      .string({ error: 'كلمة المرور الجديدة مطلوبة.' })
+      .min(8, { message: 'كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.' })
+      .max(200, { message: 'كلمة المرور الجديدة طويلة جدًا.' }),
+    confirm_password: z
+      .string({ error: 'تأكيد كلمة المرور مطلوب.' })
+      .min(1, { message: 'تأكيد كلمة المرور مطلوب.' })
+      .max(200, { message: 'تأكيد كلمة المرور طويل جدًا.' }),
+  })
+  .refine((value) => value.new_password === value.confirm_password, {
+    message: 'تأكيد كلمة المرور غير مطابق.',
+    path: ['confirm_password'],
+  })
+  .refine((value) => value.new_password !== value.current_password, {
+    message: 'كلمة المرور الجديدة يجب أن تختلف عن الحالية.',
+    path: ['new_password'],
+  });
+
 const demoResetSchema = z.object({
   confirm: z.literal('RESET_DEMO_DATA', {
     error: 'تأكيد غير صالح لعملية إعادة التهيئة.',
@@ -554,6 +578,7 @@ module.exports = {
   subjectCreateSchema,
   subjectUpdateSchema,
   loginSchema,
+  changePasswordSchema,
   demoResetSchema,
   demoCleanupSchema,
   formatZodError,

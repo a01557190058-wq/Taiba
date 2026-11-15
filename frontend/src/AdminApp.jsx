@@ -15,6 +15,7 @@ import NewsFormPage from './pages/admin/NewsFormPage.jsx';
 import GalleryPage from './pages/admin/GalleryPage.jsx';
 import ContentPage from './pages/admin/ContentPage.jsx';
 import DemoDataPage from './pages/admin/DemoDataPage.jsx';
+import AccountPage from './pages/admin/AccountPage.jsx';
 import AdminNotFoundPage from './pages/admin/AdminNotFoundPage.jsx';
 
 function BootScreen({ children }) {
@@ -88,6 +89,7 @@ export default function AdminApp() {
           <Route path="gallery" element={<GalleryPage />} />
           <Route path="content" element={<ContentPage />} />
           <Route path="demo-data" element={<DemoDataPage />} />
+          <Route path="account" element={<AccountPage />} />
           <Route path="*" element={<AdminNotFoundPage />} />
         </Route>
       </Route>
