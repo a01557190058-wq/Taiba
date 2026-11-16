@@ -11,10 +11,16 @@
  * No password is ever stored in the repository.
  */
 const crypto = require('node:crypto');
-const bcrypt = require('bcryptjs');
 const config = require('../src/config');
 const { migrate } = require('../src/db/migrate');
 const db = require('../src/db');
+const {
+  MAX_PASSWORD_BYTES,
+  hashPassword,
+  passwordByteLength,
+  normalizePasswordInput,
+  verifyPassword,
+} = require('../src/lib/passwords');
 
 migrate({ silent: true });
 
@@ -27,6 +33,9 @@ const errors = [];
 if (username.length < 3) errors.push('ADMIN_USERNAME يجب أن يكون 3 أحرف على الأقل.');
 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push('ADMIN_EMAIL يجب أن يكون بريدًا إلكترونيًا صالحًا.');
 if (password && password.length < 10) errors.push('ADMIN_PASSWORD يجب أن يكون 10 أحرف على الأقل.');
+if (password && passwordByteLength(normalizePasswordInput(password)) > MAX_PASSWORD_BYTES) {
+  errors.push(`ADMIN_PASSWORD يجب ألا يتجاوز ${MAX_PASSWORD_BYTES} بايت.`);
+}
 
 if (errors.length) {
   console.error('[admin] ' + errors.join('\n[admin] '));
@@ -44,7 +53,7 @@ const existing = db.get(
   [username.toLowerCase(), email]
 );
 
-const passwordHash = bcrypt.hashSync(password, 10);
+const passwordHash = hashPassword(password);
 
 if (existing) {
   if (!force) {
@@ -70,6 +79,16 @@ if (existing) {
     'مدير المدرسة',
   ]);
   console.log(`[admin] تم إنشاء الحساب الإداري: ${username} <${email}>`);
+}
+
+// Fail loudly if the stored hash cannot verify the password that was written.
+const saved = db.get('SELECT password_hash FROM admins WHERE lower(username) = ? LIMIT 1', [
+  username.toLowerCase(),
+]);
+if (!saved || !verifyPassword(password, saved.password_hash)) {
+  console.error('[admin] فشل التحقق من كلمة المرور بعد حفظها. لم يتم تأكيد العملية.');
+  db.closeDatabase();
+  process.exit(1);
 }
 
 if (generated) {

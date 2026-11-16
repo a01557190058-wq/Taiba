@@ -280,6 +280,106 @@ test('sessions persist in the database', async () => {
   assert.ok(token.length === 64);
 });
 
+// ---------------------------------------------------------------------------
+// Keyboard layout and invisible characters
+//
+// A password typed on an Arabic keyboard layout emits Arabic-Indic digits
+// (٠١٢…), which look almost identical to 012… but are different bytes. These
+// tests pin the behaviour that made "typing" fail while "pasting" worked.
+// ---------------------------------------------------------------------------
+test('login accepts a password typed with Arabic-Indic digits', async () => {
+  const { agent, token } = await anonymousAgent();
+  const typedOnArabicKeyboard = 'TestPass!١٢٣'; // visually identical to TestPass!123
+  const res = await agent
+    .post('/api/auth/login')
+    .set('x-csrf-token', token)
+    .send({ identifier: ADMIN.email, password: typedOnArabicKeyboard });
+  assert.equal(res.status, 200);
+});
+
+test('login ignores invisible bidi and zero-width marks in the password', async () => {
+  const { agent, token } = await anonymousAgent();
+  const res = await agent
+    .post('/api/auth/login')
+    .set('x-csrf-token', token)
+    .send({ identifier: ADMIN.email, password: 'TestPass!\u200b123\u200f' });
+  assert.equal(res.status, 200);
+});
+
+test('login still rejects a password whose visible letters differ', async () => {
+  const { agent, token } = await anonymousAgent();
+  const res = await agent
+    .post('/api/auth/login')
+    .set('x-csrf-token', token)
+    .send({ identifier: ADMIN.email, password: 'testpass!123' });
+  assert.equal(res.status, 401, 'letter case must never be folded');
+});
+
+test('changing the password accepts the current password typed on an Arabic keyboard', async () => {
+  const { agent, token } = await adminAgent();
+  const res = await agent
+    .patch('/api/auth/password')
+    .set('x-csrf-token', token)
+    .send({
+      current_password: 'TestPass!١٢٣',
+      new_password: 'Keyboard-2026!',
+      confirm_password: 'Keyboard-2026!',
+    });
+  assert.equal(res.status, 200);
+
+  // The new password works whether its digits are typed in ASCII or Arabic.
+  for (const password of ['Keyboard-2026!', 'Keyboard-٢٠٢٦!']) {
+    const { agent: fresh, token: freshToken } = await anonymousAgent();
+    const login = await fresh
+      .post('/api/auth/login')
+      .set('x-csrf-token', freshToken)
+      .send({ identifier: ADMIN.email, password });
+    assert.equal(login.status, 200, `login must accept ${JSON.stringify(password)}`);
+  }
+
+  // The old password stops working after a successful change.
+  const { agent: stale, token: staleToken } = await anonymousAgent();
+  const oldLogin = await stale
+    .post('/api/auth/login')
+    .set('x-csrf-token', staleToken)
+    .send({ identifier: ADMIN.email, password: ADMIN.password });
+  assert.equal(oldLogin.status, 401);
+});
+
+test('the new password is stored as a bcrypt hash, never as plain text', async () => {
+  const bcrypt = require('bcryptjs');
+  const { agent, token } = await adminAgent();
+  const res = await agent
+    .patch('/api/auth/password')
+    .set('x-csrf-token', token)
+    .send({
+      current_password: ADMIN.password,
+      new_password: 'Stored-Safely-2026',
+      confirm_password: 'Stored-Safely-2026',
+    });
+  assert.equal(res.status, 200);
+
+  const row = db.get('SELECT password_hash FROM admins WHERE username = ?', [ADMIN.username]);
+  assert.match(row.password_hash, /^\$2[aby]\$/);
+  assert.ok(!row.password_hash.includes('Stored-Safely-2026'));
+  assert.ok(bcrypt.compareSync('Stored-Safely-2026', row.password_hash));
+});
+
+test('changing the password rejects a password longer than 72 bytes', async () => {
+  const { agent, token } = await adminAgent();
+  const tooLong = 'A'.repeat(73);
+  const res = await agent
+    .patch('/api/auth/password')
+    .set('x-csrf-token', token)
+    .send({
+      current_password: ADMIN.password,
+      new_password: tooLong,
+      confirm_password: tooLong,
+    });
+  assert.equal(res.status, 400);
+  assert.ok(res.body.error.fields.new_password);
+});
+
 after(() => {
   db.closeDatabase();
 });

@@ -100,6 +100,12 @@ const config = {
     headerName: 'x-csrf-token',
     maxAgeHours: 12,
   },
+  security: {
+    // bcrypt cost factor used when hashing a new password. Verification reads
+    // the cost from the stored hash, so raising this never invalidates
+    // existing passwords.
+    bcryptRounds: int(process.env.BCRYPT_ROUNDS, 10),
+  },
   rateLimits: {
     windowMinutes: int(process.env.RATE_LIMIT_WINDOW_MINUTES, 15),
     loginMax: int(process.env.LOGIN_RATE_LIMIT_MAX, 10),

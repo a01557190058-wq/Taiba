@@ -5,6 +5,7 @@
  */
 import { useState } from 'react';
 import { Icon } from '../../lib/icons.jsx';
+import { cleanPasswordInput, findNonAscii } from '../../lib/password.js';
 
 function FieldShell({ id, label, required, hint, error, full, children }) {
   const hintId = hint ? `${id}-hint` : undefined;
@@ -69,12 +70,17 @@ export function TextField({
 /**
  * Password input with a built-in show/hide toggle. The toggle is a real button
  * so it is keyboard accessible, and it never changes the submitted value.
+ *
+ * Input is normalised through `cleanPasswordInput`, which converts Arabic-Indic
+ * digits to ASCII digits and removes invisible marks. Everything else (case,
+ * spaces, symbols) is sent exactly as typed.
  */
 export function PasswordField({
   id,
   label,
   value,
   onChange,
+  onValueChange,
   required = false,
   hint = '',
   error = '',
@@ -83,10 +89,47 @@ export function PasswordField({
   full = false,
 }) {
   const [visible, setVisible] = useState(false);
+  const [capsLock, setCapsLock] = useState(false);
+  const [notes, setNotes] = useState([]);
+
   const toggleLabel = visible ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور';
 
+  const emit = (next) => {
+    if (onValueChange) onValueChange(next);
+    else if (onChange) onChange({ target: { value: next } });
+  };
+
+  const handleChange = (event) => {
+    const cleaned = cleanPasswordInput(event.target.value);
+    setNotes(cleaned.notes);
+    emit(cleaned.value);
+  };
+
+  const syncCapsLock = (event) => {
+    if (typeof event.getModifierState === 'function') {
+      setCapsLock(event.getModifierState('CapsLock'));
+    }
+  };
+
+  const nonAscii = findNonAscii(value);
+  const messages = [];
+  if (capsLock) messages.push('Caps Lock مفعّل: الحروف تُكتب كبيرة.');
+  if (nonAscii.length) {
+    messages.push(
+      `الكلمة تحتوي على حروف غير إنجليزية (${nonAscii.slice(0, 4).join(' ')}). تأكد أن لوحة المفاتيح على الإنجليزية.`
+    );
+  }
+  messages.push(...notes);
+
   return (
-    <FieldShell id={id} label={label} required={required} hint={hint} error={error} full={full}>
+    <FieldShell
+      id={id}
+      label={label}
+      required={required}
+      hint={messages.length ? messages.join(' ') : hint}
+      error={error}
+      full={full}
+    >
       {({ hintId }) => (
         <div className="input-affix">
           <input
@@ -94,7 +137,9 @@ export function PasswordField({
             className="input"
             type={visible ? 'text' : 'password'}
             value={value}
-            onChange={onChange}
+            onChange={handleChange}
+            onKeyDown={syncCapsLock}
+            onKeyUp={syncCapsLock}
             dir="ltr"
             maxLength={maxLength || undefined}
             autoComplete={autoComplete}

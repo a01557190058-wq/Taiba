@@ -3,6 +3,7 @@ import { ApiError } from '../../lib/api.js';
 import { useAdminAuth } from '../../lib/admin-auth.jsx';
 import { Alert, Spinner } from '../../components/admin/ui.jsx';
 import { Icon } from '../../lib/icons.jsx';
+import { cleanPasswordInput, findNonAscii } from '../../lib/password.js';
 
 /** Only internal admin paths are accepted as a post-login destination. */
 function safeNext() {
@@ -18,6 +19,8 @@ export default function LoginPage() {
 
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordNotes, setPasswordNotes] = useState([]);
+  const [capsLock, setCapsLock] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [alert, setAlert] = useState(null);
@@ -38,6 +41,22 @@ export default function LoginPage() {
     if (!password) next.password = 'كلمة المرور مطلوبة.';
     return next;
   };
+
+  const syncCapsLock = (event) => {
+    if (typeof event.getModifierState === 'function') {
+      setCapsLock(event.getModifierState('CapsLock'));
+    }
+  };
+
+  const nonAscii = findNonAscii(password);
+  const passwordMessages = [];
+  if (capsLock) passwordMessages.push('Caps Lock مفعّل: الحروف تُكتب كبيرة.');
+  if (nonAscii.length) {
+    passwordMessages.push(
+      `الكلمة تحتوي على حروف غير إنجليزية (${nonAscii.slice(0, 4).join(' ')}). تأكد أن لوحة المفاتيح على الإنجليزية.`
+    );
+  }
+  passwordMessages.push(...passwordNotes);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -63,6 +82,7 @@ export default function LoginPage() {
       } else if (error instanceof ApiError && error.status === 401) {
         setAlert({ type: 'error', message: error.message || 'بيانات الدخول غير صحيحة.' });
         setPassword('');
+        setPasswordNotes([]);
         if (passwordRef.current) passwordRef.current.focus();
       } else {
         setAlert({
@@ -150,9 +170,15 @@ export default function LoginPage() {
                   required
                   value={password}
                   aria-invalid={errors.password ? 'true' : undefined}
-                  aria-describedby="error-password"
+                  aria-describedby={
+                    passwordMessages.length ? 'password-hint error-password' : 'error-password'
+                  }
+                  onKeyDown={syncCapsLock}
+                  onKeyUp={syncCapsLock}
                   onChange={(event) => {
-                    setPassword(event.target.value);
+                    const cleaned = cleanPasswordInput(event.target.value);
+                    setPassword(cleaned.value);
+                    setPasswordNotes(cleaned.notes);
                     if (errors.password) setErrors((current) => ({ ...current, password: '' }));
                   }}
                 />
@@ -167,6 +193,11 @@ export default function LoginPage() {
                   <Icon name={showPassword ? 'eyeOff' : 'eye'} size={18} />
                 </button>
               </div>
+              {passwordMessages.length ? (
+                <p className="hint" id="password-hint">
+                  {passwordMessages.join(' ')}
+                </p>
+              ) : null}
               <p className="error-text" id="error-password">
                 {errors.password || ''}
               </p>

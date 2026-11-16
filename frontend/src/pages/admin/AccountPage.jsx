@@ -5,6 +5,7 @@ import { useAdminAuth } from '../../lib/admin-auth.jsx';
 import { useFeedback } from '../../components/admin/feedback.jsx';
 import { Alert, PageHead } from '../../components/admin/ui.jsx';
 import { FormSection, PasswordField } from '../../components/admin/form.jsx';
+import { MAX_PASSWORD_BYTES, passwordByteLength } from '../../lib/password.js';
 
 const EMPTY = {
   current_password: '',
@@ -26,6 +27,8 @@ function validate(values) {
     errors.new_password = 'كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.';
   } else if (values.new_password.length > 200) {
     errors.new_password = 'كلمة المرور الجديدة طويلة جدًا (200 حرف كحد أقصى).';
+  } else if (passwordByteLength(values.new_password) > MAX_PASSWORD_BYTES) {
+    errors.new_password = `كلمة المرور الجديدة طويلة جدًا (${MAX_PASSWORD_BYTES} بايت كحد أقصى).`;
   } else if (values.new_password !== values.new_password.trim()) {
     errors.new_password = 'لا تبدأ أو تنتهي كلمة المرور بمسافة فارغة.';
   } else if (values.new_password === values.current_password) {
@@ -50,8 +53,7 @@ export default function AccountPage() {
   const [alert, setAlert] = useState(null);
   const [busy, setBusy] = useState(false);
 
-  const setField = (key) => (event) => {
-    const value = event.target.value;
+  const setField = (key) => (value) => {
     setValues((current) => ({ ...current, [key]: value }));
     if (errors[key]) setErrors((current) => ({ ...current, [key]: '' }));
   };
@@ -82,7 +84,7 @@ export default function AccountPage() {
       setAlert({
         type: 'success',
         message:
-          'تم تغيير كلمة المرور. استخدم الكلمة الجديدة في تسجيل الدخول القادم. إن أردت التأكد الآن، سجّل الخروج ثم ادخل بالكلمة الجديدة.',
+          'تم حفظ كلمة المرور الجديدة والتحقق منها في قاعدة البيانات. سجّل الخروج ثم ادخل بالكلمة الجديدة للتأكد.',
       });
       toast('تم تغيير كلمة المرور بنجاح.');
     } catch (saveError) {
@@ -131,11 +133,11 @@ export default function AccountPage() {
                 id="current_password"
                 label="كلمة المرور الحالية"
                 value={values.current_password}
-                onChange={setField('current_password')}
+                onValueChange={setField('current_password')}
                 required
                 autoComplete="current-password"
                 maxLength={200}
-                hint="اضغط أيقونة العين لعرض الكلمة والتأكد من كتابتها."
+                hint="اكتبها كما هي. تُحوَّل الأرقام العربية تلقائيًا، ويمكنك إظهار الكلمة للتأكد منها."
                 error={errors.current_password}
                 full
               />
@@ -143,7 +145,7 @@ export default function AccountPage() {
                 id="new_password"
                 label="كلمة المرور الجديدة"
                 value={values.new_password}
-                onChange={setField('new_password')}
+                onValueChange={setField('new_password')}
                 required
                 autoComplete="new-password"
                 maxLength={200}
@@ -154,7 +156,7 @@ export default function AccountPage() {
                 id="confirm_password"
                 label="تأكيد كلمة المرور الجديدة"
                 value={values.confirm_password}
-                onChange={setField('confirm_password')}
+                onValueChange={setField('confirm_password')}
                 required
                 autoComplete="new-password"
                 maxLength={200}

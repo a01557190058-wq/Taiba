@@ -1,7 +1,6 @@
 'use strict';
 
 const express = require('express');
-const bcrypt = require('bcryptjs');
 const db = require('../db');
 const config = require('../config');
 const HttpError = require('../lib/http-error');
@@ -10,12 +9,13 @@ const { loginSchema, changePasswordSchema } = require('../validators/schemas');
 const { requireCsrf } = require('../middleware/csrf');
 const { requireAdmin } = require('../middleware/auth');
 const { loginLimiter, passwordLimiter } = require('../middleware/rate-limit');
+const { hashPassword, verifyPassword } = require('../lib/passwords');
 
 const router = express.Router();
 
 // Compared against when the account does not exist so response timing does not
 // reveal whether a username/email is registered.
-const DUMMY_HASH = bcrypt.hashSync('taiba-invalid-password-placeholder', 10);
+const DUMMY_HASH = hashPassword('taiba-invalid-password-placeholder');
 
 function publicAdmin(admin) {
   return {
@@ -30,7 +30,9 @@ function publicAdmin(admin) {
 router.post('/login', loginLimiter, requireCsrf, validate(loginSchema), (req, res, next) => {
   try {
     const { identifier, password } = req.validated;
-    const needle = identifier.toLowerCase();
+    // Trim server-side as well: the dashboard already trims, but direct API
+    // clients and pasted values can carry surrounding spaces.
+    const needle = identifier.trim().toLowerCase();
 
     const admin = db.get(
       'SELECT * FROM admins WHERE lower(email) = ? OR lower(username) = ? LIMIT 1',
@@ -38,7 +40,11 @@ router.post('/login', loginLimiter, requireCsrf, validate(loginSchema), (req, re
     );
 
     const hash = admin ? admin.password_hash : DUMMY_HASH;
-    const passwordMatches = bcrypt.compareSync(password, hash);
+    // Same verification helper as the change-password endpoint: raw bytes
+    // first, then the normalised form (Arabic-Indic digits -> ASCII digits,
+    // invisible marks removed) so a manually typed password matches a pasted
+    // one.
+    const passwordMatches = verifyPassword(password, hash);
 
     if (!admin || !passwordMatches) {
       throw HttpError.unauthorized('بيانات الدخول غير صحيحة.');
@@ -85,13 +91,15 @@ router.patch(
       const { current_password, new_password } = req.validated;
       const admin = db.get('SELECT * FROM admins WHERE id = ?', [req.admin.id]);
 
-      if (!admin || !bcrypt.compareSync(current_password, admin.password_hash)) {
+      // Exactly the same verification path as login, so a password that works
+      // on the login form always works here too.
+      if (!admin || !verifyPassword(current_password, admin.password_hash)) {
         throw HttpError.badRequest('كلمة المرور الحالية غير صحيحة.', {
           current_password: 'كلمة المرور الحالية غير صحيحة.',
         });
       }
 
-      const passwordHash = bcrypt.hashSync(new_password, 10);
+      const passwordHash = hashPassword(new_password);
       db.run(
         `UPDATE admins
             SET password_hash = ?,
@@ -99,6 +107,13 @@ router.patch(
           WHERE id = ?`,
         [passwordHash, admin.id]
       );
+
+      // Do not report success until the new hash is actually stored and can be
+      // verified from the database again.
+      const saved = db.get('SELECT password_hash FROM admins WHERE id = ?', [admin.id]);
+      if (!saved || !verifyPassword(new_password, saved.password_hash)) {
+        throw HttpError.internal('تعذّر تأكيد حفظ كلمة المرور الجديدة. حاول مرة أخرى.');
+      }
 
       // A password change invalidates every other session for this account so a
       // leaked session cannot outlive the old credentials. Keep the session

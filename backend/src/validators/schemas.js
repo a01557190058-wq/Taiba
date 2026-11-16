@@ -6,6 +6,11 @@
  */
 const { z } = require('zod');
 const { cleanText, normalizePhone, slugify } = require('../lib/text');
+const {
+  MAX_PASSWORD_BYTES,
+  normalizePasswordInput,
+  passwordByteLength,
+} = require('../lib/passwords');
 const { isImageUrl, isVideoUrl } = require('../lib/media');
 const { GALLERY_ICONS, GALLERY_LIMITS } = require('../lib/gallery-constants');
 const {
@@ -535,10 +540,23 @@ const changePasswordSchema = z
     message: 'لا تبدأ أو تنتهي كلمة المرور بمسافة فارغة.',
     path: ['new_password'],
   })
-  .refine((value) => value.new_password !== value.current_password, {
-    message: 'كلمة المرور الجديدة يجب أن تختلف عن الحالية.',
-    path: ['new_password'],
-  });
+  // bcrypt silently ignores everything after 72 bytes, so reject longer input
+  // instead of storing a password that is not fully protected.
+  .refine(
+    (value) => passwordByteLength(normalizePasswordInput(value.new_password)) <= MAX_PASSWORD_BYTES,
+    {
+      message: `كلمة المرور طويلة جدًا (${MAX_PASSWORD_BYTES} بايت كحد أقصى).`,
+      path: ['new_password'],
+    }
+  )
+  .refine(
+    (value) =>
+      normalizePasswordInput(value.new_password) !== normalizePasswordInput(value.current_password),
+    {
+      message: 'كلمة المرور الجديدة يجب أن تختلف عن الحالية.',
+      path: ['new_password'],
+    }
+  );
 
 const demoResetSchema = z.object({
   confirm: z.literal('RESET_DEMO_DATA', {

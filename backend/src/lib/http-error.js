@@ -34,6 +34,10 @@ class HttpError extends Error {
   static tooManyRequests(message = 'عدد المحاولات كبير. يرجى المحاولة لاحقًا.') {
     return new HttpError(429, 'RATE_LIMITED', message);
   }
+
+  static internal(message = 'حدث خطأ غير متوقع. حاول مرة أخرى.') {
+    return new HttpError(500, 'INTERNAL_ERROR', message);
+  }
 }
 
 module.exports = HttpError;

@@ -49,6 +49,7 @@ process.env.DEPARTMENT_UPLOADS_DIR = DEPARTMENT_UPLOADS_DIR;
 process.env.APPLICATION_UPLOADS_DIR = APPLICATION_UPLOADS_DIR;
 process.env.SESSION_SECRET = 'test-session-secret-that-is-long-enough-0123456789';
 process.env.LOGIN_RATE_LIMIT_MAX = '1000';
+process.env.PASSWORD_RATE_LIMIT_MAX = '1000';
 process.env.APPLICATION_RATE_LIMIT_MAX = '1000';
 process.env.ADMIN_USERNAME = 'admin';
 process.env.ADMIN_EMAIL = 'admin@test.demo';
