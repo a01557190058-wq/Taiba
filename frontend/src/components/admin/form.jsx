@@ -3,6 +3,8 @@
  * renders its own hint/error nodes and wires `aria-describedby` / `aria-invalid`
  * so validation feedback is announced correctly.
  */
+import { useState } from 'react';
+import { Icon } from '../../lib/icons.jsx';
 
 function FieldShell({ id, label, required, hint, error, full, children }) {
   const hintId = hint ? `${id}-hint` : undefined;
@@ -59,6 +61,58 @@ export function TextField({
           aria-describedby={hintId}
           {...rest}
         />
+      )}
+    </FieldShell>
+  );
+}
+
+/**
+ * Password input with a built-in show/hide toggle. The toggle is a real button
+ * so it is keyboard accessible, and it never changes the submitted value.
+ */
+export function PasswordField({
+  id,
+  label,
+  value,
+  onChange,
+  required = false,
+  hint = '',
+  error = '',
+  autoComplete = 'current-password',
+  maxLength,
+  full = false,
+}) {
+  const [visible, setVisible] = useState(false);
+  const toggleLabel = visible ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور';
+
+  return (
+    <FieldShell id={id} label={label} required={required} hint={hint} error={error} full={full}>
+      {({ hintId }) => (
+        <div className="input-affix">
+          <input
+            id={id}
+            className="input"
+            type={visible ? 'text' : 'password'}
+            value={value}
+            onChange={onChange}
+            dir="ltr"
+            maxLength={maxLength || undefined}
+            autoComplete={autoComplete}
+            aria-required={required || undefined}
+            aria-invalid={error ? 'true' : undefined}
+            aria-describedby={hintId}
+          />
+          <button
+            type="button"
+            className="input-affix__toggle"
+            onClick={() => setVisible((current) => !current)}
+            aria-label={toggleLabel}
+            aria-pressed={visible}
+            title={toggleLabel}
+          >
+            <Icon name={visible ? 'eyeOff' : 'eye'} size={18} />
+          </button>
+        </div>
       )}
     </FieldShell>
   );

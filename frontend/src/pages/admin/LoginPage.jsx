@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ApiError } from '../../lib/api.js';
 import { useAdminAuth } from '../../lib/admin-auth.jsx';
 import { Alert, Spinner } from '../../components/admin/ui.jsx';
+import { Icon } from '../../lib/icons.jsx';
 
 /** Only internal admin paths are accepted as a post-login destination. */
 function safeNext() {
@@ -17,6 +18,7 @@ export default function LoginPage() {
 
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [alert, setAlert] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -136,23 +138,35 @@ export default function LoginPage() {
 
             <div className="field mt-2">
               <label htmlFor="password">كلمة المرور</label>
-              <input
-                ref={passwordRef}
-                className="input"
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                dir="ltr"
-                required
-                value={password}
-                aria-invalid={errors.password ? 'true' : undefined}
-                aria-describedby="error-password"
-                onChange={(event) => {
-                  setPassword(event.target.value);
-                  if (errors.password) setErrors((current) => ({ ...current, password: '' }));
-                }}
-              />
+              <div className="input-affix">
+                <input
+                  ref={passwordRef}
+                  className="input"
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  dir="ltr"
+                  required
+                  value={password}
+                  aria-invalid={errors.password ? 'true' : undefined}
+                  aria-describedby="error-password"
+                  onChange={(event) => {
+                    setPassword(event.target.value);
+                    if (errors.password) setErrors((current) => ({ ...current, password: '' }));
+                  }}
+                />
+                <button
+                  type="button"
+                  className="input-affix__toggle"
+                  onClick={() => setShowPassword((current) => !current)}
+                  aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                  aria-pressed={showPassword}
+                  title={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                >
+                  <Icon name={showPassword ? 'eyeOff' : 'eye'} size={18} />
+                </button>
+              </div>
               <p className="error-text" id="error-password">
                 {errors.password || ''}
               </p>

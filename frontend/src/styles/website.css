@@ -1337,6 +1337,43 @@ button {
   background: var(--red-50);
 }
 
+/* Password inputs with a show/hide (eye) button. */
+.input-affix {
+  position: relative;
+}
+
+.input-affix .input {
+  padding-inline-end: 2.9rem;
+}
+
+.input-affix__toggle {
+  position: absolute;
+  inset-inline-end: 0.35rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-400);
+  cursor: pointer;
+  transition: background 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.input-affix__toggle:hover {
+  background: var(--bg-soft);
+  color: var(--ink-700);
+}
+
+.input-affix__toggle:focus-visible {
+  outline: 2px solid var(--teal-600);
+  outline-offset: 2px;
+}
+
 .field-error {
   display: flex;
   align-items: flex-start;

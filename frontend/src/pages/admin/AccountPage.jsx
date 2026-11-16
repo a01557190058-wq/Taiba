@@ -4,7 +4,7 @@ import { Icon } from '../../lib/icons.jsx';
 import { useAdminAuth } from '../../lib/admin-auth.jsx';
 import { useFeedback } from '../../components/admin/feedback.jsx';
 import { Alert, PageHead } from '../../components/admin/ui.jsx';
-import { CheckboxField, FormSection, TextField } from '../../components/admin/form.jsx';
+import { FormSection, PasswordField } from '../../components/admin/form.jsx';
 
 const EMPTY = {
   current_password: '',
@@ -49,9 +49,6 @@ export default function AccountPage() {
   const [errors, setErrors] = useState({});
   const [alert, setAlert] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [showPasswords, setShowPasswords] = useState(false);
-
-  const passwordType = showPasswords ? 'text' : 'password';
 
   const setField = (key) => (event) => {
     const value = event.target.value;
@@ -130,52 +127,40 @@ export default function AccountPage() {
             description="أدخل كلمة المرور الحالية ثم كلمة مرور جديدة قوية (8 أحرف على الأقل). سيتم تسجيل الخروج من أي جلسات أخرى مفتوحة لنفس الحساب."
           >
             <div className="form-grid">
-              <TextField
+              <PasswordField
                 id="current_password"
                 label="كلمة المرور الحالية"
-                type={passwordType}
                 value={values.current_password}
                 onChange={setField('current_password')}
                 required
                 autoComplete="current-password"
                 maxLength={200}
-                dir="ltr"
+                hint="اضغط أيقونة العين لعرض الكلمة والتأكد من كتابتها."
                 error={errors.current_password}
                 full
               />
-              <TextField
+              <PasswordField
                 id="new_password"
                 label="كلمة المرور الجديدة"
-                type={passwordType}
                 value={values.new_password}
                 onChange={setField('new_password')}
                 required
                 autoComplete="new-password"
                 maxLength={200}
-                dir="ltr"
                 hint="8 أحرف على الأقل، ويُفضّل أن تجمع بين حروف وأرقام ورموز. تُكتب من اليسار إلى اليمين."
                 error={errors.new_password}
               />
-              <TextField
+              <PasswordField
                 id="confirm_password"
                 label="تأكيد كلمة المرور الجديدة"
-                type={passwordType}
                 value={values.confirm_password}
                 onChange={setField('confirm_password')}
                 required
                 autoComplete="new-password"
                 maxLength={200}
-                dir="ltr"
                 error={errors.confirm_password}
               />
             </div>
-            <CheckboxField
-              id="show_passwords"
-              label="إظهار كلمات المرور"
-              hint="استخدمه للتأكد من كتابة الكلمة بالشكل الصحيح قبل الحفظ."
-              checked={showPasswords}
-              onChange={(event) => setShowPasswords(event.target.checked)}
-            />
           </FormSection>
         </div>
 
