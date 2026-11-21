@@ -20,8 +20,8 @@ function matches(department, query) {
 
 export default function DepartmentsPage() {
   usePageMeta(
-    'التخصصات التقنية | مدرسة طيبة تكنولوجي',
-    'استكشف التخصصات التقنية في مدرسة طيبة تكنولوجي: البرمجة، الذكاء الاصطناعي، الأجهزة الطبية، الكهرباء، الميكانيكا، الطاقة المتجددة وغيرها.'
+    'التخصصات التقنية | مجمع طيبة تكنولوجي',
+    'استكشف التخصصات التقنية في مجمع طيبة تكنولوجي: البرمجة، الذكاء الاصطناعي، الأجهزة الطبية، الكهرباء، الميكانيكا، الطاقة المتجددة وغيرها.'
   );
 
   const { data, loading, error, reload } = useAsync(() => api('/api/departments'), []);
@@ -93,7 +93,7 @@ export default function DepartmentsPage() {
             {!loading && !error && !departments.length ? (
               <StateBox
                 title="لا توجد تخصصات منشورة حاليًا"
-                message="تقوم إدارة المدرسة بتحديث التخصصات. يمكنك العودة لاحقًا أو التواصل معنا للاستفسار."
+                message="تقوم إدارة المجمع بتحديث التخصصات. يمكنك العودة لاحقًا أو التواصل معنا للاستفسار."
                 actionLabel="إعادة المحاولة"
                 onAction={reload}
                 iconName="book"
@@ -125,7 +125,7 @@ export default function DepartmentsPage() {
               <h2 className="section-title mt-1 mb-2">اطّلع على معلومات القبول قبل اختيار التخصص</h2>
               <p className="text-muted">
                 تحتوي صفحة القبول على خطوات التقديم والمواعيد التجريبية والأسئلة الشائعة. يمكنك
-                أيضًا التواصل مع إدارة المدرسة للاستفسار عن أي تخصص.
+                أيضًا التواصل مع إدارة المجمع للاستفسار عن أي تخصص.
               </p>
               <div className="hero__actions">
                 <Link className="btn btn-primary" to="/apply">

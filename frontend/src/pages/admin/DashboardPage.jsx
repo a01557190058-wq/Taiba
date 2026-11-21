@@ -111,7 +111,7 @@ export default function DashboardPage() {
   if (error) {
     return (
       <>
-        <PageHead title="ملخص المدرسة" />
+        <PageHead title="ملخص المجمع" />
         <div className="panel">
           <div className="panel__body">
             <Alert type="error" message={error.message || 'تعذّر تحميل الإحصاءات.'} />
@@ -131,7 +131,7 @@ export default function DashboardPage() {
   return (
     <>
       <PageHead
-        title="ملخص المدرسة"
+        title="ملخص المجمع"
         description={`آخر تحديث: ${formatDateTime(
           stats.generated_at
         )} — تُحسب جميع الأرقام من قاعدة البيانات مباشرة.`}

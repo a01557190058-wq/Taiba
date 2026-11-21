@@ -85,8 +85,8 @@ export default function NewsArticlePage() {
 
   const notFound = error && error.status === 404;
   usePageMeta(
-    article ? `${article.title} | مدرسة طيبة تكنولوجي` : 'خبر | مدرسة طيبة تكنولوجي',
-    article?.summary || 'تفاصيل الخبر في مدرسة طيبة تكنولوجي. جميع الأخبار المعروضة تجريبية لأغراض العرض.'
+    article ? `${article.title} | مجمع طيبة تكنولوجي` : 'خبر | مجمع طيبة تكنولوجي',
+    article?.summary || 'تفاصيل الخبر في مجمع طيبة تكنولوجي. جميع الأخبار المعروضة تجريبية لأغراض العرض.'
   );
 
   if (notFound) {
@@ -141,7 +141,7 @@ export default function NewsArticlePage() {
           article
             ? article.summary || ''
             : loading
-              ? 'يتم جلب نص الخبر من قاعدة بيانات المدرسة.'
+              ? 'يتم جلب نص الخبر من قاعدة بيانات المجمع.'
               : 'حدث خطأ أثناء الاتصال بالخادم.'
         }
         breadcrumb={[

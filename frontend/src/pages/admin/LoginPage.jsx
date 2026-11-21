@@ -101,8 +101,8 @@ export default function LoginPage() {
         <div className="login-aside__brand">
           <img src="/assets/img/logo.jpg" alt="" width="52" height="52" />
           <div>
-            <strong>مدرسة طيبة تكنولوجي</strong>
-            <span>Taiba Technology School</span>
+            <strong>مجمع طيبة تكنولوجي</strong>
+            <span>Taiba Technology Complex</span>
           </div>
         </div>
 

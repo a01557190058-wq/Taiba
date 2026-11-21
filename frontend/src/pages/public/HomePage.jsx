@@ -98,7 +98,7 @@ const FALLBACK_STEPS = [
   'اختيار التخصص: اطّلع على وصف التخصصات ومهاراتها واختر المسار الأنسب.',
   'تعبئة النموذج: أدخل الاسم ورقم الهاتف وبيانات التواصل الأساسية.',
   'إرسال الطلب: راجع البيانات ووافق على معالجة المعلومات ثم أرسل.',
-  'متابعة الحالة: احتفظ برقم الطلب لمتابعة المراجعة مع إدارة المدرسة.',
+  'متابعة الحالة: احتفظ برقم الطلب لمتابعة المراجعة مع إدارة المجمع.',
 ];
 
 function SkeletonLines({ count = 2 }) {
@@ -113,8 +113,8 @@ function SkeletonLines({ count = 2 }) {
 
 export default function HomePage() {
   usePageMeta(
-    'مدرسة طيبة تكنولوجي | تعليم تقني تطبيقي',
-    'مدرسة طيبة تكنولوجي — بيئة تعليمية تقنية تجريبية تجمع بين الأساس النظري والتطبيق العملي في البرمجة والهندسة والتقنيات الصناعية.'
+    'مجمع طيبة تكنولوجي | تعليم تقني تطبيقي',
+    'مجمع طيبة تكنولوجي — بيئة تعليمية تقنية تجريبية تجمع بين الأساس النظري والتطبيق العملي في البرمجة والهندسة والتقنيات الصناعية.'
   );
 
   const heroRef = useRef(null);
@@ -146,10 +146,10 @@ export default function HomePage() {
         <div className="container hero__inner">
           <div className="hero__content">
             <span className="hero__badge">
-              {contentText(content, 'hero_badge', 'بيانات تجريبية — مدرسة تقنية')}
+              {contentText(content, 'hero_badge', 'بيانات تجريبية — مجمع تقني')}
             </span>
             <h1 className="hero__title">
-              مدرسة طيبة <span className="accent">تكنولوجي</span>
+              مجمع طيبة <span className="accent">تكنولوجي</span>
               <br />
               حيث يتحوّل الشغف التقني إلى مهارة
             </h1>
@@ -195,7 +195,7 @@ export default function HomePage() {
             <div className="hero__media-frame">
               <img
                 src="/assets/img/logo.jpg"
-                alt="شعار مدرسة طيبة تكنولوجي"
+                alt="شعار مجمع طيبة تكنولوجي"
                 width="413"
                 height="409"
               />
@@ -219,7 +219,7 @@ export default function HomePage() {
       </section>
 
       {/* ================= STATS BAND ================= */}
-      <section className="container" aria-label="أرقام سريعة عن المدرسة">
+      <section className="container" aria-label="أرقام سريعة عن المجمع">
         <div className="stats-band reveal">
           <div className="stats-band__item">
             <Counter className="stats-band__value" value={departmentList.length} />
@@ -250,7 +250,7 @@ export default function HomePage() {
         <div className="container">
           <SectionHead
             center
-            eyebrow="لماذا مدرسة طيبة تكنولوجي؟"
+            eyebrow="لماذا مجمع طيبة تكنولوجي؟"
             title="تعليم تقني يبدأ من التطبيق ولا ينتهي عند النظرية"
             lead="نصمم التجربة التعليمية حول الطالب: أساس معرفي واضح، تدريب عملي منتظم، ومشروعات تُظهر ما تعلّمه الطالب بشكل ملموس."
           />
@@ -281,7 +281,7 @@ export default function HomePage() {
               flush
               eyebrow="المسارات التعليمية"
               title="تخصصات تقنية تُبنى حول المهارة والتطبيق"
-              lead="تعرض هذه القائمة التخصصات المنشورة والمتاحة للتقديم حاليًا من قاعدة بيانات المدرسة."
+              lead="تعرض هذه القائمة التخصصات المنشورة والمتاحة للتقديم حاليًا من قاعدة بيانات المجمع."
             />
             <Link className="btn btn-outline" to="/departments">
               عرض جميع التخصصات
@@ -305,7 +305,7 @@ export default function HomePage() {
             {!departments.loading && !departments.error && !departmentList.length ? (
               <StateBox
                 title="لا توجد تخصصات منشورة حاليًا"
-                message="تقوم إدارة المدرسة بتحديث التخصصات. يمكنك العودة لاحقًا أو التواصل معنا للاستفسار."
+                message="تقوم إدارة المجمع بتحديث التخصصات. يمكنك العودة لاحقًا أو التواصل معنا للاستفسار."
                 actionLabel="تحديث"
                 onAction={departments.reload}
                 iconName="book"
@@ -327,7 +327,7 @@ export default function HomePage() {
             <SectionHead
               flush
               eyebrow="آخر المستجدات"
-              title="أخبار وأنشطة من داخل المدرسة"
+              title="أخبار وأنشطة من داخل المجمع"
               lead="أحدث الأخبار المنشورة من لوحة التحكم: أنشطة التخصصات، الورش العملية، والمشروعات الطلابية."
             />
             <Link className="btn btn-outline" to="/news">
@@ -399,24 +399,24 @@ export default function HomePage() {
       <section className="section" id="about">
         <div className="container split">
           <div className="prose reveal">
-            <span className="eyebrow">عن المدرسة</span>
-            <h2 className="section-title mt-1 mb-2">مدرسة تجمع الأساس النظري بالتجربة العملية</h2>
+            <span className="eyebrow">عن المجمع</span>
+            <h2 className="section-title mt-1 mb-2">مجمع يجمع الأساس النظري بالتجربة العملية</h2>
             <p>
               {contentText(
                 content,
                 'school_intro',
-                'مدرسة طيبة تكنولوجي مدرسة تقنية تجريبية تهدف إلى تقديم تعليم تطبيقي في مجالات الحاسوب والهندسة والتقنيات الصناعية، مع التركيز على المشروعات العملية والمتابعة المستمرة.'
+                'مجمع طيبة تكنولوجي مجمع تقني تجريبي يهدف إلى تقديم تعليم تطبيقي في مجالات الحاسوب والهندسة والتقنيات الصناعية، مع التركيز على المشروعات العملية والمتابعة المستمرة.'
               )}
             </p>
             <p>
               {contentText(
                 content,
                 'learning_environment',
-                'توفّر المدرسة بيئة تعليمية منظمة تجمع بين الفصول الدراسية والمختبرات التقنية ومساحات العمل الجماعي.'
+                'يوفر المجمع بيئة تعليمية منظمة تجمع بين الفصول الدراسية والمختبرات التقنية ومساحات العمل الجماعي.'
               )}
             </p>
             <Link className="btn btn-outline mt-3" to="/about">
-              تعرّف على المدرسة
+              تعرّف على المجمع
             </Link>
           </div>
 
@@ -496,7 +496,7 @@ export default function HomePage() {
           <SectionHead
             center
             eyebrow="تجارب الطلاب"
-            title="كيف يصف الطلاب تجربة التعلّم داخل المدرسة؟"
+            title="كيف يصف الطلاب تجربة التعلّم داخل المجمع؟"
             lead="نماذج توضيحية لآراء طلاب، مكتوبة لأغراض العرض ولا تمثل شهادات حقيقية."
           />
 
@@ -527,7 +527,7 @@ export default function HomePage() {
               <h2>جاهز تبدأ رحلتك التقنية معنا؟</h2>
               <p>
                 اختر التخصص المناسب، أرسل طلبك في دقائق، واحتفظ برقم الطلب لمتابعة حالة المراجعة مع
-                إدارة المدرسة.
+                إدارة المجمع.
               </p>
             </div>
             <div className="cta-band__actions">
@@ -550,7 +550,7 @@ export default function HomePage() {
               <span className="eyebrow">تواصل معنا</span>
               <h2 className="section-title mt-1 mb-2">هل لديك سؤال قبل التقديم؟</h2>
               <p className="text-muted">
-                بيانات التواصل التالية تجريبية لأغراض العرض ولا تمثل معلومات رسمية للمدرسة.
+                بيانات التواصل التالية تجريبية لأغراض العرض ولا تمثل معلومات رسمية للمجمع.
               </p>
 
               <ul className="contact-list">
@@ -606,7 +606,7 @@ export default function HomePage() {
                 <h3>جاهز لبدء رحلتك التقنية؟</h3>
                 <p>
                   اختر التخصص المناسب وأرسل طلبك خلال دقائق. إرسال الطلب لا يعني القبول النهائي، بل
-                  يبدأ مراجعة إدارة المدرسة لبياناتك.
+                  يبدأ مراجعة إدارة المجمع لبياناتك.
                 </p>
               </div>
               <div>

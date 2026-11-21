@@ -22,11 +22,11 @@ beforeEach(() => resetDatabase());
 const DEMO_NEWS_COUNT = 6;
 
 const validNews = (overrides = {}) => ({
-  title: 'خبر اختباري عن أنشطة المدرسة',
+  title: 'خبر اختباري عن أنشطة المجمع',
   slug: 'test-news-item',
   summary: 'ملخص تجريبي لخبر اختباري يوضح طريقة عرض الأخبار في الموقع.',
   body:
-    'هذا نص تجريبي لخبر اختباري طويل بما يكفي لاجتياز التحقق، ويشرح تفاصيل النشاط داخل المدرسة دون أي بيانات رسمية.',
+    'هذا نص تجريبي لخبر اختباري طويل بما يكفي لاجتياز التحقق، ويشرح تفاصيل النشاط داخل المجمع دون أي بيانات رسمية.',
   category: 'أنشطة',
   image_url: '/assets/img/departments/programming.svg',
   is_published: true,
@@ -70,7 +70,7 @@ test('an administrator can create a news item and it starts as real data', async
 
   assert.equal(res.status, 201);
   const news = res.body.data;
-  assert.equal(news.title, 'خبر اختباري عن أنشطة المدرسة');
+  assert.equal(news.title, 'خبر اختباري عن أنشطة المجمع');
   assert.equal(news.slug, 'test-news-item');
   assert.equal(news.category, 'أنشطة');
   assert.equal(news.is_published, true);

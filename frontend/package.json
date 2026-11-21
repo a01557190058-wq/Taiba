@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "React front-end for the Taiba Technology School website and admin dashboard",
+  "description": "React front-end for the Taiba Technology Complex website and admin dashboard",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

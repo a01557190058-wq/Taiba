@@ -76,7 +76,7 @@ if (existing) {
     username,
     email,
     passwordHash,
-    'مدير المدرسة',
+    'مدير المجمع',
   ]);
   console.log(`[admin] تم إنشاء الحساب الإداري: ${username} <${email}>`);
 }

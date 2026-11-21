@@ -40,7 +40,7 @@ const server = app.listen(config.port, config.host, () => {
   const base = `http://${config.host}:${config.port}`;
   /* eslint-disable no-console */
   console.log('');
-  console.log('  مدرسة طيبة تكنولوجي - الخادم يعمل');
+  console.log('  مجمع طيبة تكنولوجي - الخادم يعمل');
   console.log(`  الموقع:        ${base}`);
   console.log(`  لوحة التحكم:   ${base}/admin`);
   console.log(`  قاعدة البيانات: ${config.paths.db}`);

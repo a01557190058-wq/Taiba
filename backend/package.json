@@ -2,7 +2,7 @@
   "name": "taiba-technology-school-backend",
   "version": "1.0.0",
   "private": true,
-  "description": "Backend API and static hosting for Taiba Technology School website and admin dashboard",
+  "description": "Backend API and static hosting for Taiba Technology Complex website and admin dashboard",
   "type": "commonjs",
   "engines": {
     "node": ">=22.13.0"

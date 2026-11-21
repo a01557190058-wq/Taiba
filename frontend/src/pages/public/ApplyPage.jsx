@@ -39,7 +39,7 @@ const DOCUMENT_FIELDS = [
   {
     kind: 'success_form',
     label: 'استمارة النجاح في الشهادة الإعدادية',
-    hint: 'أو بيان نجاح معتمد من المدرسة، بصيغة PDF أو صورة واضحة.',
+    hint: 'أو بيان نجاح معتمد من المجمع، بصيغة PDF أو صورة واضحة.',
   },
   {
     kind: 'birth_certificate',
@@ -334,8 +334,8 @@ function DocumentField({ field, file, error, onChange }) {
 
 export default function ApplyPage() {
   usePageMeta(
-    'نموذج التقديم | مدرسة طيبة تكنولوجي',
-    'املأ نموذج التقديم في مدرسة طيبة تكنولوجي واختر التخصص المناسب. إرسال الطلب لا يعني القبول النهائي.'
+    'نموذج التقديم | مجمع طيبة تكنولوجي',
+    'املأ نموذج التقديم في مجمع طيبة تكنولوجي واختر التخصص المناسب. إرسال الطلب لا يعني القبول النهائي.'
   );
 
   const { content } = useSchoolContent();
@@ -617,7 +617,7 @@ export default function ApplyPage() {
                   </span>
                   <h2 className="section-title mb-0">تم تسجيل طلبك بنجاح</h2>
                   <p className="text-muted">
-                    احتفظ برقم الطلب التالي لمتابعة حالة طلبك مع إدارة المدرسة.
+                    احتفظ برقم الطلب التالي لمتابعة حالة طلبك مع إدارة المجمع.
                   </p>
 
                   <div className="reference-box">
@@ -639,7 +639,7 @@ export default function ApplyPage() {
                     {contentText(
                       content,
                       'application_note',
-                      'إرسال الطلب لا يعني القبول. سجل الطلب يصل إلى إدارة المدرسة للمراجعة.'
+                      'إرسال الطلب لا يعني القبول. سجل الطلب يصل إلى إدارة المجمع للمراجعة.'
                     )}
                   </p>
 
@@ -873,7 +873,7 @@ export default function ApplyPage() {
 
                       <div className="form-field">
                         <label className="form-label" htmlFor="previous_education">
-                          المدرسة الإعدادية السابقة{' '}
+                          المجمع الإعدادية السابقة{' '}
                           <span className="text-muted text-small">(اختياري)</span>
                         </label>
                         <input
@@ -1144,7 +1144,7 @@ export default function ApplyPage() {
                           />
                           <span>
                             أقر أنا ولي الأمر بأن جميع البيانات المدونة صحيحة وأتحمل مسؤوليتها،
-                            وأوافق على شروط وقواعد القبول الخاصة بالمدرسة.
+                            وأوافق على شروط وقواعد القبول الخاصة بالمجمع.
                           </span>
                         </label>
                         <p className="field-error" id="error-consent">

@@ -19,12 +19,12 @@ export default function SiteFooter({ note }) {
             <Link className="footer-brand" to="/">
               <img src="/assets/img/logo.jpg" alt="" width="44" height="44" />
               <span>
-                <strong>مدرسة طيبة تكنولوجي</strong>
-                <span>Taiba Technology School</span>
+                <strong>مجمع طيبة تكنولوجي</strong>
+                <span>Taiba Technology Complex</span>
               </span>
             </Link>
             <p>
-              مدرسة تقنية تجريبية تقدم تعليمًا تطبيقيًا في مجالات التقنية والهندسة. جميع البيانات
+              مجمع تقني تجريبي يقدم تعليمًا تطبيقيًا في مجالات التقنية والهندسة. جميع البيانات
               والتخصصات والمواعيد المعروضة هنا لأغراض العرض فقط.
             </p>
           </div>
@@ -33,7 +33,7 @@ export default function SiteFooter({ note }) {
             <h2 className="footer-title">روابط سريعة</h2>
             <ul className="footer-links">
               <li>
-                <Link to="/about">عن المدرسة</Link>
+                <Link to="/about">عن المجمع</Link>
               </li>
               <li>
                 <Link to="/departments">التخصصات</Link>
@@ -91,7 +91,7 @@ export default function SiteFooter({ note }) {
         </div>
 
         <div className="footer-bottom">
-          <span>© {year} مدرسة طيبة تكنولوجي — نسخة تجريبية.</span>
+          <span>© {year} مجمع طيبة تكنولوجي — نسخة تجريبية.</span>
           <span className="demo-flag">{note || 'بيانات ومواعيد تجريبية لأغراض العرض'}</span>
         </div>
       </div>

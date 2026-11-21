@@ -204,7 +204,7 @@ export default function ApplicationDetailPage() {
               <DetailRow label="المجموع / النسبة في الشهادة الإعدادية">
                 {application.preparatory_score}
               </DetailRow>
-              <DetailRow label="المدرسة الإعدادية السابقة">
+              <DetailRow label="المجمع الإعدادية السابقة">
                 {application.previous_education}
               </DetailRow>
               <DetailRow label="ملاحظات المتقدم">

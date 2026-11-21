@@ -7,7 +7,7 @@ import { PageHero, SectionHead } from '../../components/public/ui.jsx';
 const FALLBACK_OBJECTIVES = [
   'ربط المناهج التقنية باحتياجات سوق العمل والمشروعات الواقعية.',
   'تنمية مهارات التفكير التحليلي وحل المشكلات لدى الطلاب.',
-  'توفير تدريب عملي منتظم داخل مختبرات وورش المدرسة.',
+  'توفير تدريب عملي منتظم داخل مختبرات وورش المجمع.',
   'تعزيز العمل الجماعي والتواصل المهني والمسؤولية الأخلاقية.',
 ];
 
@@ -50,8 +50,8 @@ const VALUES = [
 
 export default function AboutPage() {
   usePageMeta(
-    'عن المدرسة | مدرسة طيبة تكنولوجي',
-    'تعرّف على مدرسة طيبة تكنولوجي: الرؤية والرسالة والأهداف التعليمية وبيئة التعلم والتعلّم العملي.'
+    'عن المجمع | مجمع طيبة تكنولوجي',
+    'تعرّف على مجمع طيبة تكنولوجي: الرؤية والرسالة والأهداف التعليمية وبيئة التعلم والتعلّم العملي.'
   );
 
   const { content, objectives, loading } = useSchoolContent();
@@ -60,28 +60,28 @@ export default function AboutPage() {
   return (
     <>
       <PageHero
-        title="عن مدرسة طيبة تكنولوجي"
-        lead="مدرسة تقنية تجريبية تضع التطبيق العملي في قلب التجربة التعليمية، وتبني مسارات متدرجة تربط المعرفة النظرية بالمهارات التي يحتاجها سوق العمل."
-        breadcrumb={[{ label: 'الرئيسية', href: '/' }, { label: 'عن المدرسة' }]}
+        title="عن مجمع طيبة تكنولوجي"
+        lead="مجمع تقني تجريبي يضع التطبيق العملي في قلب التجربة التعليمية، وتبني مسارات متدرجة تربط المعرفة النظرية بالمهارات التي يحتاجها سوق العمل."
+        breadcrumb={[{ label: 'الرئيسية', href: '/' }, { label: 'عن المجمع' }]}
       />
 
       <section className="section">
         <div className="container split">
           <div className="prose reveal">
-            <span className="eyebrow">نبذة عن المدرسة</span>
+            <span className="eyebrow">نبذة عن المجمع</span>
             <h2 className="section-title mt-1 mb-2">تعليم تقني يبدأ من السؤال وينتهي بمشروع</h2>
             <p>
               {contentText(
                 content,
                 'school_intro',
-                'مدرسة طيبة تكنولوجي مدرسة تقنية تجريبية تهدف إلى تقديم تعليم تطبيقي في مجالات الحاسوب والهندسة والتقنيات الصناعية، مع التركيز على المشروعات العملية والمتابعة المستمرة.'
+                'مجمع طيبة تكنولوجي مجمع تقني تجريبي يهدف إلى تقديم تعليم تطبيقي في مجالات الحاسوب والهندسة والتقنيات الصناعية، مع التركيز على المشروعات العملية والمتابعة المستمرة.'
               )}
             </p>
             <p>
               {contentText(
                 content,
                 'learning_environment',
-                'توفّر المدرسة بيئة تعليمية منظمة تجمع بين الفصول الدراسية والمختبرات التقنية ومساحات العمل الجماعي.'
+                'يوفر المجمع بيئة تعليمية منظمة تجمع بين الفصول الدراسية والمختبرات التقنية ومساحات العمل الجماعي.'
               )}
             </p>
           </div>
@@ -157,7 +157,7 @@ export default function AboutPage() {
 
       <section className="section section--soft">
         <div className="container">
-          <SectionHead center eyebrow="قيمنا" title="ثلاث قيم تحكم طريقة العمل داخل المدرسة" />
+          <SectionHead center eyebrow="قيمنا" title="ثلاث قيم تحكم طريقة العمل داخل المجمع" />
           <div className="grid grid--3">
             {VALUES.map((value, index) => (
               <article className="card feature reveal" data-delay={String(index)} key={value.title}>
@@ -181,7 +181,7 @@ export default function AboutPage() {
               {contentText(
                 content,
                 'learning_environment',
-                'توفّر المدرسة بيئة تعليمية منظمة تجمع بين الفصول الدراسية والمختبرات التقنية ومساحات العمل الجماعي.'
+                'يوفر المجمع بيئة تعليمية منظمة تجمع بين الفصول الدراسية والمختبرات التقنية ومساحات العمل الجماعي.'
               )}
             </p>
           </div>

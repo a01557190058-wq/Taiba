@@ -74,7 +74,7 @@ function chromeFor(pathname) {
       subtitle: 'بيانات حسابك الإداري وتغيير كلمة المرور في أي وقت',
     };
   }
-  return { title: 'نظرة عامة', subtitle: 'ملخص مباشر من قاعدة بيانات المدرسة' };
+  return { title: 'نظرة عامة', subtitle: 'ملخص مباشر من قاعدة بيانات المجمع' };
 }
 
 export default function AdminLayout() {
@@ -113,7 +113,7 @@ export default function AdminLayout() {
         <Link className="admin-brand" to="/dashboard">
           <img src="/assets/img/logo.jpg" alt="" width="42" height="42" />
           <span>
-            <strong>مدرسة طيبة تكنولوجي</strong>
+            <strong>مجمع طيبة تكنولوجي</strong>
             <span>لوحة التحكم</span>
           </span>
         </Link>

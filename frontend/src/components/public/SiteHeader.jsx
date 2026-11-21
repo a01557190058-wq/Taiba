@@ -4,7 +4,7 @@ import { useScrolledHeader } from '../../lib/motion.jsx';
 
 const NAV_ITEMS = [
   { to: '/', label: 'الرئيسية', end: true },
-  { to: '/about', label: 'عن المدرسة' },
+  { to: '/about', label: 'عن المجمع' },
   { to: '/departments', label: 'التخصصات' },
   { to: '/subjects', label: 'المواد الدراسية' },
   { to: '/news', label: 'الأخبار' },
@@ -33,11 +33,11 @@ export default function SiteHeader() {
   return (
     <header className={`site-header${scrolled ? ' is-scrolled' : ''}`}>
       <div className="container site-header__inner">
-        <Link className="brand" to="/" aria-label="مدرسة طيبة تكنولوجي — الصفحة الرئيسية">
+        <Link className="brand" to="/" aria-label="مجمع طيبة تكنولوجي — الصفحة الرئيسية">
           <img className="brand__logo" src="/assets/img/logo.jpg" alt="" width="46" height="46" />
           <span className="brand__text">
-            <span className="brand__name">مدرسة طيبة تكنولوجي</span>
-            <span className="brand__tag">Taiba Technology School</span>
+            <span className="brand__name">مجمع طيبة تكنولوجي</span>
+            <span className="brand__tag">Taiba Technology Complex</span>
           </span>
         </Link>
 

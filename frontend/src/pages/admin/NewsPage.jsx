@@ -144,7 +144,7 @@ export default function NewsPage() {
     <>
       <PageHead
         title="إدارة الأخبار"
-        description="أضف أخبار المدرسة وحرّرها، وتحكم في نشرها وتمييزها. تُحذف الأخبار نهائيًا بعد تأكيد كتابي."
+        description="أضف أخبار المجمع وحرّرها، وتحكم في نشرها وتمييزها. تُحذف الأخبار نهائيًا بعد تأكيد كتابي."
         actions={[
           <a
             className="btn btn-outline"

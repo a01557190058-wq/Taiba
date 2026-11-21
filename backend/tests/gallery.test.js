@@ -20,7 +20,7 @@ beforeEach(() => resetDatabase());
 
 const settings = (overrides = {}) => ({
   eyebrow: 'معرض الصور',
-  title: 'الحياة في مدرسة طيبة',
+  title: 'الحياة في مجمع طيبة',
   lead: 'لقطات من الفصول والمعامل والورش توثّق رحلة الطلاب بين النظرية والتطبيق.',
   credits_note: 'صور توضيحية من أنشطة تعليمية عامة.',
   show_credits: true,
@@ -80,7 +80,7 @@ test('the public gallery exposes the seeded settings, sections and photos', asyn
   assert.equal(res.status, 200);
   const { settings: page, sections } = res.body.data;
 
-  assert.equal(page.title, 'الحياة في مدرسة طيبة');
+  assert.equal(page.title, 'الحياة في مجمع طيبة');
   assert.equal(page.show_credits, true);
   assert.equal(sections.length, 2);
   assert.deepEqual(

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { usePageMeta } from '../../lib/motion.jsx';
 
 export default function NotFoundPage() {
-  usePageMeta('الصفحة غير موجودة | مدرسة طيبة تكنولوجي', 'الصفحة المطلوبة غير موجودة.');
+  usePageMeta('الصفحة غير موجودة | مجمع طيبة تكنولوجي', 'الصفحة المطلوبة غير موجودة.');
 
   return (
     <section className="section">
