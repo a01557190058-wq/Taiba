@@ -110,7 +110,7 @@ function SummaryTables({ data }) {
         ) : (
           <EmptyState
             title="لا توجد تخصصات تجريبية"
-            message="استخدم زر إضافة البيانات التجريبية لإنشاء مجموعة العرض."
+            message="استخدم زر إضافة البيانات لإنشاء مجموعة العرض."
             iconName="layers"
           />
         )}
@@ -163,7 +163,7 @@ function SummaryTables({ data }) {
         ) : (
           <EmptyState
             title="لا توجد طلبات تجريبية"
-            message="استخدم زر إضافة البيانات التجريبية لإنشاء طلبات العرض."
+            message="استخدم زر إضافة البيانات لإنشاء طلبات العرض."
             iconName="inbox"
           />
         )}
@@ -190,11 +190,11 @@ export default function DemoDataPage() {
       toast(
         added > 0
           ? `تمت إضافة السجلات الناقصة (${formatNumber(added)} سجل).`
-          : 'جميع البيانات التجريبية موجودة بالفعل؛ لم تتم إضافة شيء.'
+          : 'جميع البيانات موجودة بالفعل؛ لم تتم إضافة شيء.'
       );
       reload();
     } catch (seedError) {
-      toast(seedError.message || 'تعذّرت إضافة البيانات التجريبية.', 'error');
+      toast(seedError.message || 'تعذّرت إضافة البيانات.', 'error');
     } finally {
       setBusyAction(null);
     }
@@ -202,7 +202,7 @@ export default function DemoDataPage() {
 
   const runReset = async () => {
     const confirmed = await confirm({
-      title: 'إعادة تهيئة البيانات التجريبية',
+      title: 'إعادة تهيئة البيانات',
       message:
         'سيتم حذف جميع الطلبات والتخصصات الموسومة كبيانات تجريبية، ثم إعادة إنشاء مجموعة العرض من جديد. لن تُحذف أو تُعدّل أي بيانات حقيقية. اكتب RESET_DEMO_DATA للتأكيد.',
       confirmLabel: 'إعادة التهيئة',
@@ -228,7 +228,7 @@ export default function DemoDataPage() {
       );
       reload();
     } catch (resetError) {
-      toast(resetError.message || 'تعذّرت إعادة تهيئة البيانات التجريبية.', 'error');
+      toast(resetError.message || 'تعذّرت إعادة تهيئة البيانات.', 'error');
     } finally {
       setBusyAction(null);
     }
@@ -236,10 +236,10 @@ export default function DemoDataPage() {
 
   const runCleanup = async () => {
     const confirmed = await confirm({
-      title: 'حذف البيانات التجريبية فقط',
+      title: 'حذف البيانات فقط',
       message:
         'سيتم حذف جميع الطلبات والتخصصات التجريبية دون إعادة إنشائها. تُحفظ البيانات الحقيقية بالكامل، وأي تخصص تجريبي مرتبط بطلب حقيقي سيُؤرشف بدلًا من حذفه. اكتب DELETE_DEMO_DATA للتأكيد.',
-      confirmLabel: 'حذف البيانات التجريبية',
+      confirmLabel: 'حذف البيانات',
       danger: true,
       requireText: 'DELETE_DEMO_DATA',
     });
@@ -262,7 +262,7 @@ export default function DemoDataPage() {
       );
       reload();
     } catch (cleanupError) {
-      toast(cleanupError.message || 'تعذّر حذف البيانات التجريبية.', 'error');
+      toast(cleanupError.message || 'تعذّر حذف البيانات.', 'error');
     } finally {
       setBusyAction(null);
     }
@@ -273,12 +273,12 @@ export default function DemoDataPage() {
   if (error) {
     return (
       <>
-        <PageHead title="البيانات التجريبية" />
+        <PageHead title="البيانات" />
         <div className="panel mt-2">
           <div className="panel__body">
             <Alert
               type="error"
-              message={error.message || 'تعذّر تحميل ملخص البيانات التجريبية.'}
+              message={error.message || 'تعذّر تحميل ملخص البيانات.'}
             />
             <button className="btn btn-primary mt-2" type="button" onClick={reload}>
               إعادة المحاولة
@@ -294,7 +294,7 @@ export default function DemoDataPage() {
   return (
     <>
       <PageHead
-        title="البيانات التجريبية"
+        title="البيانات"
         description="سجلات العرض التجريبية موسومة في قاعدة البيانات ويمكن تمييزها عن البيانات الحقيقية."
         actions={[
           <button className="btn btn-outline" type="button" key="refresh" onClick={reload}>
@@ -335,7 +335,7 @@ export default function DemoDataPage() {
           <div className="notice notice--info">
             <Icon name="info" size={18} />
             <span>
-              البيانات التجريبية لا تُعاد تلقائيًا عند تشغيل الخادم. استخدم الأزرار أدناه صراحةً
+              البيانات لا تُعاد تلقائيًا عند تشغيل الخادم. استخدم الأزرار أدناه صراحةً
               لإضافتها أو إعادة تهيئتها أو حذفها.
             </span>
           </div>
@@ -354,13 +354,13 @@ export default function DemoDataPage() {
           title="إضافة الناقص فقط"
           description="عملية آمنة وقابلة للتكرار: تُضاف السجلات التجريبية غير الموجودة دون تعديل الموجود."
           notice="لا تُحذف أي بيانات. مثالية بعد التثبيت الأول أو بعد حذف بعض سجلات العرض."
-          buttonLabel="إضافة البيانات التجريبية"
+          buttonLabel="إضافة البيانات"
           busy={busyAction === 'seed'}
           onAction={runSeed}
         />
         <ActionPanel
           title="إعادة التهيئة"
-          description="حذف البيانات التجريبية الحالية ثم إعادة إنشاء مجموعة العرض الأصلية."
+          description="حذف البيانات الحالية ثم إعادة إنشاء مجموعة العرض الأصلية."
           notice="تتطلب كتابة RESET_DEMO_DATA. البيانات الحقيقية لا تتأثر."
           noticeType="danger"
           buttonLabel="إعادة تهيئة البيانات"
@@ -369,11 +369,11 @@ export default function DemoDataPage() {
           onAction={runReset}
         />
         <ActionPanel
-          title="حذف البيانات التجريبية"
+          title="حذف البيانات"
           description="إزالة كل سجلات العرض دون إعادة إنشائها، مع الحفاظ على البيانات الحقيقية."
           notice="تتطلب كتابة DELETE_DEMO_DATA. التخصصات التجريبية المرتبطة بطلبات حقيقية تُؤرشف."
           noticeType="danger"
-          buttonLabel="حذف البيانات التجريبية"
+          buttonLabel="حذف البيانات"
           danger
           busy={busyAction === 'cleanup'}
           onAction={runCleanup}

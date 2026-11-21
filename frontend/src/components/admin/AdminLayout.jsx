@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { key: 'news', to: '/news', label: 'الأخبار', icon: 'news' },
   { key: 'gallery', to: '/gallery', label: 'معرض الصور', icon: 'image' },
   { key: 'content', to: '/content', label: 'المحتوى والأسئلة', icon: 'file' },
-  { key: 'demo', to: '/demo-data', label: 'البيانات التجريبية', icon: 'database' },
+  { key: 'demo', to: '/demo-data', label: 'البيانات', icon: 'database' },
   { key: 'account', to: '/account', label: 'الحساب وكلمة المرور', icon: 'shield' },
 ];
 
@@ -64,7 +64,7 @@ function chromeFor(pathname) {
   }
   if (pathname.startsWith('/demo-data')) {
     return {
-      title: 'البيانات التجريبية',
+      title: 'البيانات',
       subtitle: 'إدارة سجلات العرض التجريبية دون المساس بالبيانات الحقيقية',
     };
   }

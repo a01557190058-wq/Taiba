@@ -216,7 +216,7 @@ export default function DashboardPage() {
             </Link>
             <Link className="btn btn-outline btn-sm" to="/demo-data">
               <Icon name="database" size={15} />
-              <span>البيانات التجريبية</span>
+              <span>البيانات</span>
             </Link>
             <a
               className="btn btn-outline btn-sm"
