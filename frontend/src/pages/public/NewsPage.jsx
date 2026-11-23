@@ -111,7 +111,7 @@ export default function NewsPage() {
         breadcrumb={[{ label: 'الرئيسية', href: '/' }, { label: 'الأخبار' }]}
       />
 
-      <section className="section section--news">
+      <section className="section section--news" data-cinematic-reveal>
         <div className="container">
           <div className="news-toolbar">
             <div className="search-field">
@@ -198,7 +198,7 @@ export default function NewsPage() {
         </div>
       </section>
 
-      <section className="section section--soft">
+      <section className="section section--soft" data-cinematic-reveal>
         <div className="container">
           <div className="cta-band reveal">
             <div>

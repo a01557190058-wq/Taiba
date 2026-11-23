@@ -17,6 +17,7 @@ const db = require('./index');
 const INITIAL_VERSION = '001_initial';
 const APPLICATION_DETAILS_VERSION = '002_application_details';
 const SUBJECT_GRADE_DEPARTMENT_VERSION = '003_subject_grade_department';
+const SUBJECT_WEEKLY_PERIODS_VERSION = '004_subject_weekly_periods';
 
 // Columns added to `applications` after the initial schema. They are all
 // nullable text with an empty-string default so existing rows stay valid.
@@ -60,6 +61,7 @@ function addMissingApplicationColumns() {
 const SUBJECT_COLUMNS = [
   ['grade', "TEXT NOT NULL DEFAULT 'first'"],
   ['department_id', 'INTEGER REFERENCES departments(id) ON DELETE SET NULL ON UPDATE CASCADE'],
+  ['weekly_periods', 'INTEGER NOT NULL DEFAULT 0'],
 ];
 
 function addMissingSubjectColumns() {
@@ -112,6 +114,13 @@ function migrate({ silent = false } = {}) {
     db.run('INSERT INTO schema_migrations (version) VALUES (?)', [SUBJECT_GRADE_DEPARTMENT_VERSION]);
   }
 
+  const weeklyPeriods = db.get('SELECT version FROM schema_migrations WHERE version = ?', [
+    SUBJECT_WEEKLY_PERIODS_VERSION,
+  ]);
+  if (!weeklyPeriods) {
+    db.run('INSERT INTO schema_migrations (version) VALUES (?)', [SUBJECT_WEEKLY_PERIODS_VERSION]);
+  }
+
   if (!silent) {
     // eslint-disable-next-line no-console
     console.log(`[db] schema ready (${config.paths.db})`);
@@ -124,4 +133,5 @@ module.exports = {
   INITIAL_VERSION,
   APPLICATION_DETAILS_VERSION,
   SUBJECT_GRADE_DEPARTMENT_VERSION,
+  SUBJECT_WEEKLY_PERIODS_VERSION,
 };

@@ -21,7 +21,7 @@ function matches(department, query) {
 export default function DepartmentsPage() {
   usePageMeta(
     'التخصصات التقنية | مجمع طيبة تكنولوجي',
-    'استكشف التخصصات التقنية في مجمع طيبة تكنولوجي: البرمجة، الذكاء الاصطناعي، الأجهزة الطبية، الكهرباء، الميكانيكا، الطاقة المتجددة وغيرها.'
+    'استكشف التخصصات التقنية في مجمع طيبة تكنولوجي: خراطة المعادن، لحام المعادن، التبريد والتكييف، شبكات الحاسب، المخارط والفرايز CNC، والإلكترونيات الصناعية وغيرها.'
   );
 
   const { data, loading, error, reload } = useAsync(() => api('/api/departments'), []);
@@ -41,15 +41,23 @@ export default function DepartmentsPage() {
         ? 'لا توجد تخصصات منشورة'
         : null;
 
+  const numberFormat = new Intl.NumberFormat('ar-EG');
+  const examples = departments.slice(0, 3).map((department) => department.name).join('، ');
+  const heroLead = loading
+    ? 'استكشف المسارات التقنية العملية التي يقدمها مجمع طيبة تكنولوجي.'
+    : departments.length
+      ? `${numberFormat.format(departments.length)} تخصصًا تقنيًا تغطي مجالات مثل ${examples} وغيرها. كل تخصص يعرض وصفه ومهاراته ومعلومات التقديم الخاصة به.`
+      : 'لا توجد تخصصات منشورة حاليًا. يُرجى المتابعة لاحقًا.';
+
   return (
     <>
       <PageHero
         title="التخصصات التقنية"
-        lead="عشرة مسارات تعليمية تغطي البرمجة والذكاء الاصطناعي والهندسة والتقنيات الصناعية والطاقة. كل تخصص يعرض وصفه ومهاراته ومعلومات التقديم الخاصة به."
+        lead={heroLead}
         breadcrumb={[{ label: 'الرئيسية', href: '/' }, { label: 'التخصصات' }]}
       />
 
-      <section className="section">
+      <section className="section" data-cinematic-reveal>
         <div className="container">
           <div className="toolbar">
             <div className="search-field">
@@ -117,7 +125,7 @@ export default function DepartmentsPage() {
         </div>
       </section>
 
-      <section className="section section--soft">
+      <section className="section section--soft" data-cinematic-reveal>
         <div className="container">
           <div className="contact-card reveal">
             <div className="contact-card__main">

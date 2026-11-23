@@ -19,6 +19,8 @@ const {
   DEFAULT_SUBJECT_GRADE,
   SUBJECT_ICONS,
   DEFAULT_SUBJECT_ICON,
+  DEFAULT_SUBJECT_WEEKLY_PERIODS,
+  SUBJECT_WEEKLY_PERIODS_MAX,
 } = require('../lib/subject-constants');
 
 const arabic = {
@@ -482,6 +484,15 @@ const subjectDepartmentField = z
     error: 'التخصص المحدد غير صالح.',
   });
 
+const subjectWeeklyPeriodsField = z
+  .number()
+  .int()
+  .min(0, { message: 'عدد الحصص لا يمكن أن يكون سالبًا.' })
+  .max(SUBJECT_WEEKLY_PERIODS_MAX, {
+    message: `عدد الحصص الأسبوعية يجب ألا يتجاوز ${SUBJECT_WEEKLY_PERIODS_MAX}.`,
+  })
+  .default(DEFAULT_SUBJECT_WEEKLY_PERIODS);
+
 const subjectCreateSchema = z.object({
   name: text('اسم المادة', { min: 2, max: 120 }),
   description: optionalText('وصف المادة', 1000),
@@ -490,6 +501,7 @@ const subjectCreateSchema = z.object({
   department_id: subjectDepartmentField.default(null),
   icon: subjectIconField.default(DEFAULT_SUBJECT_ICON),
   sort_order: sortOrderField.default(0),
+  weekly_periods: subjectWeeklyPeriodsField,
   is_published: booleanField.default(true),
 });
 
@@ -502,6 +514,7 @@ const subjectUpdateSchema = z
     department_id: subjectDepartmentField.optional(),
     icon: subjectIconField.optional(),
     sort_order: sortOrderField.optional(),
+    weekly_periods: subjectWeeklyPeriodsField.optional(),
     is_published: booleanField.optional(),
   })
   .refine((value) => Object.keys(value).length > 0, { message: 'لا توجد بيانات للتحديث.' });

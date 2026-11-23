@@ -316,6 +316,7 @@ CREATE TABLE IF NOT EXISTS subjects (
   is_published  INTEGER NOT NULL DEFAULT 1 CHECK (is_published IN (0, 1)),
   is_demo       INTEGER NOT NULL DEFAULT 0 CHECK (is_demo IN (0, 1)),
   sort_order    INTEGER NOT NULL DEFAULT 0,
+  weekly_periods INTEGER NOT NULL DEFAULT 0, -- حصص أسبوعية، 0 = غير محدد
   created_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
   updated_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
   CHECK (length(trim(name)) > 0)

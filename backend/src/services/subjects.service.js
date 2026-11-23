@@ -9,6 +9,7 @@ const {
   SUBJECT_GRADE_VALUES,
   DEFAULT_SUBJECT_ICON,
   DEFAULT_SUBJECT_GRADE,
+  DEFAULT_SUBJECT_WEEKLY_PERIODS,
 } = require('../lib/subject-constants');
 
 const PUBLIC_FILTER = 's.is_published = 1';
@@ -36,6 +37,7 @@ function mapSubject(row) {
     is_published: Boolean(row.is_published),
     is_demo: Boolean(row.is_demo),
     sort_order: row.sort_order,
+    weekly_periods: Number(row.weekly_periods || DEFAULT_SUBJECT_WEEKLY_PERIODS),
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
@@ -205,8 +207,8 @@ function create(payload) {
   );
   const result = db.run(
     `INSERT INTO subjects
-       (name, description, type, grade, department_id, icon, is_published, is_demo, sort_order)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)`,
+       (name, description, type, grade, department_id, icon, is_published, is_demo, sort_order, weekly_periods)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`,
     [
       payload.name,
       payload.description || '',
@@ -216,6 +218,7 @@ function create(payload) {
       payload.icon || DEFAULT_SUBJECT_ICON,
       payload.is_published ? 1 : 0,
       payload.sort_order || 0,
+      payload.weekly_periods ?? DEFAULT_SUBJECT_WEEKLY_PERIODS,
     ]
   );
   return getById(Number(result.lastInsertRowid));
@@ -240,6 +243,9 @@ function update(id, payload) {
     assign('department_id', assertDepartment(payload.department_id));
   }
   if (payload.icon !== undefined) assign('icon', payload.icon);
+  if (payload.weekly_periods !== undefined) {
+    assign('weekly_periods', payload.weekly_periods ?? DEFAULT_SUBJECT_WEEKLY_PERIODS);
+  }
   if (payload.is_published !== undefined) assign('is_published', payload.is_published ? 1 : 0);
   if (payload.sort_order !== undefined) assign('sort_order', payload.sort_order);
 

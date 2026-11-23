@@ -76,7 +76,7 @@ export default function DepartmentPage() {
             { label: 'تخصص غير متوفر' },
           ]}
         />
-        <section className="section">
+        <section className="section" data-cinematic-reveal>
           <div className="container">
             <div className="card p-2">
               <StateBox
@@ -125,7 +125,7 @@ export default function DepartmentPage() {
         ]}
       />
 
-      <section className="section">
+      <section className="section" data-cinematic-reveal>
         <div className="container" aria-live="polite">
           {loading ? (
             <div className="detail-layout">
@@ -168,7 +168,7 @@ export default function DepartmentPage() {
                     />
                   </div>
 
-                  <section className="detail-section">
+                  <section className="detail-section" data-cinematic-reveal>
                     <h2>عن التخصص</h2>
                     <Paragraphs
                       value={department.description}
@@ -177,14 +177,14 @@ export default function DepartmentPage() {
                   </section>
 
                   {department.educational_focus ? (
-                    <section className="detail-section">
+                    <section className="detail-section" data-cinematic-reveal>
                       <h2>التركيز التعليمي</h2>
                       <Paragraphs value={department.educational_focus} fallback="" />
                     </section>
                   ) : null}
 
                   {Array.isArray(department.skills) && department.skills.length ? (
-                    <section className="detail-section">
+                    <section className="detail-section" data-cinematic-reveal>
                       <h2>المهارات المستهدفة</h2>
                       <ul className="skill-list">
                         {department.skills.map((skill) => (
@@ -195,14 +195,14 @@ export default function DepartmentPage() {
                   ) : null}
 
                   {department.admission_info ? (
-                    <section className="detail-section">
+                    <section className="detail-section" data-cinematic-reveal>
                       <h2>معلومات القبول</h2>
                       <Paragraphs value={department.admission_info} fallback="" />
                     </section>
                   ) : null}
 
                   {photos.length ? (
-                    <section className="detail-section">
+                    <section className="detail-section" data-cinematic-reveal>
                       <h2>صور من التخصص</h2>
                       <div className="gallery-grid">
                         {photos.map((photo, index) => (

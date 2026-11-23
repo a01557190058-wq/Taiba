@@ -45,6 +45,7 @@ const EMPTY = {
   department_id: '',
   icon: 'book',
   sort_order: '0',
+  weekly_periods: '0',
   is_published: true,
 };
 
@@ -83,6 +84,13 @@ function validate(values) {
     errors.sort_order = 'ترتيب العرض كبير جدًا.';
   }
 
+  const periods = Number(values.weekly_periods);
+  if (!Number.isInteger(periods) || periods < 0) {
+    errors.weekly_periods = 'عدد الحصص الأسبوعية يجب أن يكون عددًا صحيحًا غير سالب.';
+  } else if (periods > 20) {
+    errors.weekly_periods = 'عدد الحصص الأسبوعية يجب ألا يتجاوز 20.';
+  }
+
   return errors;
 }
 
@@ -96,6 +104,7 @@ function toFormState(subject) {
     department_id: subject.department_id ? String(subject.department_id) : '',
     icon: subject.icon || 'book',
     sort_order: String(subject.sort_order ?? 0),
+    weekly_periods: String(subject.weekly_periods ?? 0),
     is_published: Boolean(subject.is_published),
   };
 }
@@ -158,6 +167,7 @@ export default function SubjectFormPage() {
       department_id: values.department_id === '' ? null : Number(values.department_id),
       icon: values.icon,
       sort_order: Number(values.sort_order),
+      weekly_periods: Number(values.weekly_periods),
       is_published: values.is_published,
     };
 
@@ -393,6 +403,18 @@ export default function SubjectFormPage() {
                 onChange={setField('sort_order')}
                 hint="الأرقام الأصغر تظهر أولًا داخل القسم."
                 error={errors.sort_order}
+              />
+              <TextField
+                id="weekly_periods"
+                label="الحصص الأسبوعية"
+                type="number"
+                inputMode="numeric"
+                min="0"
+                max="20"
+                value={values.weekly_periods}
+                onChange={setField('weekly_periods')}
+                hint="عدد الحصص الأسبوعية للمادة؛ اتركها 0 إذا كانت غير محددة."
+                error={errors.weekly_periods}
               />
               <CheckboxField
                 id="is_published"

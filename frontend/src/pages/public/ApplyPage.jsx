@@ -5,6 +5,7 @@ import { contentText, useSchoolContent } from '../../lib/content.jsx';
 import { Icon } from '../../lib/icons.jsx';
 import { usePageMeta } from '../../lib/motion.jsx';
 import { Alert, DemoBanner, PageHero } from '../../components/public/ui.jsx';
+import ApplicationProgress from '../../components/public/experience/ApplicationProgress.jsx';
 
 const ARABIC_DIGITS = {
   '٠': '0',
@@ -585,7 +586,7 @@ export default function ApplyPage() {
         ]}
       />
 
-      <section className="section">
+      <section className="section" data-cinematic-reveal>
         <div className="container">
           <div className="apply-intro">
             <span className="apply-intro__icon" aria-hidden="true">
@@ -653,7 +654,9 @@ export default function ApplyPage() {
                   </div>
                 </div>
               ) : (
-                <form id="application-form" noValidate ref={formRef} onSubmit={handleSubmit}>
+                <>
+                  <ApplicationProgress values={values} files={files} />
+                  <form id="application-form" noValidate ref={formRef} onSubmit={handleSubmit}>
                   <fieldset className="form-step">
                     <legend className="form-section-title">بيانات الطالب</legend>
                     <div className="form-grid">
@@ -1172,7 +1175,8 @@ export default function ApplyPage() {
                       تصفح التخصصات أولًا
                     </Link>
                   </div>
-                </form>
+                  </form>
+                </>
               )}
             </div>
 

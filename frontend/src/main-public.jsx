@@ -6,6 +6,8 @@ import { SchoolContentProvider } from './lib/content.jsx';
 import { installRevealObserver, useScrollToTop } from './lib/motion.jsx';
 import './styles/website.css';
 import './styles/motion.css';
+import './styles/signature.css';
+import './styles/cinematic.css';
 
 /** Restores scroll position (or jumps to a hash) whenever the route changes. */
 function ScrollManager() {

@@ -279,6 +279,7 @@ export default function SubjectsPage() {
                   <th>النوع</th>
                   <th>الصف</th>
                   <th>التخصص</th>
+                  <th>الحصص</th>
                   <th>النشر</th>
                   <th>البيانات</th>
                   <th>الترتيب</th>
@@ -303,6 +304,11 @@ export default function SubjectsPage() {
                     </td>
                     <td className="cell-muted">
                       {subject.department_name || 'عامة'}
+                    </td>
+                    <td className="cell-muted">
+                      {subject.weekly_periods > 0
+                        ? `${formatNumber(subject.weekly_periods)}/أسبوع`
+                        : '—'}
                     </td>
                     <td>
                       <SubjectStateBadge subject={subject} />

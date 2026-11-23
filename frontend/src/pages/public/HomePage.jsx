@@ -12,6 +12,9 @@ import {
   SkeletonGrid,
   StateBox,
 } from '../../components/public/ui.jsx';
+import HeroExperience from '../../components/public/experience/HeroExperience.jsx';
+import BrandTicker from '../../components/public/experience/BrandTicker.jsx';
+import SplitWords from '../../components/public/experience/SplitWords.jsx';
 
 const ORDINALS = ['الأولى', 'الثانية', 'الثالثة', 'الرابعة', 'الخامسة', 'السادسة', 'السابعة', 'الثامنة'];
 
@@ -139,6 +142,12 @@ export default function HomePage() {
       {/* ================= HERO ================= */}
       <section className="hero" ref={heroRef}>
         <div className="hero__bg" aria-hidden="true">
+          <div className="hero__lightshow">
+            <span className="hero__beam hero__beam--blue" />
+            <span className="hero__beam hero__beam--red" />
+            <span className="hero__beam hero__beam--gold" />
+          </div>
+          <HeroExperience />
           <span className="hero__orb hero__orb--1" />
           <span className="hero__orb hero__orb--2" />
           <span className="hero__orb hero__orb--3" />
@@ -149,9 +158,12 @@ export default function HomePage() {
               {contentText(content, 'hero_badge', 'بيانات تجريبية — مجمع تقني')}
             </span>
             <h1 className="hero__title">
-              مجمع طيبة <span className="accent">تكنولوجي</span>
-              <br />
-              حيث يتحوّل الشغف التقني إلى مهارة
+              <span className="signature-title__line">
+                مجمع طيبة <span className="accent">تكنولوجي</span>
+              </span>
+              <span className="signature-title__line">
+                <SplitWords text="حيث يتحوّل الشغف التقني إلى مهارة" />
+              </span>
             </h1>
             <p className="hero__subtitle">
               {contentText(
@@ -189,10 +201,17 @@ export default function HomePage() {
                 هذا موقع تجريبي لأغراض العرض. التخصصات والمواعيد وبيانات التواصل المعروضة غير رسمية.
               </span>
             </p>
+
+            <a className="hero__scroll-cue" href="#why">
+              اكتشف ما نقدمه
+              <Icon name="arrowDown" size={18} />
+            </a>
           </div>
 
           <div className="hero__media">
             <div className="hero__media-frame">
+              <span className="hero__frame-ring hero__frame-ring--1" aria-hidden="true" />
+              <span className="hero__frame-ring hero__frame-ring--2" aria-hidden="true" />
               <img
                 src="/assets/img/logo.jpg"
                 alt="شعار مجمع طيبة تكنولوجي"
@@ -214,12 +233,21 @@ export default function HomePage() {
                 <span>برمجة وهندسة وتقنيات صناعية</span>
               </div>
             </div>
+            <div className="hero__float hero__float--3">
+              <Icon name="bolt" size={22} />
+              <div>
+                <strong>مهارات المستقبل</strong>
+                <span>من الفكرة إلى المنتج</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
+      <BrandTicker />
+
       {/* ================= STATS BAND ================= */}
-      <section className="container" aria-label="أرقام سريعة عن المجمع">
+      <section className="container" aria-label="أرقام سريعة عن المجمع" data-cinematic-reveal>
         <div className="stats-band reveal">
           <div className="stats-band__item">
             <Counter className="stats-band__value" value={departmentList.length} />
@@ -246,7 +274,7 @@ export default function HomePage() {
       </section>
 
       {/* ================= ADVANTAGES ================= */}
-      <section className="section" id="why">
+      <section className="section" id="why" data-cinematic-reveal>
         <div className="container">
           <SectionHead
             center
@@ -274,7 +302,7 @@ export default function HomePage() {
       </section>
 
       {/* ================= FEATURED DEPARTMENTS ================= */}
-      <section className="section section--soft" id="departments">
+      <section className="section section--soft" id="departments" data-cinematic-reveal>
         <div className="container">
           <div className="section-head__row">
             <SectionHead
@@ -321,7 +349,7 @@ export default function HomePage() {
       </section>
 
       {/* ================= LATEST NEWS ================= */}
-      <section className="section" id="news">
+      <section className="section" id="news" data-cinematic-reveal>
         <div className="container">
           <div className="section-head__row">
             <SectionHead
@@ -369,7 +397,7 @@ export default function HomePage() {
       </section>
 
       {/* ================= STUDENT EXPERIENCE ================= */}
-      <section className="section section--soft" id="student-experience">
+      <section className="section section--soft" id="student-experience" data-cinematic-reveal>
         <div className="container">
           <SectionHead
             center
@@ -396,7 +424,7 @@ export default function HomePage() {
       </section>
 
       {/* ================= ABOUT / OBJECTIVES ================= */}
-      <section className="section" id="about">
+      <section className="section" id="about" data-cinematic-reveal>
         <div className="container split">
           <div className="prose reveal">
             <span className="eyebrow">عن المجمع</span>
@@ -433,7 +461,7 @@ export default function HomePage() {
       </section>
 
       {/* ================= ADMISSION PROCESS ================= */}
-      <section className="section section--soft" id="admission-process">
+      <section className="section section--soft" id="admission-process" data-cinematic-reveal>
         <div className="container">
           <SectionHead
             center
@@ -462,7 +490,7 @@ export default function HomePage() {
       </section>
 
       {/* ================= FAQ ================= */}
-      <section className="section" id="faq">
+      <section className="section" id="faq" data-cinematic-reveal>
         <div className="container">
           <SectionHead
             center
@@ -491,7 +519,7 @@ export default function HomePage() {
       </section>
 
       {/* ================= TESTIMONIALS ================= */}
-      <section className="section section--soft" id="voices">
+      <section className="section section--soft" id="voices" data-cinematic-reveal>
         <div className="container">
           <SectionHead
             center
@@ -520,7 +548,7 @@ export default function HomePage() {
       </section>
 
       {/* ================= CTA ================= */}
-      <section className="section section--tight">
+      <section className="section section--tight" data-cinematic-reveal>
         <div className="container">
           <div className="cta-band reveal">
             <div>
@@ -543,7 +571,7 @@ export default function HomePage() {
       </section>
 
       {/* ================= CONTACT ================= */}
-      <section className="section section--soft" id="contact">
+      <section className="section section--soft" id="contact" data-cinematic-reveal>
         <div className="container">
           <div className="contact-card reveal">
             <div className="contact-card__main">

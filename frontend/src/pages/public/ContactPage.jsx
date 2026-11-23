@@ -59,7 +59,7 @@ export default function ContactPage() {
         breadcrumb={[{ label: 'الرئيسية', href: '/' }, { label: 'تواصل معنا' }]}
       />
 
-      <section className="section section--tight">
+      <section className="section section--tight" data-cinematic-reveal>
         <div className="container">
           <DemoBanner id="notice">
             بيانات التواصل والعنوان المعروضة هنا تجريبية لأغراض العرض، وليست معلومات رسمية للمجمع.
@@ -67,7 +67,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="section section--tight" id="channels">
+      <section className="section section--tight" id="channels" data-cinematic-reveal>
         <div className="container">
           <SectionHead
             eyebrow="قنوات التواصل"
@@ -100,7 +100,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" data-cinematic-reveal>
         <div className="container split">
           <div className="reveal">
             <span className="eyebrow">قبل أن تتواصل</span>
@@ -155,7 +155,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="section section--soft">
+      <section className="section section--soft" data-cinematic-reveal>
         <div className="container">
           <div className="cta-band reveal">
             <div>

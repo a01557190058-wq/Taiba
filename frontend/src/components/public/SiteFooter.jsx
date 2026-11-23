@@ -13,6 +13,9 @@ export default function SiteFooter({ note }) {
 
   return (
     <footer className="site-footer">
+      <span className="footer-wordmark" aria-hidden="true">
+        طيبة
+      </span>
       <div className="container">
         <div className="footer-grid">
           <div>

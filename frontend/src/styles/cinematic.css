@@ -1,0 +1,510 @@
+/* --------------------------------------------------------------------------
+   Cinematic experience layer — loaded after the signature layer.
+   Adds: route transitions, WebGL hero integration, magnetic/tilt feedback,
+   scroll reveals, desktop cursor glow, animated navigation menu and a
+   non-invasive application progress indicator.
+
+   Palette is unchanged. No inline styles, no external origins, no libraries
+   that inject <style> tags — the strict CSP remains fully intact.
+   -------------------------------------------------------------------------- */
+
+:root {
+  --cursor-x: -100px;
+  --cursor-y: -100px;
+  --cinematic-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------------------
+   Cinematic page transitions
+   -------------------------------------------------------------------------- */
+.route-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.route-curtain__veil {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background:
+    radial-gradient(720px 460px at 78% -10%, rgba(23, 105, 170, 0.65), transparent 64%),
+    radial-gradient(620px 420px at 12% 112%, rgba(214, 40, 57, 0.5), transparent 64%),
+    linear-gradient(150deg, #041b33 0%, #062b4d 52%, #1769aa 100%);
+  clip-path: inset(0 0 100% 0);
+  animation: cinematic-curtain 0.82s var(--cinematic-ease) both;
+}
+
+.route-curtain__line {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: right center;
+  background: linear-gradient(90deg, transparent, var(--brand-gold), var(--brand-red), transparent);
+  box-shadow: 0 0 26px rgba(255, 201, 40, 0.65);
+  animation: cinematic-curtain-line 0.86s var(--cinematic-ease) both;
+}
+
+@keyframes cinematic-curtain {
+  0% { opacity: 0.92; clip-path: inset(0 0 100% 0); }
+  42% { opacity: 0.5; clip-path: inset(0 0 0 0); }
+  100% { opacity: 0; clip-path: inset(100% 0 0 0); }
+}
+
+@keyframes cinematic-curtain-line {
+  0% { transform: scaleX(0); }
+  45% { transform: scaleX(1); }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+.route-view {
+  animation: cinematic-route-in 0.72s var(--cinematic-ease) both;
+}
+
+@keyframes cinematic-route-in {
+  from {
+    opacity: 0;
+    filter: blur(12px);
+    transform: scale(0.986) translateY(14px);
+  }
+  to {
+    opacity: 1;
+    /* `none` (not blur(0)) avoids creating a containing block for the fixed
+       gallery lightbox rendered inside this element. */
+    filter: none;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Scroll-triggered section reveals (only when JS motion is active)
+   -------------------------------------------------------------------------- */
+html[data-cinematic='active'] [data-cinematic-reveal] {
+  opacity: 0;
+  transform: translateY(38px) scale(0.992);
+  filter: blur(9px);
+  transition:
+    opacity 0.85s var(--cinematic-ease),
+    transform 0.85s var(--cinematic-ease),
+    filter 0.85s var(--cinematic-ease);
+  will-change: opacity, transform, filter;
+}
+
+html[data-cinematic='active'] [data-cinematic-reveal].is-cinematic-visible {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* Directional entrance for hero content — a calm, layered reveal. */
+html[data-cinematic='active'] .hero__content > * {
+  animation: cinematic-hero-rise 0.9s var(--cinematic-ease) both;
+}
+
+html[data-cinematic='active'] .hero__content > :nth-child(1) { animation-delay: 0.08s; }
+html[data-cinematic='active'] .hero__content > :nth-child(2) { animation-delay: 0.14s; }
+html[data-cinematic='active'] .hero__content > :nth-child(3) { animation-delay: 0.2s; }
+html[data-cinematic='active'] .hero__content > :nth-child(4) { animation-delay: 0.27s; }
+html[data-cinematic='active'] .hero__content > :nth-child(5) { animation-delay: 0.33s; }
+html[data-cinematic='active'] .hero__content > :nth-child(6) { animation-delay: 0.39s; }
+html[data-cinematic='active'] .hero__content > :nth-child(7) { animation-delay: 0.45s; }
+
+@keyframes cinematic-hero-rise {
+  from { opacity: 0; transform: translateY(22px); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+/* --------------------------------------------------------------------------
+   WebGL hero integration (fallback 2D canvas is untouched)
+   -------------------------------------------------------------------------- */
+.hero-experience,
+.hero-scene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-scene > div,
+.hero-scene canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hero-experience::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 60% 44%,
+    transparent 0%,
+    rgba(4, 27, 51, 0.42) 68%,
+    rgba(4, 27, 51, 0.82) 100%
+  );
+}
+
+.hero:has(.hero-experience) .hero__media-frame {
+  box-shadow: 0 42px 90px -38px rgba(0, 0, 0, 0.9), 0 0 60px -24px rgba(255, 201, 40, 0.35);
+}
+
+/* --------------------------------------------------------------------------
+   Magnetic buttons and 3D-tilt cards
+   -------------------------------------------------------------------------- */
+html[data-cinematic='active'] .btn,
+html[data-cinematic='active'] .site-nav__link,
+html[data-cinematic='active'] .to-top {
+  translate: calc(var(--mag-x, 0) * 3px) calc(var(--mag-y, 0) * 3px);
+  transition:
+    translate 0.3s var(--cinematic-ease),
+    transform 0.35s var(--cinematic-ease),
+    box-shadow 0.35s var(--cinematic-ease);
+  will-change: translate;
+}
+
+html[data-cinematic='active'] .btn-primary:hover,
+html[data-cinematic='active'] .btn-outline:hover {
+  box-shadow: 0 20px 44px -18px rgba(214, 40, 57, 0.75), 0 0 0 1px rgba(255, 201, 40, 0.35);
+}
+
+html[data-cinematic='active'] .department-card.is-visible,
+html[data-cinematic='active'] .feature.is-visible,
+html[data-cinematic='active'] .project-card.is-visible,
+html[data-cinematic='active'] .news-card.is-visible,
+html[data-cinematic='active'] .stat-card {
+  transform: perspective(1000px) rotateX(calc(var(--tilt-x, 0) * 1deg)) rotateY(calc(var(--tilt-y, 0) * 1deg));
+  transform-style: preserve-3d;
+  transition:
+    transform 0.45s var(--cinematic-ease),
+    box-shadow 0.45s var(--cinematic-ease),
+    border-color 0.45s var(--cinematic-ease);
+  will-change: transform;
+}
+
+html[data-cinematic='active'] .department-card.is-visible:hover,
+html[data-cinematic='active'] .feature.is-visible:hover,
+html[data-cinematic='active'] .project-card.is-visible:hover,
+html[data-cinematic='active'] .news-card.is-visible:hover,
+html[data-cinematic='active'] .stat-card:hover {
+  transform: perspective(1000px) rotateX(calc(var(--tilt-x, 0) * 1deg))
+    rotateY(calc(var(--tilt-y, 0) * 1deg)) translateY(-10px) scale(1.012);
+  border-color: rgba(255, 201, 40, 0.45);
+  box-shadow: 0 36px 70px -34px rgba(4, 27, 51, 0.78), 0 0 44px -22px rgba(255, 201, 40, 0.55);
+}
+
+html[data-cinematic='active'] .department-card__media img,
+html[data-cinematic='active'] .news-card__media img {
+  transform: scale(1.02);
+  transition: transform 0.9s var(--cinematic-ease), filter 0.6s var(--cinematic-ease);
+}
+
+html[data-cinematic='active'] .department-card:hover .department-card__media img,
+html[data-cinematic='active'] .news-card:hover .news-card__media img {
+  transform: scale(1.1);
+  filter: saturate(1.16) brightness(1.06);
+}
+
+/* --------------------------------------------------------------------------
+   Desktop cursor glow — native cursor remains for accessibility
+   -------------------------------------------------------------------------- */
+.cinematic-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1900;
+  pointer-events: none;
+  translate: var(--cursor-x) var(--cursor-y);
+  transition: opacity 0.3s var(--cinematic-ease);
+}
+
+.cinematic-cursor__ring,
+.cinematic-cursor__dot {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cinematic-cursor__ring {
+  width: 38px;
+  height: 38px;
+  margin: -19px 0 0 -19px;
+  border: 1px solid rgba(255, 201, 40, 0.8);
+  box-shadow: 0 0 22px rgba(255, 201, 40, 0.32), inset 0 0 14px rgba(23, 105, 170, 0.35);
+  transition: width 0.3s var(--cinematic-ease), height 0.3s var(--cinematic-ease),
+    margin 0.3s var(--cinematic-ease), background 0.3s var(--cinematic-ease);
+  animation: cinematic-cursor-breathe 2.6s ease-in-out infinite;
+}
+
+.cinematic-cursor__dot {
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  background: var(--brand-red);
+  box-shadow: 0 0 12px var(--brand-red);
+}
+
+html[data-cursor-active='true'] .cinematic-cursor__ring {
+  width: 62px;
+  height: 62px;
+  margin: -31px 0 0 -31px;
+  background: rgba(255, 201, 40, 0.1);
+  border-color: var(--brand-red);
+}
+
+@keyframes cinematic-cursor-breathe {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
+   Animated navigation dropdown
+   -------------------------------------------------------------------------- */
+.site-nav__item.has-menu {
+  position: relative;
+}
+
+.site-nav__link > svg {
+  margin-inline-start: 0.35rem;
+  vertical-align: middle;
+  transition: transform 0.35s var(--cinematic-ease);
+}
+
+.has-menu:is(:hover, :focus-within) > .site-nav__link > svg {
+  transform: rotate(180deg);
+}
+
+.site-nav__menu {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  inset-inline-start: 50%;
+  z-index: 60;
+  min-width: 250px;
+  padding: 0.55rem;
+  border: 1px solid rgba(255, 201, 40, 0.28);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 28px 60px -30px rgba(4, 27, 51, 0.85);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(50%) translateY(12px) scale(0.97);
+  transform-origin: top right;
+  transition:
+    opacity 0.3s var(--cinematic-ease),
+    transform 0.3s var(--cinematic-ease),
+    visibility 0.3s;
+}
+
+.has-menu:is(:hover, :focus-within) > .site-nav__menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(50%) translateY(0) scale(1);
+}
+
+.site-nav__menu-link {
+  display: block;
+  padding: 0.72rem 0.85rem;
+  border-radius: 13px;
+  color: var(--ink-800);
+  transition: background 0.25s var(--cinematic-ease), color 0.25s var(--cinematic-ease),
+    transform 0.25s var(--cinematic-ease);
+}
+
+.site-nav__menu-link strong,
+.site-nav__menu-link span {
+  display: block;
+}
+
+.site-nav__menu-link strong {
+  font-size: 0.92rem;
+}
+
+.site-nav__menu-link span {
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  color: var(--ink-500);
+}
+
+.site-nav__menu-link:hover,
+.site-nav__menu-link:focus-visible {
+  background: linear-gradient(120deg, rgba(23, 105, 170, 0.1), rgba(255, 201, 40, 0.16));
+  color: var(--brand-red-deep);
+  transform: translateX(-4px);
+}
+
+@media (max-width: 1100px) {
+  .site-nav__menu {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Intro skip control
+   -------------------------------------------------------------------------- */
+.intro-splash__core {
+  position: relative;
+  z-index: 2;
+}
+
+.intro-splash__skip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1.2rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.25s var(--cinematic-ease), border-color 0.25s var(--cinematic-ease),
+    color 0.25s var(--cinematic-ease);
+}
+
+.intro-splash__skip:hover,
+.intro-splash__skip:focus-visible {
+  background: rgba(255, 201, 40, 0.18);
+  border-color: var(--brand-gold);
+  color: var(--brand-gold);
+}
+
+/* --------------------------------------------------------------------------
+   Application progress — visual only, validation logic untouched
+   -------------------------------------------------------------------------- */
+.application-progress {
+  margin-bottom: 1.4rem;
+  padding: 0.95rem 1.1rem;
+  border: 1px solid rgba(23, 105, 170, 0.16);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(23, 105, 170, 0.06), rgba(255, 201, 40, 0.08));
+}
+
+.application-progress__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.65rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ink-800);
+}
+
+.application-progress__head span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.application-progress__head svg {
+  color: var(--brand-red);
+}
+
+.application-progress__head strong {
+  color: var(--brand-red-deep);
+}
+
+.application-progress__track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(6, 43, 77, 0.1);
+}
+
+.application-progress__fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--brand-blue-royal), var(--brand-gold), var(--brand-red));
+  box-shadow: 0 0 16px rgba(255, 201, 40, 0.5);
+  transition: width 0.6s var(--cinematic-ease);
+}
+
+.application-progress[data-step='1'] .application-progress__fill { width: 24%; }
+.application-progress[data-step='2'] .application-progress__fill { width: 52%; }
+.application-progress[data-step='3'] .application-progress__fill { width: 82%; }
+.application-progress[data-step='4'] .application-progress__fill { width: 100%; }
+
+.application-progress__steps {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  font-size: 0.7rem;
+  color: var(--ink-500);
+}
+
+.application-progress__steps span {
+  transition: color 0.3s var(--cinematic-ease);
+}
+
+.application-progress[data-step='1'] .application-progress__steps span:nth-child(1),
+.application-progress[data-step='2'] .application-progress__steps span:nth-child(-n + 2),
+.application-progress[data-step='3'] .application-progress__steps span:nth-child(-n + 3),
+.application-progress[data-step='4'] .application-progress__steps span {
+  color: var(--brand-red-deep);
+  font-weight: 800;
+}
+
+/* --------------------------------------------------------------------------
+   Scroll-direction polish
+   -------------------------------------------------------------------------- */
+html[data-scroll-direction='down'] .site-header.is-scrolled {
+  box-shadow: 0 18px 44px -30px rgba(4, 27, 51, 0.9);
+}
+
+html[data-deep-scroll='true'] .to-top.is-visible {
+  box-shadow: 0 18px 40px -16px rgba(214, 40, 57, 0.7);
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion — keep the identity, drop all of the movement
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .route-curtain__veil,
+  .route-curtain__line,
+  .route-view,
+  .hero__content > *,
+  .cinematic-cursor__ring {
+    animation: none !important;
+  }
+
+  .route-curtain {
+    display: none;
+  }
+
+  .route-view {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+
+  html[data-cinematic='active'] [data-cinematic-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+
+  html[data-cinematic='active'] .btn,
+  html[data-cinematic='active'] .department-card.is-visible,
+  html[data-cinematic='active'] .feature.is-visible,
+  html[data-cinematic='active'] .project-card.is-visible,
+  html[data-cinematic='active'] .news-card.is-visible,
+  html[data-cinematic='active'] .stat-card {
+    translate: none;
+    transform: none;
+    transition: none;
+  }
+
+  .cinematic-cursor {
+    display: none;
+  }
+}

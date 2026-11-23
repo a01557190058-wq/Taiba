@@ -65,7 +65,7 @@ export default function AboutPage() {
         breadcrumb={[{ label: 'الرئيسية', href: '/' }, { label: 'عن المجمع' }]}
       />
 
-      <section className="section">
+      <section className="section" data-cinematic-reveal>
         <div className="container split">
           <div className="prose reveal">
             <span className="eyebrow">نبذة عن المجمع</span>
@@ -117,7 +117,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="section section--soft">
+      <section className="section section--soft" data-cinematic-reveal>
         <div className="container">
           <SectionHead
             eyebrow="الأهداف التعليمية"
@@ -136,7 +136,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" data-cinematic-reveal>
         <div className="container">
           <SectionHead
             center
@@ -155,7 +155,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="section section--soft">
+      <section className="section section--soft" data-cinematic-reveal>
         <div className="container">
           <SectionHead center eyebrow="قيمنا" title="ثلاث قيم تحكم طريقة العمل داخل المجمع" />
           <div className="grid grid--3">
@@ -172,7 +172,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" data-cinematic-reveal>
         <div className="container split">
           <div className="card p-2 reveal">
             <span className="eyebrow">بيئة التعلّم</span>
@@ -199,7 +199,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="section section--soft">
+      <section className="section section--soft" data-cinematic-reveal>
         <div className="container">
           <div className="contact-card reveal">
             <div className="contact-card__main">

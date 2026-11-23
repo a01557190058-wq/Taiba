@@ -3,6 +3,10 @@ import { Outlet, useLocation } from 'react-router-dom';
 import SiteHeader from './SiteHeader.jsx';
 import SiteFooter from './SiteFooter.jsx';
 import { Icon } from '../../lib/icons.jsx';
+import ScrollProgress from './experience/ScrollProgress.jsx';
+import IntroSplash from './experience/IntroSplash.jsx';
+import CinematicCursor from './experience/CinematicCursor.jsx';
+import { installCinematicInteractions, installCinematicReveals } from '../../lib/cinematic.js';
 
 /** Floating "back to top" control, revealed after scrolling down. */
 function BackToTop() {
@@ -27,11 +31,35 @@ function BackToTop() {
   );
 }
 
+/** Short brand sweep played whenever a new route mounts. */
+function RouteCurtain() {
+  const location = useLocation();
+  return (
+    <div className="route-curtain" key={location.key} aria-hidden="true">
+      <span className="route-curtain__veil" />
+      <span className="route-curtain__line" />
+    </div>
+  );
+}
+
 export default function PublicLayout() {
   const location = useLocation();
 
+  useEffect(() => {
+    const stopPointer = installCinematicInteractions();
+    const stopReveals = installCinematicReveals();
+    return () => {
+      stopPointer();
+      stopReveals();
+    };
+  }, []);
+
   return (
     <>
+      <IntroSplash />
+      <ScrollProgress />
+      <CinematicCursor />
+      <RouteCurtain />
       <a className="skip-link" href="#main">
         تخطَّ إلى المحتوى الرئيسي
       </a>

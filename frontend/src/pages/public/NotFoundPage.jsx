@@ -5,7 +5,7 @@ export default function NotFoundPage() {
   usePageMeta('الصفحة غير موجودة | مجمع طيبة تكنولوجي', 'الصفحة المطلوبة غير موجودة.');
 
   return (
-    <section className="section">
+    <section className="section" data-cinematic-reveal>
       <div className="container">
         <div className="card p-2 text-center">
           <p className="eyebrow">خطأ 404</p>

@@ -57,7 +57,7 @@ export default function AdmissionPage() {
         breadcrumb={[{ label: 'الرئيسية', href: '/' }, { label: 'القبول والتقديم' }]}
       />
 
-      <section className="section section--tight">
+      <section className="section section--tight" data-cinematic-reveal>
         <div className="container">
           <DemoBanner id="notice">
             {contentText(
@@ -69,7 +69,7 @@ export default function AdmissionPage() {
         </div>
       </section>
 
-      <section className="section section--tight">
+      <section className="section section--tight" data-cinematic-reveal>
         <div className="container">
           <div className="info-grid reveal">
             <div className="info-tile">
@@ -96,7 +96,7 @@ export default function AdmissionPage() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" data-cinematic-reveal>
         <div className="container split">
           <div className="reveal">
             <span className="eyebrow">خطوات التقديم</span>
@@ -146,7 +146,7 @@ export default function AdmissionPage() {
         </div>
       </section>
 
-      <section className="section section--soft">
+      <section className="section section--soft" data-cinematic-reveal>
         <div className="container">
           <SectionHead
             center
@@ -198,7 +198,7 @@ export default function AdmissionPage() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" data-cinematic-reveal>
         <div className="container">
           <SectionHead
             center
@@ -217,7 +217,7 @@ export default function AdmissionPage() {
         </div>
       </section>
 
-      <section className="section section--soft">
+      <section className="section section--soft" data-cinematic-reveal>
         <div className="container">
           <div className="contact-card reveal">
             <div className="contact-card__main">

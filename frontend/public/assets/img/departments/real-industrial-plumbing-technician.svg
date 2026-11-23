@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-label="رسم توضيحي لتخصص المواسير الصناعية">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A3B66" />
+      <stop offset="1" stop-color="#3E7E9C" />
+    </linearGradient>
+    <pattern id="lines" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(28)">
+      <path d="M0 0 V36" stroke="#FFFFFF" stroke-width="2" opacity="0.13" />
+    </pattern>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFC928" stop-opacity="0.34" />
+      <stop offset="1" stop-color="#FFC928" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#bg)" />
+  <rect width="640" height="420" fill="url(#lines)" />
+  <circle cx="522" cy="120" r="168" fill="#FFFFFF" opacity="0.05" />
+  <circle cx="122" cy="330" r="132" fill="#FFC928" opacity="0.10" />
+  <circle cx="320" cy="210" r="176" fill="url(#glow)" />
+  
+  <g transform="translate(320 210)" fill="none" stroke="#FFFFFF"
+     stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+    
+      <path d="M-116 -64 H-30 V0 H54 V64 H116" />
+      <path d="M-116 -36 H-58 V28 H26 V92 H82" opacity="0.55" stroke-width="8" />
+      <circle cx="-30" cy="-64" r="12" fill="#FFC928" stroke="none" />
+      <circle cx="54" cy="0" r="12" fill="#FFC928" stroke="none" />
+      <path d="M-16 92 C-16 66 16 50 16 24 C16 50 48 66 48 92 C48 110 -16 110 -16 92Z" fill="#FFC928" stroke="none" />
+  </g>
+  <g fill="none" stroke="#FFC928" stroke-width="4" opacity="0.6">
+    <path d="M52 338 H132 M52 338 V270" />
+    <path d="M588 82 H518 M588 82 V150" />
+  </g>
+  <circle cx="52" cy="338" r="7" fill="#FFC928" />
+  <circle cx="588" cy="82" r="7" fill="#FFC928" />
+  <g fill="#FFC928" opacity="0.9">
+    <rect x="278" y="374" width="22" height="5" rx="2.5" />
+    <rect x="309" y="374" width="22" height="5" rx="2.5" />
+    <rect x="340" y="374" width="22" height="5" rx="2.5" />
+  </g>
+</svg>

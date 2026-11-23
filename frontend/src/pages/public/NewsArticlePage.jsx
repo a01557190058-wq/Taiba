@@ -15,7 +15,7 @@ import {
 function ArticleGallery({ images }) {
   if (!images.length) return null;
   return (
-    <section className="article-gallery" aria-label="معرض صور الخبر">
+    <section className="article-gallery" aria-label="معرض صور الخبر" data-cinematic-reveal>
       <h2 className="article-section-title">معرض الصور</h2>
       <div className="article-gallery__grid">
         {images.map((item, index) => (
@@ -43,7 +43,7 @@ function ArticleGallery({ images }) {
 function ArticleVideos({ videos }) {
   if (!videos.length) return null;
   return (
-    <section className="article-videos" aria-label="فيديوهات الخبر">
+    <section className="article-videos" aria-label="فيديوهات الخبر" data-cinematic-reveal>
       <h2 className="article-section-title">فيديوهات الخبر</h2>
       <div className="article-videos__list">
         {videos.map((item, index) => (
@@ -102,7 +102,7 @@ export default function NewsArticlePage() {
             { label: 'خبر غير متوفر' },
           ]}
         />
-        <section className="section">
+        <section className="section" data-cinematic-reveal>
           <div className="container">
             <div className="card p-2">
               <StateBox
@@ -168,7 +168,7 @@ export default function NewsArticlePage() {
         ) : null}
       </PageHero>
 
-      <section className="section">
+      <section className="section" data-cinematic-reveal>
         <div className="container">
           <Link className="detail-back" to="/news">
             <Icon name="arrowLeft" size={16} />
@@ -257,7 +257,7 @@ export default function NewsArticlePage() {
       </section>
 
       {related.length ? (
-        <section className="section section--soft">
+        <section className="section section--soft" data-cinematic-reveal>
           <div className="container">
             <SectionHead eyebrow="اقرأ أيضًا" title="أخبار ذات صلة" />
             <div className="news-grid">

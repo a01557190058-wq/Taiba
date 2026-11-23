@@ -55,6 +55,10 @@ const SUBJECT_ICONS = [
 
 const DEFAULT_SUBJECT_ICON = 'book';
 
+/** Number of weekly periods shown on the public subject card. */
+const DEFAULT_SUBJECT_WEEKLY_PERIODS = 0;
+const SUBJECT_WEEKLY_PERIODS_MAX = 20;
+
 module.exports = {
   SUBJECT_TYPES,
   SUBJECT_TYPE_LABELS,
@@ -65,4 +69,6 @@ module.exports = {
   DEFAULT_SUBJECT_GRADE,
   SUBJECT_ICONS,
   DEFAULT_SUBJECT_ICON,
+  DEFAULT_SUBJECT_WEEKLY_PERIODS,
+  SUBJECT_WEEKLY_PERIODS_MAX,
 };

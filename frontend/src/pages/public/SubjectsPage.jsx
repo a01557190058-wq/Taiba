@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../lib/api.js';
 import { contentText, useSchoolContent } from '../../lib/content.jsx';
+import { formatNumber } from '../../lib/format.js';
 import { useAsync } from '../../lib/hooks.js';
 import { Icon } from '../../lib/icons.jsx';
 import { usePageMeta } from '../../lib/motion.jsx';
@@ -16,7 +17,7 @@ const FALLBACK_INTRO =
   'تُقسَّم المواد الدراسية في مجمع طيبة تكنولوجي إلى مواد نظرية تبني الأساس العلمي، ومواد عملية تُنمّي المهارات داخل المختبرات والورش.';
 
 const FALLBACK_NOTE =
-  'المواد المعروضة هنا تجريبية لأغراض العرض، وتُدار من لوحة التحكم. قد تختلف الخطة الدراسية الفعلية من فصل إلى آخر.';
+  'الخطة المعروضة هي المواد المعتمدة للمجمع بحسب الصف والتخصص، وعدد الحصص الأسبوعية لكل مادة موضّح على بطاقتها. قد تُحدَّث الخطة أو تُعدَّل من إدارة المجمع خلال العام الدراسي.';
 
 const GRADES = [
   { value: 'first', label: 'الصف الأول الثانوي', short: 'الأول' },
@@ -65,6 +66,12 @@ function SubjectCard({ subject, index = 0 }) {
           )}
         </div>
         <h3 className="subject-card__title">{subject.name}</h3>
+        {Number(subject.weekly_periods) > 0 ? (
+          <span className="subject-card__periods">
+            <Icon name="calendar" size={14} aria-hidden="true" />
+            {`${formatNumber(subject.weekly_periods)} حصة/أسبوع`}
+          </span>
+        ) : null}
         {subject.description ? (
           <p className="subject-card__desc">{subject.description}</p>
         ) : null}
@@ -75,7 +82,7 @@ function SubjectCard({ subject, index = 0 }) {
 
 function SubjectSection({ section, subjects, loading, error, onRetry }) {
   return (
-    <section className={`section${section.type === 'practical' ? ' section--soft' : ''}`}>
+    <section className={`section${section.type === 'practical' ? ' section--soft' : ''}`} data-cinematic-reveal>
       <div className="container">
         <SectionHead
           eyebrow={section.eyebrow}
@@ -120,7 +127,7 @@ function SubjectSection({ section, subjects, loading, error, onRetry }) {
 
 function SubjectsPicker({ grade, department, departments, disabled, onGrade, onDepartment }) {
   return (
-    <section className="section section--tight subjects-picker-section">
+    <section className="section section--tight subjects-picker-section" data-cinematic-reveal>
       <div className="container">
         <div className="subjects-picker">
           <div className="subjects-picker__group" role="group" aria-label="اختيار الصف الدراسي">
@@ -259,7 +266,7 @@ export default function SubjectsPage() {
         />
       ))}
 
-      <section className="section section--tight">
+      <section className="section section--tight" data-cinematic-reveal>
         <div className="container">
           <div className="callout subjects-note reveal">
             <h2>ملاحظة عن الخطة الدراسية</h2>

@@ -214,7 +214,7 @@ export default function GalleryPage() {
       </PageHero>
 
       {sections.length === 0 ? (
-        <section className="section">
+        <section className="section" data-cinematic-reveal>
           <div className="container">
             <div className="gallery-empty">
               <Icon name="image" size={28} />
@@ -260,7 +260,7 @@ export default function GalleryPage() {
       ))}
 
       {settings.show_credits && credits.length ? (
-        <section className="section section--tight">
+        <section className="section section--tight" data-cinematic-reveal>
           <div className="container">
             <details className="gallery-credits">
               <summary>

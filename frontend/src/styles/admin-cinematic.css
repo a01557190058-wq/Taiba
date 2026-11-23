@@ -1,0 +1,171 @@
+/* --------------------------------------------------------------------------
+   Admin cinematic polish — visual only.
+   No routes, permissions, API calls or form logic are touched here.
+   Existing brand colours are preserved exactly.
+   -------------------------------------------------------------------------- */
+
+:root {
+  --admin-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-layout {
+  position: relative;
+  isolation: isolate;
+}
+
+.admin-layout::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(680px 420px at 96% -8%, rgba(23, 105, 170, 0.14), transparent 66%),
+    radial-gradient(560px 380px at 2% 108%, rgba(214, 40, 57, 0.1), transparent 66%),
+    radial-gradient(480px 360px at 50% 40%, rgba(255, 201, 40, 0.07), transparent 70%);
+  animation: admin-aura 18s ease-in-out infinite alternate;
+}
+
+@keyframes admin-aura {
+  from { transform: translate3d(-1.5%, 0, 0) scale(1); }
+  to { transform: translate3d(1.5%, 1.5%, 0) scale(1.04); }
+}
+
+.admin-sidebar {
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  border-inline-end: 1px solid rgba(255, 201, 40, 0.16);
+}
+
+.admin-nav__link {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s var(--admin-ease), background 0.3s var(--admin-ease),
+    color 0.3s var(--admin-ease), box-shadow 0.3s var(--admin-ease);
+}
+
+.admin-nav__link::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 18%;
+  bottom: 18%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--a-brand-gold, #ffc928);
+  transform: scaleY(0);
+  transition: transform 0.3s var(--admin-ease);
+}
+
+.admin-nav__link:is(:hover, :focus-visible, .is-active) {
+  transform: translateX(-4px);
+  box-shadow: inset 0 0 26px -12px rgba(255, 201, 40, 0.65);
+}
+
+.admin-nav__link:is(:hover, :focus-visible, .is-active)::before {
+  transform: scaleY(1);
+}
+
+.admin-topbar {
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(23, 105, 170, 0.12);
+}
+
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.42s var(--admin-ease), box-shadow 0.42s var(--admin-ease),
+    border-color 0.42s var(--admin-ease);
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(260px circle at 82% 0%, rgba(255, 201, 40, 0.2), transparent 68%);
+  transition: opacity 0.42s var(--admin-ease);
+}
+
+.stat-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 201, 40, 0.4);
+  box-shadow: 0 28px 54px -30px rgba(4, 27, 51, 0.85), 0 0 34px -20px rgba(255, 201, 40, 0.6);
+}
+
+.stat-card:hover::after {
+  opacity: 1;
+}
+
+.stat-card__value {
+  background: linear-gradient(120deg, var(--a-navy-900, #062b4d), var(--a-red-600, #d62839));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.panel {
+  transition: transform 0.4s var(--admin-ease), box-shadow 0.4s var(--admin-ease),
+    border-color 0.4s var(--admin-ease);
+}
+
+.panel:is(:hover, :focus-within) {
+  transform: translateY(-3px);
+  border-color: rgba(23, 105, 170, 0.22);
+  box-shadow: 0 26px 54px -34px rgba(4, 27, 51, 0.8);
+}
+
+.data-table tbody tr {
+  transition: background 0.28s var(--admin-ease), transform 0.28s var(--admin-ease),
+    box-shadow 0.28s var(--admin-ease);
+}
+
+.data-table tbody tr:hover {
+  background: linear-gradient(90deg, rgba(23, 105, 170, 0.06), rgba(255, 201, 40, 0.08));
+}
+
+.input:is(:focus, :focus-visible),
+.select:is(:focus, :focus-visible),
+.textarea:is(:focus, :focus-visible) {
+  box-shadow: 0 0 0 3px rgba(23, 105, 170, 0.14), 0 0 26px -12px rgba(255, 201, 40, 0.55);
+}
+
+.btn:is(:hover, :focus-visible) {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px -16px rgba(4, 27, 51, 0.8);
+}
+
+.login-page {
+  position: relative;
+  overflow: hidden;
+}
+
+.login-page::before {
+  content: '';
+  position: absolute;
+  width: 460px;
+  height: 460px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 201, 40, 0.22), transparent 70%);
+  filter: blur(12px);
+  animation: admin-aura 12s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-layout::before,
+  .login-page::before {
+    animation: none;
+  }
+
+  .admin-nav__link,
+  .stat-card,
+  .panel,
+  .btn,
+  .data-table tbody tr {
+    transform: none;
+    transition: none;
+  }
+}

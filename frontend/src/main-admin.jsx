@@ -6,6 +6,7 @@ import { AdminAuthProvider } from './lib/admin-auth.jsx';
 import { AdminFeedbackProvider } from './components/admin/feedback.jsx';
 import './styles/admin.css';
 import './styles/admin-react.css';
+import './styles/admin-cinematic.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
