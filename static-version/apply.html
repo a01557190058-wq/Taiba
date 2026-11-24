@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="نموذج تقديم تجريبي لمجمع طيبة تكنولوجي — نسخة ثابتة لا ترسل بيانات إلى خادم.">
+  <title>نموذج التقديم | مجمع طيبة تكنولوجي</title>
+  <link rel="icon" href="../frontend/public/assets/img/favicon.png">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="scroll-progress" aria-hidden="true"></div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html"><img src="../frontend/public/assets/img/logo.jpg" alt="شعار المجمع"><span><strong>مجمع طيبة تكنولوجي</strong><span>بنـي سـويف — تعليم تقني عملي</span></span></a>
+      <button class="nav-toggle" type="button" aria-label="فتح القائمة" aria-expanded="false" aria-controls="main-nav"><span class="nav-toggle__bars"></span></button>
+      <nav id="main-nav" aria-label="القائمة الرئيسية"><ul class="nav-links">
+        <li><a href="index.html">الرئيسية</a></li><li><a href="departments.html">التخصصات</a></li><li><a href="subjects.html">المواد</a></li><li><a href="about.html">عن المجمع</a></li>
+        <li><a href="admission.html">القبول</a></li><li><a href="news.html">الأخبار</a></li><li><a href="gallery.html">المعرض</a></li><li><a href="contact.html">تواصل معنا</a></li>
+      </ul></nav>
+      <div class="header-actions"><a class="btn btn--primary btn--sm" href="apply.html" data-magnetic>قدّم الآن</a></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero"><div class="container">
+      <span class="eyebrow">خطوتك الأولى</span><h1>نموذج التقديم</h1>
+      <p>املأ البيانات الأساسية واختر التخصص الذي تريده. في هذه النسخة الثابتة يتم التحقق من المدخلات محليًا فقط.</p>
+    </div></section>
+
+    <section class="section"><div class="container">
+      <div class="demo-note demo-note--warning reveal"><strong> نسخة عرض:</strong> النموذج لا يتصل بأي خادم ولن يُحفظ أي طلب. النسخة الكاملة من المشروع (React + Backend) هي التي ترسل الطلب وتُرجع رقم متابعة.</div>
+
+      <div class="grid grid--2">
+        <form class="card form-card reveal" id="apply-form" novalidate>
+          <div class="progress">
+            <div class="progress__head"><span>اكتمال البيانات</span><strong id="progress-label">0%</strong></div>
+            <div class="progress__track"><span class="progress__fill"></span></div>
+            <div class="progress__steps"><span>البيانات الأساسية</span><span>التخصص</span><span>الموافقة</span></div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field"><label for="full-name">الاسم الكامل</label><input id="full-name" name="fullName" type="text" data-required autocomplete="name" placeholder="الاسم كما في البطاقة"><span class="error" aria-live="polite"></span></div>
+            <div class="field"><label for="phone">رقم الهاتف</label><input id="phone" name="phone" type="tel" data-required autocomplete="tel" placeholder="01xxxxxxxxx"><span class="error" aria-live="polite"></span></div>
+            <div class="field"><label for="email">البريد الإلكتروني</label><input id="email" name="email" type="email" data-required autocomplete="email" placeholder="name@example.com"><span class="error" aria-live="polite"></span></div>
+            <div class="field"><label for="specialization">التخصص المطلوب</label><select id="specialization" name="specialization" data-required><option value="">اختر التخصص</option></select><span class="error" aria-live="polite"></span></div>
+            <div class="field field--full"><label for="notes">ملاحظات (اختياري)</label><textarea id="notes" name="notes" rows="4" placeholder="أي معلومات تساعد إدارة المجمع على فهم طلبك"></textarea></div>
+            <div class="field field--full"><label class="check"><input name="consent" type="checkbox"> أوافق على معالجة بياناتي لغرض مراجعة الطلب</label><span class="error" aria-live="polite"></span></div>
+          </div>
+          <button class="btn btn--primary mt-3" type="submit" data-magnetic>تحقق من الطلب</button>
+          <div class="form-message" id="form-message" role="status" aria-live="polite"></div>
+        </form>
+
+        <aside class="reveal" data-delay="1">
+          <div class="card feature"><span class="feature__icon">✓</span><h3>قبل أن تبدأ</h3><ul class="skill-list"><li>اختر التخصص من صفحة التخصصات.</li><li>جهّز رقم هاتف يمكنك التواصل عليه.</li><li>اكتب ملاحظاتك بوضوح إن وجدت.</li><li>احتفظ بنسخة من بياناتك خارج النموذج.</li></ul></div>
+          <div class="callout"><h3>تحتاج مساعدة؟</h3><p>راجع صفحة القبول للخطوات والتنبيهات، أو تواصل مع المجمع للاستشارة.</p><a class="btn btn--ghost mt-2" href="contact.html" data-magnetic>تواصل معنا</a></div>
+        </aside>
+      </div>
+    </div></section>
+  </main>
+
+  <footer class="site-footer"><div class="container footer-grid">
+    <div><h3>مجمع طيبة تكنولوجي</h3><p>تعليم تقني عملي يبني المهارة ويربط الطالب بسوق العمل.</p></div>
+    <div><h3>روابط سريعة</h3><ul><li><a href="departments.html">التخصصات</a></li><li><a href="subjects.html">المواد</a></li><li><a href="about.html">عن المجمع</a></li><li><a href="admission.html">القبول</a></li><li><a href="apply.html">نموذج التقديم</a></li></ul></div>
+    <div><h3>تواصل معنا</h3><ul><li>الهاتف: 0100 000 0000 (تجريبي)</li><li>البريد: info@taiba.demo</li></ul></div>
+  </div><div class="container footer-bottom">© <span data-year></span> مجمع طيبة تكنولوجي — نسخة عرض ثابتة.</div></footer>
+
+  <script src="assets/js/data.js"></script><script src="assets/js/app.js"></script>
+</body>
+</html>

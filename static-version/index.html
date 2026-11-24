@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="مجمع طيبة تكنولوجي — بني سويف. نسخة ثابتة بـ HTML وCSS وJavaScript خالص، جنب نسخة React الأصلية.">
+  <title>مجمع طيبة تكنولوجي | الرئيسية</title>
+  <link rel="icon" href="../frontend/public/assets/img/favicon.png">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="مجمع طيبة تكنولوجي — الرئيسية">
+        <img src="../frontend/public/assets/img/logo.jpg" alt="شعار المجمع">
+        <span><strong>مجمع طيبة تكنولوجي</strong><span>بنـي سـويف — تعليم تقني عملي</span></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="فتح القائمة" aria-expanded="false" aria-controls="main-nav"><span class="nav-toggle__bars"></span></button>
+      <nav id="main-nav" aria-label="القائمة الرئيسية">
+        <ul class="nav-links">
+          <li><a href="index.html">الرئيسية</a></li>
+          <li><a href="departments.html">التخصصات</a></li><li><a href="subjects.html">المواد</a></li>
+          <li><a href="about.html">عن المجمع</a></li>
+          <li><a href="admission.html">القبول</a></li>
+          <li><a href="news.html">الأخبار</a></li>
+          <li><a href="gallery.html">المعرض</a></li>
+          <li><a href="contact.html">تواصل معنا</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions"><a class="btn btn--primary btn--sm" href="apply.html" data-magnetic>قدّم الآن</a></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero__inner">
+        <div class="hero__content">
+          <span class="eyebrow">◆ مجمع طيبة تكنولوجي — بني سويف</span>
+          <h1>مهارة تُبنى<span class="accent"> بيديك</span>،<br>ومستقبل يبدأ<span class="accent"> من هنا</span></h1>
+          <p>سبعة عشر تخصصًا تقنيًا حقيقيًا، وورش ومعامل تدريب عملي، وخطوات واضحة من أول يوم في المجمع حتى سوق العمل.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="apply.html" data-magnetic>ابدأ التقديم</a>
+            <a class="btn btn--ghost" href="departments.html" data-magnetic>استكشف التخصصات</a>
+          </div>
+          <ul class="hero__trust">
+            <li>17 تخصصًا معتمدًا</li>
+            <li>تعليم عملي قائم على المشروعات</li>
+            <li>متابعة دورية لكل طالب</li>
+          </ul>
+        </div>
+        <div class="hero__stage" aria-hidden="true">
+          <div class="hero__orb"></div>
+          <div class="hero__ring"></div>
+          <div class="hero__ring hero__ring--two"></div>
+          <div class="hero__core"></div>
+          <span class="hero__spark"></span>
+          <span class="hero__spark"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">لماذا طيبة</span>
+          <h2>تعليم تقني يركّز على ما يهم فعلًا</h2>
+          <p>من الأساسيات النظرية إلى التطبيق داخل الورشة، يمر الطالب بتجربة متكاملة تبني المهارة خطوة بخطوة.</p>
+        </div>
+        <div class="grid grid--3">
+          <article class="card feature reveal" data-tilt data-delay="0"><span class="feature__icon">⚙</span><h3>تخصصات حقيقية</h3><p>سبعة عشر مسارًا مهنيًا مبنيًا على احتياجات سوق العمل، لكل منها وصف ومهارات واضحة.</p></article>
+          <article class="card feature reveal" data-tilt data-delay="1"><span class="feature__icon">✦</span><h3>تعلّم بالتطبيق</h3><p>تمارين معملية ومشروعات جماعية مع إشراف مباشر من المعلمين في كل مرحلة.</p></article>
+          <article class="card feature reveal" data-tilt data-delay="2"><span class="feature__icon">◈</span><h3>مسار واضح</h3><p>من الاختيار إلى التقديم إلى المتابعة، تعرف ماذا تفعل في كل خطوة قبل أن تبدأ.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--soft">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">أبرز التخصصات</span>
+          <h2>اختر المسار الذي يناسبك</h2>
+          <p>نماذج من التخصصات المتاحة. يمكنك الاطلاع على القائمة الكاملة ووصف كل مسار ومهاراته.</p>
+        </div>
+        <div class="grid grid--3" id="home-departments"></div>
+        <div style="text-align:center;margin-top:1.8rem"><a class="btn btn--ghost" href="departments.html" data-magnetic>عرض كل التخصصات</a></div>
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container">
+        <div class="stats-band reveal">
+          <div class="stat"><strong data-count="17">0</strong><span>تخصصًا مهنيًا</span></div>
+          <div class="stat"><strong data-count="69">0</strong><span>مادة دراسية</span></div>
+          <div class="stat"><strong data-count="10" data-suffix="+">0</strong><span>صورة من المعامل والورش</span></div>
+          <div class="stat"><strong data-count="4">0</strong><span>خطوات للتقديم</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head reveal"><span class="eyebrow">الحياة في المجمع</span><h2>ورش ومعامل تفتح أبوابها للتعلّم</h2><p>صور من بيئة التدريب العملية والنظرية داخل المجمع.</p></div>
+        <div class="grid grid--3" id="home-gallery-preview">
+          <article class="card reveal" data-tilt data-delay="0"><div class="card__media"><img src="../frontend/public/assets/img/gallery/practical/practical-computers.jpg" alt="معمل الحاسب" loading="lazy"></div><div class="card__body"><h3>معمل الحاسب</h3><p>تدريب عملي على الأجهزة والشبكات.</p></div></article>
+          <article class="card reveal" data-tilt data-delay="1"><div class="card__media"><img src="../frontend/public/assets/img/gallery/practical/practical-electronics.jpg" alt="ورشة الإلكترونيات" loading="lazy"></div><div class="card__body"><h3>ورشة الإلكترونيات</h3><p>لحام وقياس وتشخيص للدوائر.</p></div></article>
+          <article class="card reveal" data-tilt data-delay="2"><div class="card__media"><img src="../frontend/public/assets/img/gallery/theoretical/theoretical-discussion.jpg" alt="نقاش صفّي" loading="lazy"></div><div class="card__body"><h3>نقاش صفّي</h3><p>مشاركة وتفكير جماعي داخل الحصة.</p></div></article>
+        </div>
+        <div style="text-align:center;margin-top:1.8rem"><a class="btn btn--ghost" href="gallery.html" data-magnetic>زيارة المعرض</a></div>
+      </div>
+    </section>
+
+    <section class="section section--soft">
+      <div class="container">
+        <div class="section-head reveal"><span class="eyebrow">أسئلة شائعة</span><h2>إجابات قبل أن تبدأ</h2><p>أكثر الأسئلة التي يطرحها الطلاب وأولياء الأمور.</p></div>
+        <div class="faq" id="faq-list"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="card reveal" style="padding:2.4rem;text-align:center;background:linear-gradient(135deg,var(--navy-900),var(--navy-800));color:#fff;border:0">
+          <span class="eyebrow">جاهز للبداية؟</span>
+          <h2 style="margin:0.8rem 0;font-size:clamp(1.6rem,3.4vw,2.4rem)">خطوتك الأولى أقرب مما تتخيّل</h2>
+          <p class="muted" style="color:rgba(255,255,255,.8)">راجع التخصصات، جهّز بياناتك، ثم أرسل طلبك في دقائق.</p>
+          <div class="hero__actions"><a class="btn btn--light" href="apply.html" data-magnetic>ابدأ التقديم</a><a class="btn btn--ghost" href="admission.html" data-magnetic>شروط القبول</a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div><h3>مجمع طيبة تكنولوجي</h3><p>تعليم تقني عملي يبني المهارة ويربط الطالب بسوق العمل. هذه نسخة ثابتة للعرض بجانب نسخة React الكاملة.</p></div>
+      <div><h3>روابط سريعة</h3><ul><li><a href="departments.html">التخصصات</a></li><li><a href="subjects.html">المواد</a></li><li><a href="about.html">عن المجمع</a></li><li><a href="admission.html">القبول</a></li><li><a href="apply.html">نموذج التقديم</a></li></ul></div>
+      <div><h3>تواصل معنا</h3><ul><li>الهاتف: 0100 000 0000 (تجريبي)</li><li>البريد: info@taiba.demo</li><li>الأحد – الخميس، 8 صباحًا – 3 مساءً</li></ul></div>
+    </div>
+    <div class="container footer-bottom">© <span data-year></span> مجمع طيبة تكنولوجي — نسخة عرض ثابتة.</div>
+  </footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
