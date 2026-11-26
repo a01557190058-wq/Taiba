@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../../lib/api.js';
-import { formatDate, formatNumber, toParagraphs } from '../../lib/format.js';
+import { formatDate, toParagraphs } from '../../lib/format.js';
 import { useAsync } from '../../lib/hooks.js';
 import { Icon } from '../../lib/icons.jsx';
 import { usePageMeta } from '../../lib/motion.jsx';
@@ -101,12 +101,6 @@ export default function DepartmentPage() {
   const metaRows = department
     ? [
         ['المهنة/التخصص', department.name],
-        [
-          'عدد الطلاب',
-          Number(department.students_total || 0)
-            ? `${formatNumber(department.students_total)} (${formatNumber(department.students_male)} ذكور • ${formatNumber(department.students_female)} إناث)`
-            : 'لم يُحدد بعد — يُحدَّث من لوحة التحكم',
-        ],
         ['حالة القبول', 'متاح للتقديم'],
       ]
     : [];

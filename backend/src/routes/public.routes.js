@@ -125,9 +125,6 @@ router.get('/departments', (req, res) => {
     image_url: department.image_url,
     sort_order: department.sort_order,
     skills: department.skills,
-    students_male: department.students_male,
-    students_female: department.students_female,
-    students_total: department.students_total,
   }));
   res.json({ data: items, meta: { total: items.length } });
 });

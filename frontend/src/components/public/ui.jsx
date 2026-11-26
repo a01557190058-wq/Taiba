@@ -1,12 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Icon } from '../../lib/icons.jsx';
-import { formatDate, formatNumber } from '../../lib/format.js';
-import { contentText, useSchoolContent } from '../../lib/content.jsx';
+import { formatDate } from '../../lib/format.js';
 
 const DEFAULT_IMAGE = '/assets/img/departments/default.svg';
-
-export const ACCREDITATION_FALLBACK =
-  'مجمع طيبة تكنولوجي معتمد من وزارة الصناعة ومصلحة الكفاية الإنتاجية والتدريب المهني، ويطبّق برامجه التدريبية وفق معاييرهما المعتمدة.';
 
 export function SmartImage({ src, alt, width, height, loading = 'lazy', className = '' }) {
   return (
@@ -22,48 +18,6 @@ export function SmartImage({ src, alt, width, height, loading = 'lazy', classNam
         if (!image.src.endsWith('/default.svg')) image.src = DEFAULT_IMAGE;
       }}
     />
-  );
-}
-
-/** Official-accreditation band shared by the home and about pages. */
-export function AccreditationStrip({ compact = false }) {
-  const { content } = useSchoolContent();
-  const text = contentText(content, 'accreditation', ACCREDITATION_FALLBACK);
-
-  return (
-    <section
-      className={`accreditation-strip${compact ? ' accreditation-strip--compact' : ''}`}
-      aria-label="الاعتماد الرسمي"
-      data-cinematic-reveal
-    >
-      <div className="container accreditation-strip__inner reveal">
-        <div className="accreditation-strip__logos">
-          <img
-            src="/assets/img/accreditation/ministry-industry.svg"
-            alt="شعار بديل لوزارة الصناعة"
-            width="150"
-            height="45"
-          />
-          <img
-            src="/assets/img/accreditation/productivity-authority.svg"
-            alt="شعار بديل لمصلحة الكفاية الإنتاجية والتدريب المهني"
-            width="150"
-            height="45"
-          />
-        </div>
-        <div className="accreditation-strip__copy">
-          <span className="eyebrow">اعتماد رسمي</span>
-          <h2>تعليم معتمد وجودة موثوقة</h2>
-          <p>{text}</p>
-          <span className="accreditation-strip__note">
-            الشعارات المعروضة بديلة مؤقتة إلى حين رفع الملفات الرسمية من المجمع.
-          </span>
-        </div>
-        <span className="accreditation-strip__seal" aria-hidden="true">
-          <Icon name="shield" size={30} />
-        </span>
-      </div>
-    </section>
   );
 }
 
@@ -88,15 +42,6 @@ export function DepartmentCard({ department, index = 0 }) {
           <span className="department-card__eyebrow">المهنة/التخصص</span>
           <h3 className="department-card__title">{department.name}</h3>
           <p className="department-card__desc">{department.short_description}</p>
-          <span className="department-card__students">
-            <Icon name="users" size={15} />
-            <span>
-              {`عدد الطلاب: ${formatNumber(
-                department.students_total ??
-                  Number(department.students_male || 0) + Number(department.students_female || 0)
-              )}`}
-            </span>
-          </span>
           {skills.length ? (
             <div className="chips">
               {skills.map((skill) => (

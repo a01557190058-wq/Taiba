@@ -82,18 +82,13 @@ test('the public gallery exposes the seeded settings, sections and photos', asyn
 
   assert.equal(page.title, 'الحياة في مجمع طيبة');
   assert.equal(page.show_credits, true);
-  assert.equal(sections.length, 6);
+  assert.equal(sections.length, 2);
   assert.deepEqual(
     sections.map((item) => item.slug),
-    ['theoretical', 'practical', 'departments', 'competitions', 'field-visits', 'activities']
+    ['theoretical', 'practical']
   );
   assert.equal(sections[0].images.length, 6);
   assert.equal(sections[1].images.length, 6);
-  for (const slug of ['departments', 'competitions', 'field-visits', 'activities']) {
-    const section = sections.find((item) => item.slug === slug);
-    assert.equal(section.images.length, 3);
-    assert.ok(section.images.every((image) => image.url.endsWith('.svg')));
-  }
   assert.ok(sections[0].images[0].url.startsWith('/assets/img/gallery/'));
 });
 

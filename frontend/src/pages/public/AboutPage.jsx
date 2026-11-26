@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { contentText, useSchoolContent } from '../../lib/content.jsx';
 import { Icon } from '../../lib/icons.jsx';
 import { usePageMeta } from '../../lib/motion.jsx';
-import { AccreditationStrip, PageHero, SectionHead } from '../../components/public/ui.jsx';
+import { PageHero, SectionHead } from '../../components/public/ui.jsx';
 
 const FALLBACK_OBJECTIVES = [
   'ربط المناهج التقنية باحتياجات سوق العمل والمشروعات الواقعية.',
@@ -65,8 +65,6 @@ export default function AboutPage() {
         breadcrumb={[{ label: 'الرئيسية', href: '/' }, { label: 'عن المجمع' }]}
       />
 
-      <AccreditationStrip compact />
-
       <section className="section" data-cinematic-reveal>
         <div className="container split">
           <div className="prose reveal">
@@ -98,7 +96,7 @@ export default function AboutPage() {
                 {contentText(
                   content,
                   'vision',
-                  'أن يكون مجمع طيبة تكنولوجي للتلمذة الثانوية الصناعية رائدًا في مجال التعليم والتدريب التكنولوجي على مستوى صعيد مصر، نموذجًا في الكفاءة والجودة، يُخرّج خريجين يتمتعون بالوعي المهني والعقلية السليمة والأخلاق الحميدة.'
+                  'أن نكون نموذجًا في التعليم التقني التطبيقي الذي يربط الطالب باحتياجات المجتمع وسوق العمل.'
                 )}
               </p>
             </article>
@@ -111,7 +109,7 @@ export default function AboutPage() {
                 {contentText(
                   content,
                   'mission',
-                  'يقدّم مجمع طيبة تكنولوجي تعليمًا تقنيًا متكاملًا بالاعتماد على المصادر المعرفية والتكنولوجية الحديثة والأنشطة الطلابية والاستراتيجيات التدريبية الفعّالة، من خلال معلمين ومدربين مؤهلين يوفرون مناخًا يشجّع الإبداع والتميز، ويربط الطلاب بالمجتمع المحلي وسوق العمل.'
+                  'تقديم تعليم تقني متوازن يجمع الأساس النظري والتدريب العملي، ويُنمّي مهارات التفكير والعمل الجماعي والمسؤولية المهنية.'
                 )}
               </p>
             </article>

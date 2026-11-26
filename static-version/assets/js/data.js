@@ -3,41 +3,7 @@
 (function () {
   'use strict';
 
-  var IMG = 'assets/public/img/departments/';
-  var GALLERY = 'assets/public/img/gallery/';
-
-  // Editable school text. In the React version these keys live in the
-  // `school_content` table and are changed from the dashboard.
-  var content = {
-    accreditation:
-      'مجمع طيبة تكنولوجي معتمد من وزارة الصناعة ومصلحة الكفاية الإنتاجية والتدريب المهني، ويطبّق برامجه التدريبية وفق معاييرهما المعتمدة.',
-    vision:
-      'أن يكون مجمع طيبة تكنولوجي للتلمذة الثانوية الصناعية رائدًا في مجال التعليم والتدريب التكنولوجي على مستوى صعيد مصر، نموذجًا في الكفاءة والجودة، يُخرّج خريجين يتمتعون بالوعي المهني والعقلية السليمة والأخلاق الحميدة.',
-    mission:
-      'يقدّم مجمع طيبة تكنولوجي تعليمًا تقنيًا متكاملًا بالاعتماد على المصادر المعرفية والتكنولوجية الحديثة والأنشطة الطلابية والاستراتيجيات التدريبية الفعّالة، من خلال معلمين ومدربين مؤهلين يوفرون مناخًا يشجّع الإبداع والتميز، ويربط الطلاب بالمجتمع المحلي وسوق العمل.'
-  };
-
-  // Display headcounts for the static demo. They are editable here; in the
-  // full application the same values come from the administrator dashboard.
-  var studentCounts = {
-    'metal-lathe-technician': { male: 24, female: 18 },
-    'metal-welding-technician': { male: 31, female: 12 },
-    'aluminium-technician': { male: 20, female: 15 },
-    'refrigeration-hvac-technician': { male: 18, female: 22 },
-    'computer-networks-technician': { male: 26, female: 19 },
-    'industrial-plumbing-technician': { male: 17, female: 11 },
-    'home-appliances-technician': { male: 28, female: 14 },
-    'electrical-technician': { male: 35, female: 9 },
-    'machine-tools-technician': { male: 22, female: 16 },
-    'garment-manufacturing-technician': { male: 19, female: 13 },
-    'industrial-electronics-technician': { male: 21, female: 17 },
-    'embedded-systems-ai-technician': { male: 30, female: 8 },
-    'computer-programming-technician': { male: 15, female: 20 },
-    'medical-devices-technician': { male: 23, female: 18 },
-    'chemical-laboratory-technician': { male: 27, female: 10 },
-    'cnc-lathe-technician': { male: 16, female: 14 },
-    'cnc-milling-technician': { male: 18, female: 12 }
-  };
+  var IMG = '../frontend/public/assets/img/departments/';
 
   var departments = [
     {
@@ -220,38 +186,16 @@
   ];
 
   var gallery = [
-    { src: 'assets/public/img/gallery/practical/practical-computers.jpg', title: 'معمل الحاسب', type: 'practical' },
-    { src: 'assets/public/img/gallery/practical/practical-digital-lab.jpg', title: 'المختبر الرقمي', type: 'practical' },
-    { src: 'assets/public/img/gallery/practical/practical-electronics.jpg', title: 'ورشة الإلكترونيات', type: 'practical' },
-    { src: 'assets/public/img/gallery/practical/practical-it-lab.jpg', title: 'معمل الشبكات', type: 'practical' },
-    { src: 'assets/public/img/gallery/practical/practical-programming.jpg', title: 'معمل البرمجة', type: 'practical' },
-    { src: 'assets/public/img/gallery/practical/practical-projects.jpg', title: 'مشروعات الطلاب', type: 'practical' },
-    { src: 'assets/public/img/gallery/theoretical/theoretical-discussion.jpg', title: 'نقاش صفّي', type: 'theoretical' },
-    { src: 'assets/public/img/gallery/theoretical/theoretical-explaining.jpg', title: 'شرح الدرس', type: 'theoretical' },
-    { src: 'assets/public/img/gallery/theoretical/theoretical-focus.jpg', title: 'التركيز في الحصة', type: 'theoretical' },
-    { src: 'assets/public/img/gallery/theoretical/theoretical-listening.jpg', title: 'الاستماع والمشاركة', type: 'theoretical' },
-    { src: GALLERY + 'departments/departments-workshop.svg', title: 'ورشة التخصص — صورة بديلة', type: 'departments' },
-    { src: GALLERY + 'departments/departments-lab.svg', title: 'معمل التخصص — صورة بديلة', type: 'departments' },
-    { src: GALLERY + 'departments/departments-team.svg', title: 'فريق التخصص — صورة بديلة', type: 'departments' },
-    { src: GALLERY + 'competitions/competitions-stage.svg', title: 'مسابقة تقنية — صورة بديلة', type: 'competitions' },
-    { src: GALLERY + 'competitions/competitions-project.svg', title: 'عرض مشروع — صورة بديلة', type: 'competitions' },
-    { src: GALLERY + 'competitions/competitions-jury.svg', title: 'لجنة التحكيم — صورة بديلة', type: 'competitions' },
-    { src: GALLERY + 'field-visits/field-visits-factory.svg', title: 'زيارة خط إنتاج — صورة بديلة', type: 'field-visits' },
-    { src: GALLERY + 'field-visits/field-visits-guides.svg', title: 'لقاء مع مهندسين — صورة بديلة', type: 'field-visits' },
-    { src: GALLERY + 'field-visits/field-visits-site.svg', title: 'جولة في موقع العمل — صورة بديلة', type: 'field-visits' },
-    { src: GALLERY + 'activities/activities-assembly.svg', title: 'الطابور الصباحي — صورة بديلة', type: 'activities' },
-    { src: GALLERY + 'activities/activities-sport.svg', title: 'التربية الرياضية — صورة بديلة', type: 'activities' },
-    { src: GALLERY + 'activities/activities-group.svg', title: 'نشاط جماعي — صورة بديلة', type: 'activities' }
-  ];
-
-  var galleryTypes = [
-    { id: 'all', label: 'كل الصور' },
-    { id: 'practical', label: 'التدريب العملي' },
-    { id: 'theoretical', label: 'الدراسة النظرية' },
-    { id: 'departments', label: 'صور الأقسام' },
-    { id: 'competitions', label: 'صور المسابقات' },
-    { id: 'field-visits', label: 'الزيارات الميدانية' },
-    { id: 'activities', label: 'صور الأنشطة' }
+    { src: '../frontend/public/assets/img/gallery/practical/practical-computers.jpg', title: 'معمل الحاسب', type: 'practical' },
+    { src: '../frontend/public/assets/img/gallery/practical/practical-digital-lab.jpg', title: 'المختبر الرقمي', type: 'practical' },
+    { src: '../frontend/public/assets/img/gallery/practical/practical-electronics.jpg', title: 'ورشة الإلكترونيات', type: 'practical' },
+    { src: '../frontend/public/assets/img/gallery/practical/practical-it-lab.jpg', title: 'معمل الشبكات', type: 'practical' },
+    { src: '../frontend/public/assets/img/gallery/practical/practical-programming.jpg', title: 'معمل البرمجة', type: 'practical' },
+    { src: '../frontend/public/assets/img/gallery/practical/practical-projects.jpg', title: 'مشروعات الطلاب', type: 'practical' },
+    { src: '../frontend/public/assets/img/gallery/theoretical/theoretical-discussion.jpg', title: 'نقاش صفّي', type: 'theoretical' },
+    { src: '../frontend/public/assets/img/gallery/theoretical/theoretical-explaining.jpg', title: 'شرح الدرس', type: 'theoretical' },
+    { src: '../frontend/public/assets/img/gallery/theoretical/theoretical-focus.jpg', title: 'التركيز في الحصة', type: 'theoretical' },
+    { src: '../frontend/public/assets/img/gallery/theoretical/theoretical-listening.jpg', title: 'الاستماع والمشاركة', type: 'theoretical' }
   ];
 
   var contact = {
@@ -262,15 +206,11 @@
   };
 
   window.TAIBA = {
-    content: content,
     departments: departments,
     categories: categories,
-    studentCounts: studentCounts,
     news: news,
     faq: faq,
     gallery: gallery,
-    galleryTypes: galleryTypes,
-    subjects: window.TAIBA_SUBJECTS || [],
     contact: contact
   };
 })();

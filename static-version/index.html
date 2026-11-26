@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="مجمع طيبة تكنولوجي — بني سويف. نسخة ثابتة بـ HTML وCSS وJavaScript خالص، جنب نسخة React الأصلية.">
   <title>مجمع طيبة تكنولوجي | الرئيسية</title>
-  <link rel="icon" href="assets/public/img/favicon.png">
+  <link rel="icon" href="../frontend/public/assets/img/favicon.png">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="index.html" aria-label="مجمع طيبة تكنولوجي — الرئيسية">
-        <img src="assets/public/img/logo.jpg" alt="شعار المجمع">
+        <img src="../frontend/public/assets/img/logo.jpg" alt="شعار المجمع">
         <span><strong>مجمع طيبة تكنولوجي</strong><span>بنـي سـويف — تعليم تقني عملي</span></span>
       </a>
       <button class="nav-toggle" type="button" aria-label="فتح القائمة" aria-expanded="false" aria-controls="main-nav"><span class="nav-toggle__bars"></span></button>
@@ -61,22 +61,6 @@
       </div>
     </section>
 
-    <section class="accreditation reveal" aria-label="الاعتماد الرسمي">
-      <div class="container accreditation__inner">
-        <div class="accreditation__logos">
-          <img src="assets/public/img/accreditation/ministry-industry.svg" alt="شعار بديل لوزارة الصناعة">
-          <img src="assets/public/img/accreditation/productivity-authority.svg" alt="شعار بديل لمصلحة الكفاية الإنتاجية والتدريب المهني">
-        </div>
-        <div class="accreditation__copy">
-          <span class="eyebrow">اعتماد رسمي</span>
-          <h2>تعليم معتمد وجودة موثوقة</h2>
-          <p data-content="accreditation">مجمع طيبة تكنولوجي معتمد من وزارة الصناعة ومصلحة الكفاية الإنتاجية والتدريب المهني، ويطبّق برامجه التدريبية وفق معاييرهما المعتمدة.</p>
-          <small>الشعارات المعروضة بديلة مؤقتة إلى حين رفع الملفات الرسمية من المجمع.</small>
-        </div>
-        <span class="accreditation__seal" aria-hidden="true">◈</span>
-      </div>
-    </section>
-
     <section class="section">
       <div class="container">
         <div class="section-head reveal">
@@ -109,10 +93,9 @@
         <div class="stats-band reveal">
           <div class="stat"><strong data-count="17">0</strong><span>تخصصًا مهنيًا</span></div>
           <div class="stat"><strong data-count="69">0</strong><span>مادة دراسية</span></div>
-          <div class="stat"><strong data-count="0" data-students-total>0</strong><span>طالبًا وطالبة</span></div>
-          <div class="stat"><strong data-count="22" data-suffix="+">0</strong><span>صورة من المعرض</span></div>
+          <div class="stat"><strong data-count="10" data-suffix="+">0</strong><span>صورة من المعامل والورش</span></div>
+          <div class="stat"><strong data-count="4">0</strong><span>خطوات للتقديم</span></div>
         </div>
-        <p class="muted stats-note">أعداد الطلاب هنا توضيحية؛ النسخة الكاملة تتيح تعديلها من لوحة التحكم لكل تخصص على حدة.</p>
       </div>
     </section>
 
@@ -120,9 +103,9 @@
       <div class="container">
         <div class="section-head reveal"><span class="eyebrow">الحياة في المجمع</span><h2>ورش ومعامل تفتح أبوابها للتعلّم</h2><p>صور من بيئة التدريب العملية والنظرية داخل المجمع.</p></div>
         <div class="grid grid--3" id="home-gallery-preview">
-          <article class="card reveal" data-tilt data-delay="0"><div class="card__media"><img src="assets/public/img/gallery/practical/practical-computers.jpg" alt="معمل الحاسب" loading="lazy"></div><div class="card__body"><h3>معمل الحاسب</h3><p>تدريب عملي على الأجهزة والشبكات.</p></div></article>
-          <article class="card reveal" data-tilt data-delay="1"><div class="card__media"><img src="assets/public/img/gallery/practical/practical-electronics.jpg" alt="ورشة الإلكترونيات" loading="lazy"></div><div class="card__body"><h3>ورشة الإلكترونيات</h3><p>لحام وقياس وتشخيص للدوائر.</p></div></article>
-          <article class="card reveal" data-tilt data-delay="2"><div class="card__media"><img src="assets/public/img/gallery/theoretical/theoretical-discussion.jpg" alt="نقاش صفّي" loading="lazy"></div><div class="card__body"><h3>نقاش صفّي</h3><p>مشاركة وتفكير جماعي داخل الحصة.</p></div></article>
+          <article class="card reveal" data-tilt data-delay="0"><div class="card__media"><img src="../frontend/public/assets/img/gallery/practical/practical-computers.jpg" alt="معمل الحاسب" loading="lazy"></div><div class="card__body"><h3>معمل الحاسب</h3><p>تدريب عملي على الأجهزة والشبكات.</p></div></article>
+          <article class="card reveal" data-tilt data-delay="1"><div class="card__media"><img src="../frontend/public/assets/img/gallery/practical/practical-electronics.jpg" alt="ورشة الإلكترونيات" loading="lazy"></div><div class="card__body"><h3>ورشة الإلكترونيات</h3><p>لحام وقياس وتشخيص للدوائر.</p></div></article>
+          <article class="card reveal" data-tilt data-delay="2"><div class="card__media"><img src="../frontend/public/assets/img/gallery/theoretical/theoretical-discussion.jpg" alt="نقاش صفّي" loading="lazy"></div><div class="card__body"><h3>نقاش صفّي</h3><p>مشاركة وتفكير جماعي داخل الحصة.</p></div></article>
         </div>
         <div style="text-align:center;margin-top:1.8rem"><a class="btn btn--ghost" href="gallery.html" data-magnetic>زيارة المعرض</a></div>
       </div>

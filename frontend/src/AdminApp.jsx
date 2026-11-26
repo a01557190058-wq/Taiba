@@ -6,7 +6,6 @@ import LoginPage from './pages/admin/LoginPage.jsx';
 import DashboardPage from './pages/admin/DashboardPage.jsx';
 import DepartmentsPage from './pages/admin/DepartmentsPage.jsx';
 import DepartmentFormPage from './pages/admin/DepartmentFormPage.jsx';
-import StudentCountsPage from './pages/admin/StudentCountsPage.jsx';
 import SubjectsPage from './pages/admin/SubjectsPage.jsx';
 import SubjectFormPage from './pages/admin/SubjectFormPage.jsx';
 import ApplicationsPage from './pages/admin/ApplicationsPage.jsx';
@@ -79,7 +78,6 @@ export default function AdminApp() {
           <Route path="departments" element={<DepartmentsPage />} />
           <Route path="departments/new" element={<DepartmentFormPage />} />
           <Route path="departments/:id/edit" element={<DepartmentFormPage />} />
-          <Route path="student-counts" element={<StudentCountsPage />} />
           <Route path="subjects" element={<SubjectsPage />} />
           <Route path="subjects/new" element={<SubjectFormPage />} />
           <Route path="subjects/:id/edit" element={<SubjectFormPage />} />

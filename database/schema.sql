@@ -33,8 +33,6 @@ CREATE TABLE IF NOT EXISTS admins (
 --   is_active    : archived departments stay readable for history but are
 --                  hidden from the public website (never cascade deletes)
 --   is_demo      : explicit demo-data flag used by the demo-data manager
---   students_male / students_female : admin-managed headcount; the public total
---                is derived as their sum, so it can never drift out of sync.
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS departments (
   id                INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,8 +44,6 @@ CREATE TABLE IF NOT EXISTS departments (
   skills            TEXT NOT NULL DEFAULT '',           -- one skill per line
   admission_info    TEXT NOT NULL DEFAULT '',
   image_url         TEXT NOT NULL DEFAULT '',
-  students_male     INTEGER NOT NULL DEFAULT 0 CHECK (students_male >= 0),
-  students_female   INTEGER NOT NULL DEFAULT 0 CHECK (students_female >= 0),
   is_published      INTEGER NOT NULL DEFAULT 1 CHECK (is_published IN (0, 1)),
   is_active         INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
   is_demo           INTEGER NOT NULL DEFAULT 0 CHECK (is_demo IN (0, 1)),

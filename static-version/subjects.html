@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="نظرة على الخطة الدراسية في مجمع طيبة تكنولوجي.">
   <title>المواد الدراسية | مجمع طيبة تكنولوجي</title>
-  <link rel="icon" href="assets/public/img/favicon.png">
+  <link rel="icon" href="../frontend/public/assets/img/favicon.png">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
   <div class="scroll-progress" aria-hidden="true"></div>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html"><img src="assets/public/img/logo.jpg" alt="شعار المجمع"><span><strong>مجمع طيبة تكنولوجي</strong><span>بنـي سـويف — تعليم تقني عملي</span></span></a>
+      <a class="brand" href="index.html"><img src="../frontend/public/assets/img/logo.jpg" alt="شعار المجمع"><span><strong>مجمع طيبة تكنولوجي</strong><span>بنـي سـويف — تعليم تقني عملي</span></span></a>
       <button class="nav-toggle" type="button" aria-label="فتح القائمة" aria-expanded="false" aria-controls="main-nav"><span class="nav-toggle__bars"></span></button>
       <nav id="main-nav" aria-label="القائمة الرئيسية"><ul class="nav-links">
         <li><a href="index.html">الرئيسية</a></li><li><a href="departments.html">التخصصات</a></li><li><a href="subjects.html">المواد</a></li><li><a href="about.html">عن المجمع</a></li>
@@ -28,16 +28,14 @@
       <p>تنقسم المواد إلى مواد نظرية تبني الأساس العلمي، ومواد عملية تنمّي المهارات داخل المختبرات والورش. التكامل بين القسمين هو ما يمنح الطالب فهمًا عميقًا وقدرة على التطبيق.</p>
     </div></section>
 
-    <section class="section section--tight"><div class="container">
-      <div class="section-head reveal"><span class="eyebrow">تصفية الخطة</span><h2>اختر الصف ونوع المادة</h2><p class="muted" id="subject-count">69 مادة مطابقة</p></div>
-      <div class="filters" id="subject-grade-filters" aria-label="اختيار الصف الدراسي"></div>
-      <div class="filters" id="subject-type-filters" aria-label="اختيار نوع المادة"></div>
-    </div></section>
-
-    <section class="section"><div class="container" id="subject-list"></div></section>
-
-    <section class="section section--soft"><div class="container">
-      <div class="callout reveal"><h3>مصدر البيانات</h3><p>المواد الـ69 المعروضة مأخوذة من ملف <code>backend/src/db/real-subjects-data.js</code> المستخدم فعليًا في النسخة الكاملة، وتوضّح عدد الحصص الأسبوعية لكل صف وتخصص. التعديلات الرسمية تُجرى من لوحة التحكم، وقد تُحدَّث الخطة خلال العام الدراسي.</p></div>
+    <section class="section"><div class="container">
+      <div class="section-head reveal"><span class="eyebrow">المواد المشتركة</span><h2>مواد تُدرَّس في كل الصفوف</h2><p>هذه المواد مشتركة بين التخصصات، ويُضاف إليها مواد خاصة بكل تخصص وصف في النسخة الكاملة من الموقع.</p></div>
+      <div class="grid grid--3">
+        <article class="card feature reveal" data-tilt><span class="feature__icon">١</span><h3>الصف الأول</h3><ul class="skill-list"><li>عربي — 2 حصة</li><li>إنجليزي — 2 حصة</li><li>رياضة — 2 حصة</li><li>ميكا — 2 حصة</li><li>معلومات — 2 حصة</li><li>دين — 1 حصة</li></ul></article>
+        <article class="card feature reveal" data-tilt data-delay="1"><span class="feature__icon">٢</span><h3>الصف الثاني</h3><ul class="skill-list"><li>عربي — 1 حصة</li><li>إنجليزي — 2 حصة</li><li>رياضة — 2 حصة</li><li>ميكا — 2 حصة</li><li>جودة — 1 حصة</li><li>ريادة — 2 حصة</li></ul></article>
+        <article class="card feature reveal" data-tilt data-delay="2"><span class="feature__icon">٣</span><h3>الصف الثالث</h3><ul class="skill-list"><li>إنجليزي — 1 حصة</li><li>ميكا — 2 حصة</li><li>تكنولوجيا — 3 حصص</li></ul></article>
+      </div>
+      <div class="callout reveal"><h3>ملاحظة</h3><p>الخطة المعروضة مبسّطة للنسخة الثابتة. النسخة الكاملة تعرض 69 مادة مع عدد الحصص الأسبوعية لكل صف وتخصص، وقد تُحدَّث الخطة من إدارة المجمع خلال العام الدراسي.</p></div>
       <a class="btn btn--primary mt-3" href="departments.html" data-magnetic>اختر تخصصك</a>
     </div></section>
   </main>
@@ -48,6 +46,6 @@
     <div><h3>تواصل معنا</h3><ul><li>الهاتف: 0100 000 0000 (تجريبي)</li><li>البريد: info@taiba.demo</li></ul></div>
   </div><div class="container footer-bottom">© <span data-year></span> مجمع طيبة تكنولوجي — نسخة عرض ثابتة.</div></footer>
 
-  <script src="assets/js/subjects-data.js"></script><script src="assets/js/data.js"></script><script src="assets/js/app.js"></script>
+  <script src="assets/js/data.js"></script><script src="assets/js/app.js"></script>
 </body>
 </html>
