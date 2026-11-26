@@ -140,6 +140,15 @@ export default function DepartmentsPage() {
         <Icon name="edit" size={15} />
         <span>تحرير</span>
       </Link>,
+      <Link
+        className="btn btn-outline btn-sm"
+        to="/student-counts"
+        title="أعداد الطلاب"
+        key="counts"
+      >
+        <Icon name="users" size={15} />
+        <span>الأعداد</span>
+      </Link>,
     ];
 
     if (!department.is_active) {

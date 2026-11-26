@@ -19,6 +19,9 @@ function mapDepartment(row) {
     skills: row.skills ? row.skills.split('\n').filter(Boolean) : [],
     admission_info: row.admission_info,
     image_url: row.image_url,
+    students_male: Number(row.students_male || 0),
+    students_female: Number(row.students_female || 0),
+    students_total: Number(row.students_male || 0) + Number(row.students_female || 0),
     images: [],
     is_published: Boolean(row.is_published),
     is_active: Boolean(row.is_active),
@@ -169,8 +172,9 @@ function create(payload) {
     const result = db.run(
       `INSERT INTO departments
          (name, slug, short_description, description, educational_focus, skills,
-          admission_info, image_url, is_published, is_active, is_demo, sort_order)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)`,
+          admission_info, image_url, students_male, students_female,
+          is_published, is_active, is_demo, sort_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)`,
       [
         payload.name,
         slug,
@@ -180,6 +184,8 @@ function create(payload) {
         payload.skills || '',
         payload.admission_info || '',
         payload.image_url || '',
+        payload.students_male || 0,
+        payload.students_female || 0,
         payload.is_published ? 1 : 0,
         payload.is_active === false ? 0 : 1,
         payload.sort_order || 0,
@@ -215,6 +221,8 @@ function update(id, payload) {
   if (payload.skills !== undefined) assign('skills', payload.skills);
   if (payload.admission_info !== undefined) assign('admission_info', payload.admission_info);
   if (payload.image_url !== undefined) assign('image_url', payload.image_url);
+  if (payload.students_male !== undefined) assign('students_male', payload.students_male);
+  if (payload.students_female !== undefined) assign('students_female', payload.students_female);
   if (payload.is_published !== undefined) assign('is_published', payload.is_published ? 1 : 0);
   if (payload.is_active !== undefined) assign('is_active', payload.is_active ? 1 : 0);
   if (payload.sort_order !== undefined) assign('sort_order', payload.sort_order);

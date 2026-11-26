@@ -5,7 +5,7 @@
 
 @font-face {
   font-family: 'CairoLocal';
-  src: url('../../../frontend/public/assets/fonts/cairo-arabic.woff2') format('woff2');
+  src: url('../public/fonts/cairo-arabic.woff2') format('woff2');
   font-display: swap;
 }
 
@@ -422,6 +422,69 @@ button, input, select, textarea { font: inherit; }
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
 .reveal.is-visible { opacity: 1; transform: none; }
 
+/* ---------- accreditation + admin-managed counts + real subjects ---------- */
+.accreditation {
+  position: relative;
+  overflow: hidden;
+  padding-block: 2.2rem;
+  color: #fff;
+  background:
+    radial-gradient(520px 220px at 12% 0%, rgba(255, 201, 40, 0.16), transparent 70%),
+    radial-gradient(420px 260px at 92% 100%, rgba(214, 40, 57, 0.14), transparent 72%),
+    linear-gradient(135deg, var(--navy-950), var(--navy-800) 72%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.accreditation::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+  background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(ellipse at 50% 0%, #000 18%, transparent 76%);
+}
+.accreditation__inner { position: relative; display: grid; grid-template-columns: auto 1fr auto; gap: 1.5rem; align-items: center; }
+.accreditation__logos { display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: center; }
+.accreditation__logos img {
+  width: 150px; height: auto; padding: 0.35rem;
+  border: 1px solid rgba(255,255,255,.14); border-radius: 12px;
+  background: rgba(255,255,255,.08); box-shadow: 0 14px 32px -20px rgba(0,0,0,.9);
+}
+.accreditation__copy h2 { margin: 0.25rem 0 0.35rem; font-size: clamp(1.25rem, 2.2vw, 1.8rem); line-height: 1.4; }
+.accreditation__copy p { max-width: 62ch; margin: 0; color: rgba(255,255,255,.84); font-size: 0.92rem; line-height: 1.9; }
+.accreditation__copy small { display: block; margin-top: 0.4rem; color: rgba(255,255,255,.55); font-size: 0.72rem; }
+.accreditation .eyebrow { color: var(--gold); }
+.accreditation__seal {
+  display: grid; place-items: center; width: 64px; height: 64px;
+  border: 1px solid rgba(255,201,40,.42); border-radius: 50%;
+  background: rgba(255,201,40,.12); color: var(--gold); font-size: 1.8rem;
+  box-shadow: 0 0 0 8px rgba(255,201,40,.05);
+}
+.accreditation--compact { padding-block: 1.5rem; }
+.accreditation--compact .accreditation__logos img { width: 120px; }
+.accreditation--compact .accreditation__seal { width: 52px; height: 52px; font-size: 1.4rem; }
+
+.card-students {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  margin: 0 0 0.75rem; color: var(--blue); font-size: 0.78rem; font-weight: 800;
+}
+.card-students::before { content: '◉'; color: var(--red-deep); }
+.stats-note, .count-note { margin: 0.6rem 0 0; text-align: center; font-size: 0.76rem; }
+.detail-count { margin: 0 0 0.2rem; font-size: 1.5rem; font-weight: 900; color: var(--red-deep); }
+.detail-note { font-size: 0.72rem; margin-top: 0.4rem; }
+
+.subject-group + .subject-group { margin-top: 2.4rem; }
+.subject-group .section-head { margin-bottom: 1.2rem; }
+.subject-card { display: flex; flex-direction: column; min-height: 210px; }
+.subject-card__head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.7rem; }
+.subject-card__type, .subject-card__grade {
+  padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.7rem; font-weight: 800;
+  border: 1px solid rgba(23,105,170,.28); background: rgba(23,105,170,.08); color: var(--navy-800);
+}
+.subject-card__type.is-practical { border-color: rgba(214,40,57,.3); background: rgba(214,40,57,.08); color: var(--red-deep); }
+.subject-card h3 { margin: 0 0 0.35rem; font-size: 1.05rem; }
+.subject-card__periods { margin: 0 0 0.5rem; color: var(--red-deep); font-size: 0.8rem; font-weight: 800; }
+.subject-card .muted { flex: 1; font-size: 0.8rem; }
+.subject-card__dept { font-size: 0.7rem; color: var(--muted); direction: ltr; text-align: start; }
+.subject-card code { direction: ltr; }
+
 /* ---------- responsive ---------- */
 @media (max-width: 960px) {
   .nav-links, .header-actions .btn { display: none; }
@@ -441,6 +504,8 @@ button, input, select, textarea { font: inherit; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .detail-grid { grid-template-columns: 1fr; }
   .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .accreditation__inner { grid-template-columns: 1fr; gap: 1.1rem; }
+  .accreditation__seal { display: none; }
 }
 @media (max-width: 620px) {
   .section { padding-block: 3.2rem; }

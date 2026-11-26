@@ -88,6 +88,13 @@ const sortOrderField = z.coerce
   .min(0, { message: 'ترتيب العرض لا يمكن أن يكون سالبًا.' })
   .max(9999, { message: 'ترتيب العرض كبير جدًا.' });
 
+const STUDENT_COUNT_MAX = 100000;
+const studentCountField = z.coerce
+  .number({ error: 'عدد الطلاب يجب أن يكون رقمًا.' })
+  .int({ message: 'عدد الطلاب يجب أن يكون عددًا صحيحًا.' })
+  .min(0, { message: 'عدد الطلاب لا يمكن أن يكون سالبًا.' })
+  .max(STUDENT_COUNT_MAX, { message: 'عدد الطلاب كبير جدًا.' });
+
 // ---------------------------------------------------------------------------
 // Departments
 // ---------------------------------------------------------------------------
@@ -120,6 +127,8 @@ const departmentCreateSchema = z.object({
   skills: optionalText('المهارات', 2000),
   admission_info: optionalText('معلومات القبول', 1000),
   image_url: imageUrlField,
+  students_male: studentCountField.default(0),
+  students_female: studentCountField.default(0),
   images: departmentImagesSchema.optional(),
   is_published: booleanField.default(true),
   is_active: booleanField.default(true),
@@ -136,6 +145,8 @@ const departmentUpdateSchema = z
     skills: optionalText('المهارات', 2000).optional(),
     admission_info: optionalText('معلومات القبول', 1000).optional(),
     image_url: imageUrlField.optional(),
+    students_male: studentCountField.optional(),
+    students_female: studentCountField.optional(),
     images: departmentImagesSchema.optional(),
     is_published: booleanField.optional(),
     is_active: booleanField.optional(),

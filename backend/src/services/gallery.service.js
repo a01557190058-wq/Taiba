@@ -19,7 +19,7 @@ const DEFAULT_SETTINGS = {
   lead:
     'لقطات من الفصول والمعامل والورش توثّق رحلة الطلاب بين النظرية والتطبيق، وتُظهر جانبًا من يومهم الدراسي داخل المجمع.',
   credits_note:
-    'الصور الحالية توضيحية من أنشطة تعليمية عامة، ويمكن استبدالها بصور المجمع الفعلية دون تغيير في تصميم الصفحة.',
+    'صور النظري والعملي توضيحية من أنشطة تعليمية عامة، أما الأقسام الجديدة فتعرض صورًا بديلة مؤقتة إلى حين رفع صور المجمع الفعلية. يمكن استبدال كل الصور من لوحة التحكم دون تغيير في التصميم.',
   show_credits: true,
 };
 
@@ -119,19 +119,133 @@ const IMAGE_SEED = {
         'https://commons.wikimedia.org/wiki/File:Final_year_students_defending_their_research_projects_in_Rwanda.jpg',
     },
   ],
+  // Placeholders for the photo sets the school will supply. They use a single
+  // SVG per category so the sections are visible before the real files arrive.
+  departments: [
+    {
+      id: 'departments-workshop',
+      alt: 'صورة توضيحية لورشة أحد التخصصات',
+      caption: 'ورشة التخصص — صورة بديلة',
+      extension: 'svg',
+      credit: '',
+      credit_url: '',
+    },
+    {
+      id: 'departments-lab',
+      alt: 'صورة توضيحية لمعمل أحد التخصصات',
+      caption: 'معمل التخصص — صورة بديلة',
+      extension: 'svg',
+      credit: '',
+      credit_url: '',
+    },
+    {
+      id: 'departments-team',
+      alt: 'صورة توضيحية لفريق طلابي داخل التخصص',
+      caption: 'فريق التخصص — صورة بديلة',
+      extension: 'svg',
+      credit: '',
+      credit_url: '',
+    },
+  ],
+  competitions: [
+    {
+      id: 'competitions-stage',
+      alt: 'صورة توضيحية لمسابقة تقنية',
+      caption: 'مسابقة تقنية — صورة بديلة',
+      extension: 'svg',
+      credit: '',
+      credit_url: '',
+    },
+    {
+      id: 'competitions-project',
+      alt: 'صورة توضيحية لعرض مشروع في مسابقة',
+      caption: 'عرض مشروع — صورة بديلة',
+      extension: 'svg',
+      credit: '',
+      credit_url: '',
+    },
+    {
+      id: 'competitions-jury',
+      alt: 'صورة توضيحية للجنة تحكيم مسابقة',
+      caption: 'لجنة التحكيم — صورة بديلة',
+      extension: 'svg',
+      credit: '',
+      credit_url: '',
+    },
+  ],
+  'field-visits': [
+    {
+      id: 'field-visits-factory',
+      alt: 'صورة توضيحية لزيارة ميدانية إلى مصنع',
+      caption: 'زيارة خط إنتاج — صورة بديلة',
+      extension: 'svg',
+      credit: '',
+      credit_url: '',
+    },
+    {
+      id: 'field-visits-guides',
+      alt: 'صورة توضيحية للقاء مع مهندسين أثناء زيارة',
+      caption: 'لقاء مع مهندسين — صورة بديلة',
+      extension: 'svg',
+      credit: '',
+      credit_url: '',
+    },
+    {
+      id: 'field-visits-site',
+      alt: 'صورة توضيحية لجولة ميدانية في موقع عمل',
+      caption: 'جولة في موقع العمل — صورة بديلة',
+      extension: 'svg',
+      credit: '',
+      credit_url: '',
+    },
+  ],
+  activities: [
+    {
+      id: 'activities-assembly',
+      alt: 'صورة توضيحية للطابور الصباحي',
+      caption: 'الطابور الصباحي — صورة بديلة',
+      extension: 'svg',
+      credit: '',
+      credit_url: '',
+    },
+    {
+      id: 'activities-sport',
+      alt: 'صورة توضيحية لحصة التربية الرياضية',
+      caption: 'التربية الرياضية — صورة بديلة',
+      extension: 'svg',
+      credit: '',
+      credit_url: '',
+    },
+    {
+      id: 'activities-group',
+      alt: 'صورة توضيحية لنشاط جماعي للطلاب',
+      caption: 'نشاط جماعي — صورة بديلة',
+      extension: 'svg',
+      credit: '',
+      credit_url: '',
+    },
+  ],
 };
 
+const NEW_SECTION_SLUGS = ['departments', 'competitions', 'field-visits', 'activities'];
+
 function seedImages(sectionSlug) {
-  return IMAGE_SEED[sectionSlug].map((image, index) => ({
-    url: `/assets/img/gallery/${sectionSlug}/${image.id}.jpg`,
-    thumb_url: `/assets/img/gallery/${sectionSlug}/${image.id}-thumb.jpg`,
-    alt: image.alt,
-    caption: image.caption,
-    credit: image.credit,
-    credit_url: image.credit_url,
-    is_published: true,
-    sort_order: index,
-  }));
+  return IMAGE_SEED[sectionSlug].map((image, index) => {
+    const extension = image.extension || 'jpg';
+    const url = `/assets/img/gallery/${sectionSlug}/${image.id}.${extension}`;
+    return {
+      url,
+      // The SVG placeholders are small enough to use the same file as a
+      // thumbnail; photographic seeds keep their dedicated thumb file.
+      thumb_url: image.extension ? url : `/assets/img/gallery/${sectionSlug}/${image.id}-thumb.jpg`,
+      alt: image.alt,
+      caption: image.caption,
+      credit: image.credit,
+      credit_url: image.credit_url,
+      is_published: true,
+      sort_order: index,
+    };
+  });
 }
 
 const GALLERY_SEED = {
@@ -158,6 +272,50 @@ const GALLERY_SEED = {
       is_published: true,
       sort_order: 1,
       images: seedImages('practical'),
+    },
+    {
+      slug: 'departments',
+      eyebrow: 'داخل التخصصات',
+      title: 'صور الأقسام',
+      description:
+        'لقات من ورش التخصصات ومعاملها وفرق العمل الطلابية. تظهر حاليًا صور بديلة إلى حين رفع صور المجمع الفعلية.',
+      icon: 'layers',
+      is_published: true,
+      sort_order: 2,
+      images: seedImages('departments'),
+    },
+    {
+      slug: 'competitions',
+      eyebrow: 'مشاركات ومنافسات',
+      title: 'صور المسابقات',
+      description:
+        'مسابقات تقنية وعروض مشروعات ولجان تحكيم توثّق روح المنافسة والإبداع لدى الطلاب.',
+      icon: 'star',
+      is_published: true,
+      sort_order: 3,
+      images: seedImages('competitions'),
+    },
+    {
+      slug: 'field-visits',
+      eyebrow: 'خارج المجمع',
+      title: 'صور الزيارات الميدانية',
+      description:
+        'زيارات إلى مواقع العمل المصنعية والخدمية، يلتقي فيها الطلاب بالمهندسين والفنيين ويرون تطبيق ما درسوه.',
+      icon: 'briefcase',
+      is_published: true,
+      sort_order: 4,
+      images: seedImages('field-visits'),
+    },
+    {
+      slug: 'activities',
+      eyebrow: 'يوم المجمع',
+      title: 'صور الأنشطة',
+      description:
+        'الطابور الصباحي والتربية الرياضية والأنشطة الجماعية التي تصنع حياة مدرسية متوازنة إلى جانب التدريب التقني.',
+      icon: 'users',
+      is_published: true,
+      sort_order: 5,
+      images: seedImages('activities'),
     },
   ],
 };
@@ -439,6 +597,62 @@ function seedGallery() {
   return { inserted: true, sections: GALLERY_SEED.sections.length, images };
 }
 
+/**
+ * Adds the newer photo categories to a database that already had a gallery.
+ * Existing sections and administrator edits are never replaced: a section is
+ * inserted only when its slug is absent. Fresh databases skip this helper and
+ * get every section from `seedGallery()` instead.
+ */
+function seedMissingSections(slugs = NEW_SECTION_SLUGS) {
+  const existing = new Set(listSections().map((section) => section.slug));
+  const missing = GALLERY_SEED.sections.filter(
+    (section) => slugs.includes(section.slug) && !existing.has(section.slug)
+  );
+  if (!missing.length) return { inserted: false, sections: 0, images: 0 };
+
+  let images = 0;
+  db.transaction(() => {
+    for (const section of missing) {
+      const last = db.get('SELECT COALESCE(MAX(sort_order), -1) AS last FROM gallery_sections');
+      const result = db.run(
+        `INSERT INTO gallery_sections
+           (slug, eyebrow, title, description, icon, is_published, sort_order)
+         VALUES (?, ?, ?, ?, ?, 1, ?)`,
+        [
+          section.slug,
+          section.eyebrow,
+          section.title,
+          section.description,
+          section.icon,
+          Number(last.last) + 1,
+        ]
+      );
+      const sectionId = Number(result.lastInsertRowid);
+      section.images.forEach((image, index) => {
+        db.run(
+          `INSERT INTO gallery_images
+             (section_id, url, thumb_url, alt, caption, credit, credit_url,
+              is_published, sort_order)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?)`,
+          [
+            sectionId,
+            image.url,
+            image.thumb_url,
+            image.alt,
+            image.caption,
+            image.credit,
+            image.credit_url,
+            index,
+          ]
+        );
+        images += 1;
+      });
+    }
+  });
+
+  return { inserted: true, sections: missing.length, images };
+}
+
 function countImages() {
   return db.get('SELECT COUNT(*) AS count FROM gallery_images').count;
 }
@@ -446,11 +660,13 @@ function countImages() {
 module.exports = {
   GALLERY_ICONS,
   GALLERY_SEED,
+  NEW_SECTION_SLUGS,
   LIMITS,
   DEFAULT_SETTINGS,
   getPublicGallery,
   getAdminGallery,
   saveGallery,
   seedGallery,
+  seedMissingSections,
   countImages,
 };

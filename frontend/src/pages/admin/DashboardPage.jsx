@@ -210,6 +210,10 @@ export default function DashboardPage() {
               <Icon name="plus" size={15} />
               <span>تخصص جديد</span>
             </Link>
+            <Link className="btn btn-outline btn-sm" to="/student-counts">
+              <Icon name="users" size={15} />
+              <span>أعداد الطلاب</span>
+            </Link>
             <Link className="btn btn-outline btn-sm" to="/content">
               <Icon name="file" size={15} />
               <span>تحرير المحتوى</span>

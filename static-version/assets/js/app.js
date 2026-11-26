@@ -14,6 +14,50 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  function formatNumber(value) {
+    return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function countFor(dept) {
+    var row = (D.studentCounts && D.studentCounts[dept.slug]) || {};
+    var male = Number(row.male || 0);
+    var female = Number(row.female || 0);
+    return { male: male, female: female, total: male + female };
+  }
+
+  function studentTotals() {
+    var totals = { male: 0, female: 0, total: 0 };
+    (D.departments || []).forEach(function (dept) {
+      var count = countFor(dept);
+      totals.male += count.male;
+      totals.female += count.female;
+      totals.total += count.total;
+    });
+    return totals;
+  }
+
+  /* ---------- editable text + derived stats ---------- */
+  function initContent() {
+    var text = D.content || {};
+    var map = {
+      '[data-content="accreditation"]': text.accreditation,
+      '[data-content="vision"]': text.vision,
+      '[data-content="mission"]': text.mission
+    };
+    Object.keys(map).forEach(function (selector) {
+      $$(selector).forEach(function (el) {
+        if (map[selector]) el.textContent = map[selector];
+      });
+    });
+
+    var totals = studentTotals();
+    $$('[data-students-total]').forEach(function (el) {
+      el.setAttribute('data-count', String(totals.total));
+    });
+    $$('[data-students-male]').forEach(function (el) { el.textContent = formatNumber(totals.male); });
+    $$('[data-students-female]').forEach(function (el) { el.textContent = formatNumber(totals.female); });
+  }
+
   /* ---------- shared chrome ---------- */
   function initChrome() {
     var header = $('.site-header');
@@ -135,6 +179,7 @@
       '<div class="card__body">' +
         '<h3>' + escapeHtml(dept.name) + '</h3>' +
         '<p>' + escapeHtml(dept.short) + '</p>' +
+        '<span class="card-students">عدد الطلاب: ' + formatNumber(countFor(dept).total) + '</span>' +
         '<a class="card-link" href="department.html?slug=' + encodeURIComponent(dept.slug) + '">التفاصيل والمهارات ←</a>' +
       '</div>' +
     '</article>';
@@ -187,6 +232,7 @@
     }
     document.title = dept.name + ' | مجمع طيبة تكنولوجي';
     var skills = dept.skills.map(function (s) { return '<li>' + escapeHtml(s) + '</li>'; }).join('');
+    var count = countFor(dept);
     root.innerHTML =
       '<div class="detail-grid">' +
         '<article class="card reveal">' +
@@ -198,9 +244,10 @@
           '</div>' +
         '</article>' +
         '<aside class="detail-side">' +
-          '<section class="card feature reveal" data-delay="1"><span class="feature__icon">◆</span><h3>مجال التركيز</h3><p>' + escapeHtml(dept.focus) + '</p></section>' +
-          '<section class="card feature reveal" data-delay="2"><span class="feature__icon">✓</span><h3>المهارات المكتسبة</h3><ul class="skill-list">' + skills + '</ul></section>' +
-          '<section class="card feature reveal" data-delay="3"><span class="feature__icon">!</span><h3>قبل الالتحاق</h3><p>' + escapeHtml(dept.admission) + '</p><a class="btn btn--primary" data-magnetic href="apply.html">التقديم لهذا التخصص</a></section>' +
+          '<section class="card feature reveal" data-delay="1"><span class="feature__icon">◉</span><h3>عدد الطلاب</h3><p class="detail-count">' + formatNumber(count.total) + ' طالبًا وطالبة</p><p class="muted">' + formatNumber(count.male) + ' ذكور • ' + formatNumber(count.female) + ' إناث</p><p class="muted detail-note">تُدار هذه الأعداد من لوحة التحكم في النسخة الكاملة.</p></section>' +
+          '<section class="card feature reveal" data-delay="2"><span class="feature__icon">◆</span><h3>مجال التركيز</h3><p>' + escapeHtml(dept.focus) + '</p></section>' +
+          '<section class="card feature reveal" data-delay="3"><span class="feature__icon">✓</span><h3>المهارات المكتسبة</h3><ul class="skill-list">' + skills + '</ul></section>' +
+          '<section class="card feature reveal" data-delay="4"><span class="feature__icon">!</span><h3>قبل الالتحاق</h3><p>' + escapeHtml(dept.admission) + '</p><a class="btn btn--primary" data-magnetic href="apply.html">التقديم لهذا التخصص</a></section>' +
         '</aside>' +
       '</div>';
     var link = $('a[href="apply.html"]', root);
@@ -252,9 +299,13 @@
     }
 
     if (filters) {
-      filters.innerHTML = ['all', 'practical', 'theoretical'].map(function (id) {
-        var label = id === 'all' ? 'كل الصور' : id === 'practical' ? 'التدريب العملي' : 'الدراسة النظرية';
-        return '<button class="filter-btn' + (id === 'all' ? ' is-active' : '') + '" type="button" data-filter="' + id + '">' + label + '</button>';
+      var types = D.galleryTypes || [
+        { id: 'all', label: 'كل الصور' },
+        { id: 'practical', label: 'التدريب العملي' },
+        { id: 'theoretical', label: 'الدراسة النظرية' }
+      ];
+      filters.innerHTML = types.map(function (type, index) {
+        return '<button class="filter-btn' + (index === 0 ? ' is-active' : '') + '" type="button" data-filter="' + escapeHtml(type.id) + '">' + escapeHtml(type.label) + '</button>';
       }).join('');
       filters.addEventListener('click', function (event) {
         var button = event.target.closest('[data-filter]');
@@ -285,6 +336,100 @@
         if (event.key === 'Escape') { lightbox.hidden = true; lightboxImg.src = ''; }
       });
     }
+  }
+
+  /* ---------- real study plan (generated from backend data) ---------- */
+  function initSubjects() {
+    var root = $('#subject-list');
+    if (!root || !D.subjects) return;
+
+    var gradeFilters = $('#subject-grade-filters');
+    var typeFilters = $('#subject-type-filters');
+    var count = $('#subject-count');
+    var grades = [
+      { id: 'all', label: 'كل الصفوف' },
+      { id: 'first', label: 'الصف الأول' },
+      { id: 'second', label: 'الصف الثاني' },
+      { id: 'third', label: 'الصف الثالث' }
+    ];
+    var types = [
+      { id: 'all', label: 'الكل' },
+      { id: 'theoretical', label: 'نظرية' },
+      { id: 'practical', label: 'عملية' }
+    ];
+    var groups = [
+      { id: 'theoretical', title: 'المواد النظرية', note: 'أساس علمي ولغوي يبني عليه التطبيق العملي.' },
+      { id: 'practical', title: 'المواد العملية', note: 'تمارين معملية ومشروعات تحوّل المعرفة إلى مهارة.' }
+    ];
+    var state = { grade: 'all', type: 'all' };
+
+    function filterMarkup(list, key, selected) {
+      return list.map(function (item) {
+        return '<button class="filter-btn' + (item.id === selected ? ' is-active' : '') +
+          '" type="button" data-' + key + '="' + item.id + '">' + escapeHtml(item.label) + '</button>';
+      }).join('');
+    }
+
+    function cardMarkup(subject) {
+      var isPractical = subject.type === 'practical';
+      return '<article class="card subject-card reveal">' +
+        '<div class="subject-card__head">' +
+          '<span class="subject-card__type' + (isPractical ? ' is-practical' : '') + '">' +
+            (isPractical ? 'عملية' : 'نظرية') + '</span>' +
+          '<span class="subject-card__grade">' + escapeHtml(
+            subject.grade === 'first' ? 'الأول' : subject.grade === 'second' ? 'الثاني' : 'الثالث'
+          ) + '</span>' +
+        '</div>' +
+        '<h3>' + escapeHtml(subject.name) + '</h3>' +
+        '<p class="subject-card__periods">' + formatNumber(subject.weekly_periods) + ' حصة/أسبوع</p>' +
+        '<p class="muted">' + escapeHtml(subject.description || '') + '</p>' +
+        '<span class="subject-card__dept">' + escapeHtml(subject.department_slug || 'مادة عامة') + '</span>' +
+      '</article>';
+    }
+
+    function render() {
+      var list = D.subjects.filter(function (subject) {
+        return (state.grade === 'all' || subject.grade === state.grade) &&
+          (state.type === 'all' || subject.type === state.type);
+      });
+      root.innerHTML = groups.map(function (group) {
+        var items = list.filter(function (subject) { return subject.type === group.id; });
+        if (!items.length) return '';
+        return '<section class="subject-group">' +
+          '<div class="section-head"><span class="eyebrow">' + escapeHtml(group.title) + '</span>' +
+          '<p class="muted">' + escapeHtml(group.note) + '</p></div>' +
+          '<div class="grid grid--3">' + items.map(cardMarkup).join('') + '</div>' +
+        '</section>';
+      }).join('');
+      if (count) count.textContent = formatNumber(list.length) + ' مادة مطابقة من ' + formatNumber(D.subjects.length) + ' مادة';
+      initReveals();
+    }
+
+    if (gradeFilters) {
+      gradeFilters.innerHTML = filterMarkup(grades, 'grade', state.grade);
+      gradeFilters.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-grade]');
+        if (!button) return;
+        state.grade = button.getAttribute('data-grade');
+        $$('.filter-btn', gradeFilters).forEach(function (b) { b.classList.remove('is-active'); });
+        button.classList.add('is-active');
+        render();
+      });
+    }
+
+    if (typeFilters) {
+      typeFilters.innerHTML = filterMarkup(types, 'type', state.type);
+      typeFilters.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-type]');
+        if (!button) return;
+        state.type = button.getAttribute('data-type');
+        $$('.filter-btn', typeFilters).forEach(function (b) { b.classList.remove('is-active'); });
+        button.classList.add('is-active');
+        render();
+      });
+    }
+
+    render();
   }
 
   /* ---------- demo application form (no backend) ---------- */
@@ -364,6 +509,7 @@
   /* ---------- boot ---------- */
   function boot() {
     initChrome();
+    initContent();
     initReveals();
     initPointerEffects();
     initCounters();
@@ -373,6 +519,7 @@
     initFaq();
     initNews();
     initGallery();
+    initSubjects();
     initApply();
   }
 

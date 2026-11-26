@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-label="رسم توضيحي لتخصص صيانة الأجهزة الطبية">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A3B66" />
+      <stop offset="1" stop-color="#D62839" />
+    </linearGradient>
+    <pattern id="dots" width="30" height="30" patternUnits="userSpaceOnUse">
+    <circle cx="3" cy="3" r="2" fill="#FFFFFF" opacity="0.18" />
+  </pattern>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34" />
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#bg)" />
+  <rect width="640" height="420" fill="url(#dots)" />
+  <circle cx="496" cy="120" r="168" fill="#FFFFFF" opacity="0.05" />
+  <circle cx="122" cy="352" r="132" fill="#FFFFFF" opacity="0.10" />
+  <circle cx="320" cy="210" r="176" fill="url(#glow)" />
+  
+  <g transform="translate(320 210)" fill="none" stroke="#FFFFFF"
+     stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+    
+      <path d="M-126 0 H-64 L-40 -56 L-8 72 L24 -20 L46 0 H126" stroke="#FFFFFF" />
+      <path d="M-46 -102 H46 M0 -148 V-56" stroke="#FFC928" stroke-width="12" />
+      <circle cx="0" cy="0" r="102" opacity="0.25" stroke-width="5" />
+  </g>
+  <g fill="none" stroke="#FFFFFF" stroke-width="4" opacity="0.6">
+    <path d="M52 338 H132 M52 338 V270" />
+    <path d="M588 82 H518 M588 82 V150" />
+  </g>
+  <circle cx="52" cy="338" r="7" fill="#FFFFFF" />
+  <circle cx="588" cy="82" r="7" fill="#FFFFFF" />
+  <g fill="#FFFFFF" opacity="0.9">
+    <rect x="278" y="374" width="22" height="5" rx="2.5" />
+    <rect x="309" y="374" width="22" height="5" rx="2.5" />
+    <rect x="340" y="374" width="22" height="5" rx="2.5" />
+  </g>
+</svg>

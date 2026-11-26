@@ -18,6 +18,18 @@ const INITIAL_VERSION = '001_initial';
 const APPLICATION_DETAILS_VERSION = '002_application_details';
 const SUBJECT_GRADE_DEPARTMENT_VERSION = '003_subject_grade_department';
 const SUBJECT_WEEKLY_PERIODS_VERSION = '004_subject_weekly_periods';
+const DEPARTMENT_STUDENTS_VERSION = '005_department_students';
+const CONTENT_REFRESH_VERSION = '006_school_content_refresh';
+const GALLERY_CATEGORIES_VERSION = '007_gallery_categories';
+
+// Text introduced after the first release. Existing databases keep any value
+// an administrator has customised; only the old seeded wording is replaced.
+const LEGACY_CONTENT = {
+  vision:
+    'أن يكون مجمع تقني نموذجية في التعليم التطبيقي، يُخرّج كوادر قادرة على حل المشكلات التقنية والعمل ضمن فرق متعددة التخصصات.',
+  mission:
+    'تقديم تعليم تقني متوازن يجمع بين المعرفة النظرية والتدريب العملي، وبناء بيئة تعليمية آمنة ومحفزة، وتنمية مهارات التواصل والعمل الجماعي والمسؤولية المهنية لدى الطلاب.',
+};
 
 // Columns added to `applications` after the initial schema. They are all
 // nullable text with an empty-string default so existing rows stay valid.
@@ -72,8 +84,73 @@ function addMissingSubjectColumns() {
   }
 }
 
+// Admin-managed headcount added after the first release. The total is derived
+// from these two columns instead of being stored, so it cannot drift.
+const DEPARTMENT_STUDENT_COLUMNS = [
+  ['students_male', 'INTEGER NOT NULL DEFAULT 0 CHECK (students_male >= 0)'],
+  ['students_female', 'INTEGER NOT NULL DEFAULT 0 CHECK (students_female >= 0)'],
+];
+
+function addMissingDepartmentStudentColumns() {
+  const existing = tableColumns('departments');
+  for (const [name, definition] of DEPARTMENT_STUDENT_COLUMNS) {
+    if (existing.has(name)) continue;
+    db.exec(`ALTER TABLE departments ADD COLUMN ${name} ${definition};`);
+  }
+}
+
+/**
+ * Refreshes school text on databases seeded by an older release. Values that
+ * differ from the old seed are treated as administrator edits and preserved.
+ */
+function refreshSchoolContent() {
+  // Required lazily so the service sees the final schema and DB configuration.
+  const { DEFAULT_CONTENT } = require('../services/content.service');
+
+  for (const key of ['vision', 'mission']) {
+    if (!Object.prototype.hasOwnProperty.call(DEFAULT_CONTENT, key)) continue;
+    const current = db.get('SELECT content_value FROM school_content WHERE content_key = ?', [key]);
+    if (!current) {
+      db.run(
+        `INSERT INTO school_content (content_key, content_value, updated_at)
+         VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`,
+        [key, DEFAULT_CONTENT[key]]
+      );
+    } else if (current.content_value === LEGACY_CONTENT[key]) {
+      db.run(
+        `UPDATE school_content SET content_value = ?,
+           updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+         WHERE content_key = ?`,
+        [DEFAULT_CONTENT[key], key]
+      );
+    }
+  }
+
+  const accreditation = db.get(
+    'SELECT content_value FROM school_content WHERE content_key = ?',
+    ['accreditation']
+  );
+  if (!accreditation || !String(accreditation.content_value || '').trim()) {
+    db.run(
+      `INSERT INTO school_content (content_key, content_value, updated_at)
+       VALUES ('accreditation', ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+       ON CONFLICT (content_key) DO UPDATE SET
+         content_value = excluded.content_value,
+         updated_at = excluded.updated_at`,
+      [DEFAULT_CONTENT.accreditation]
+    );
+  }
+}
+
 function migrate({ silent = false } = {}) {
   const sql = fs.readFileSync(config.paths.schema, 'utf8');
+
+  // Remember whether this was already an installed gallery before schema.sql
+  // creates the tables. Fresh databases must let the normal demo seeder create
+  // every section in one pass instead of introducing categories here.
+  const hadGallery =
+    tableExists('gallery_sections') &&
+    Boolean(db.get('SELECT COUNT(*) AS count FROM gallery_sections')?.count);
 
   db.exec('PRAGMA foreign_keys = ON;');
 
@@ -87,6 +164,9 @@ function migrate({ silent = false } = {}) {
   if (tableExists('subjects')) {
     addMissingSubjectColumns();
   }
+  if (tableExists('departments')) {
+    addMissingDepartmentStudentColumns();
+  }
 
   db.exec(sql);
 
@@ -94,6 +174,7 @@ function migrate({ silent = false } = {}) {
   // no-op there and a safety net for anything created in between.
   addMissingApplicationColumns();
   addMissingSubjectColumns();
+  addMissingDepartmentStudentColumns();
 
   const existing = db.get('SELECT version FROM schema_migrations WHERE version = ?', [INITIAL_VERSION]);
   if (!existing) {
@@ -121,6 +202,32 @@ function migrate({ silent = false } = {}) {
     db.run('INSERT INTO schema_migrations (version) VALUES (?)', [SUBJECT_WEEKLY_PERIODS_VERSION]);
   }
 
+  const departmentStudents = db.get('SELECT version FROM schema_migrations WHERE version = ?', [
+    DEPARTMENT_STUDENTS_VERSION,
+  ]);
+  if (!departmentStudents) {
+    db.run('INSERT INTO schema_migrations (version) VALUES (?)', [DEPARTMENT_STUDENTS_VERSION]);
+  }
+
+  const contentRefresh = db.get('SELECT version FROM schema_migrations WHERE version = ?', [
+    CONTENT_REFRESH_VERSION,
+  ]);
+  if (!contentRefresh) {
+    refreshSchoolContent();
+    db.run('INSERT INTO schema_migrations (version) VALUES (?)', [CONTENT_REFRESH_VERSION]);
+  }
+
+  const galleryCategories = db.get('SELECT version FROM schema_migrations WHERE version = ?', [
+    GALLERY_CATEGORIES_VERSION,
+  ]);
+  if (!galleryCategories) {
+    if (hadGallery) {
+      const { seedMissingSections } = require('../services/gallery.service');
+      seedMissingSections();
+    }
+    db.run('INSERT INTO schema_migrations (version) VALUES (?)', [GALLERY_CATEGORIES_VERSION]);
+  }
+
   if (!silent) {
     // eslint-disable-next-line no-console
     console.log(`[db] schema ready (${config.paths.db})`);
@@ -134,4 +241,7 @@ module.exports = {
   APPLICATION_DETAILS_VERSION,
   SUBJECT_GRADE_DEPARTMENT_VERSION,
   SUBJECT_WEEKLY_PERIODS_VERSION,
+  DEPARTMENT_STUDENTS_VERSION,
+  CONTENT_REFRESH_VERSION,
+  GALLERY_CATEGORIES_VERSION,
 };

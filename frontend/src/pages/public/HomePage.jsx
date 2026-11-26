@@ -6,6 +6,7 @@ import { useAsync } from '../../lib/hooks.js';
 import { Icon } from '../../lib/icons.jsx';
 import { Counter, useHeroParallax, usePageMeta } from '../../lib/motion.jsx';
 import {
+  AccreditationStrip,
   DepartmentCard,
   NewsCard,
   SectionHead,
@@ -129,6 +130,11 @@ export default function HomePage() {
 
   const departmentList = Array.isArray(departments.data) ? departments.data : [];
   const articleList = Array.isArray(news.data) ? news.data : [];
+  const studentTotal = departmentList.reduce(
+    (sum, department) =>
+      sum + Number(department.students_total ?? Number(department.students_male || 0) + Number(department.students_female || 0)),
+    0
+  );
   const objectiveList = objectives.length ? objectives.slice(0, 5) : FALLBACK_OBJECTIVES;
   const stepList = admissionSteps.length ? admissionSteps.slice(0, 6) : FALLBACK_STEPS;
 
@@ -246,6 +252,8 @@ export default function HomePage() {
 
       <BrandTicker />
 
+      <AccreditationStrip />
+
       {/* ================= STATS BAND ================= */}
       <section className="container" aria-label="أرقام سريعة عن المجمع" data-cinematic-reveal>
         <div className="stats-band reveal">
@@ -258,8 +266,8 @@ export default function HomePage() {
             <span className="stats-band__label">خطوات للتقديم</span>
           </div>
           <div className="stats-band__item">
-            <Counter className="stats-band__value" value={faqs.length} />
-            <span className="stats-band__label">سؤالًا شائعًا</span>
+            <Counter className="stats-band__value" value={studentTotal} />
+            <span className="stats-band__label">طالبًا وطالبة في التخصصات</span>
           </div>
           <div className="stats-band__item">
             <span className="stats-band__value">

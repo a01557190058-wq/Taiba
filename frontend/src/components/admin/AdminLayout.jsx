@@ -6,6 +6,7 @@ import { useAdminAuth } from '../../lib/admin-auth.jsx';
 const NAV_ITEMS = [
   { key: 'dashboard', to: '/dashboard', label: 'نظرة عامة', icon: 'dashboard' },
   { key: 'departments', to: '/departments', label: 'التخصصات', icon: 'layers' },
+  { key: 'student-counts', to: '/student-counts', label: 'أعداد الطلاب', icon: 'users' },
   { key: 'subjects', to: '/subjects', label: 'المواد الدراسية', icon: 'book' },
   { key: 'applications', to: '/applications', label: 'طلبات التقديم', icon: 'inbox' },
   { key: 'news', to: '/news', label: 'الأخبار', icon: 'news' },
@@ -25,6 +26,9 @@ function chromeFor(pathname) {
   }
   if (pathname.startsWith('/departments')) {
     return { title: 'التخصصات', subtitle: 'إنشاء وتحرير ونشر التخصصات التعليمية' };
+  }
+  if (pathname.startsWith('/student-counts')) {
+    return { title: 'أعداد الطلاب', subtitle: 'تحكم في أعداد الذكور والإناث بكل تخصص من لوحة التحكم' };
   }
   if (pathname.startsWith('/subjects/new')) {
     return { title: 'مادة دراسية جديدة', subtitle: 'إضافة مادة نظرية أو عملية إلى صفحة المواد' };

@@ -278,6 +278,46 @@
   backdrop-filter: blur(6px);
 }
 
+/* ---------- department student counts ---------- */
+.count-table .count-input {
+  width: 5.5rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--a-line-strong);
+  border-radius: var(--a-radius-sm);
+  background: #ffffff;
+  color: var(--a-ink-900);
+  font-size: 0.85rem;
+  text-align: center;
+  transition: border-color 0.15s var(--a-ease), box-shadow 0.15s var(--a-ease);
+}
+
+.count-table .count-input:focus {
+  outline: none;
+  border-color: var(--a-teal-600);
+  box-shadow: 0 0 0 3px var(--a-teal-50);
+}
+
+.count-table__slug {
+  display: block;
+  margin-top: 0.1rem;
+  direction: ltr;
+  text-align: start;
+}
+
+.count-table__total {
+  font-weight: 800;
+  color: var(--a-teal-800);
+  white-space: nowrap;
+}
+
+.count-table tbody tr.is-dirty {
+  background: #fffdf4;
+}
+
+.count-table tbody tr.is-dirty:hover {
+  background: #fff9e6;
+}
+
 @media (max-width: 720px) {
   .gallery-admin-section__head {
     flex-wrap: wrap;
